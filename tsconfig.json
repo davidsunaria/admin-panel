@@ -1,0 +1,45 @@
+{
+
+  "compilerOptions": {
+    "jsx": "react",
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "allowJs": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "baseUrl": "./",
+    "noImplicitThis": false,
+    "paths": {
+      "react-app-pages": ["src/web/pages"],
+      "react-app-images": ["src/assets/img"],
+      "react-app-layouts": ["src/web/layouts"],
+      "react-app-hooks": ["src/web/hooks"],
+      "react-app-validations": ["src/lib/validations"],
+      "react-app-store": ["src/store"],
+      "react-app-model": ["src/model"],
+      "react-app-api": ["src/api"],
+      "react-app-interfaces": ["src/interfaces"],
+      "react-app-utils": ["src/utils"],
+      "react-app-message": ["src/utils/message"],
+      "react-app-components": ["src/web/components"],
+    },
+  },
+  "include": [
+    "src",
+  ]
+}
