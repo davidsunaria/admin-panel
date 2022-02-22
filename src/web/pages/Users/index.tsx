@@ -1,16 +1,21 @@
 import React, { Suspense, useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
-import { IUsers, IEnableDisable, IPagination } from 'react-app-interfaces';
+import { IUsers, IEnableDisable, IPagination, IInviteuser } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import ConfirmAlert from '../components/ConfirmAlert';
+import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import LOGO from 'react-app-images/logo.png';
+import { Formik } from 'formik';
+import { useAuthValidation } from '../../../lib/validations/AuthSchema';
 
-const TableHeader = React.lazy(() => import('../components/TableHeader'));
-const SearchUser = React.lazy(() => import('../components/SearchUser'));
+const TableHeader = React.lazy(() => import('../../components/TableHeader'));
+const SearchUser = React.lazy(() => import('../../components/SearchUser'));
+const MyModal = React.lazy(() => import('../../components/MyModal'));
+const Input = React.lazy(() => import('../../components/Input'));
 const Users: React.FC = (): JSX.Element => {
+  const { InviteUserSchema } = useAuthValidation();
   const tableHeader = useMemo(() => {
     return [
       { key: 'image', value: 'Image' },
@@ -27,21 +32,33 @@ const Users: React.FC = (): JSX.Element => {
       q: '', page: 1, limit: 25, status: '', is_premium: ''
     }
   }, []);
+  const inviteInititalState = useCallback((): IInviteuser => {
+    return {
+      email: ''
+    }
+  }, []);
 
   const [formData, setFormData] = useState<IUsers>(userInititalState);
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
+  const [isOpen, setIsOpen] = useState(false);
 
+  //State
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.user.response);
+  const isInvitationSend = useStoreState(state => state.user.isInvitationSend);
+  //Actions
   const getUsers = useStoreActions(actions => actions.user.getUsers);
   const enableDisable = useStoreActions(actions => actions.user.enableDisable);
-
+  const inviteUser = useStoreActions(actions => actions.user.inviteUser);
+  const flushData = useStoreActions(actions => actions.user.flushData);
+  const toggle = () => setIsOpen(!isOpen);
 
   const getUserData = useCallback(async (payload: IUsers) => {
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
+
   useEffect(() => {
     if (response?.data) {
       const { data, pagination: [paginationObject] } = response;
@@ -56,13 +73,14 @@ const Users: React.FC = (): JSX.Element => {
       }
     }
   }, [response]);
+
   const onSearch = useCallback((payload: IUsers) => {
     setFormData(_ => ({ ..._, ...payload, page: 1, limit: 25 }));
   }, []);
+
   const onReset = useCallback(() => {
     setFormData(userInititalState);
   }, []);
-
 
   useEffect(() => {
     if (formData) {
@@ -102,19 +120,68 @@ const Users: React.FC = (): JSX.Element => {
     return `https://8f99j1irga.execute-api.us-west-2.amazonaws.com/production/media/` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
   }
 
-
+  const onInvite = async (payload: IInviteuser) => {
+    await inviteUser({ 'url': "user/invite-user", payload });
+    // 
+  }
+  useEffect( () => {
+    async function flush(){
+      toggle();
+      await flushData();
+    }
+    if (isInvitationSend && isInvitationSend === true) {
+      flush();
+    }
+  }, [isInvitationSend]);
   return (
     <>
-
       <div className="Content">
         <div className="mainTitle">
           <h4 className="flex-grow-1">Manage users</h4>
-          <button type="button" className="btn btn-outline-primary btn-lg"><i className="bi bi-plus-lg"></i> Invite user</button>
+          <button onClick={toggle} type="button" className="btn btn-outline-primary btn-lg"><i className="bi bi-plus-lg"></i> Invite user</button>
         </div>
         <div className="cardBox">
-
-
           <Suspense fallback={<>Loading...</>}>
+            <MyModal heading={"Invite user"} showSubmitBtn={false} isOpen={isOpen} toggle={toggle}>
+              <Formik
+                enableReinitialize={true}
+                initialValues={inviteInititalState()}
+                onSubmit={async values => {
+                  //setFormData(JSON.stringify(values, null, 2))
+                  onInvite(values);
+                }}
+                validationSchema={InviteUserSchema}
+              >
+                {props => {
+                  const {
+                    values,
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                  } = props;
+                  return (
+                    <form onSubmit={handleSubmit} className="p-3">
+                      <Input
+                        label={"Email"}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        className={"form-control"}
+                        type={"text"}
+                        autoComplete={"off"}
+                        value={values?.email}
+                        name={"email"}
+                        id={"name"}
+                        placeholder={"Email"} />
+                      <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={toggle}>Cancel</button>
+                        <button type="submit" className="btn btn-primary">Submit</button>
+                      </div>
+                    </form>
+                  );
+                }}
+              </Formik>
+
+            </MyModal>
             <SearchUser onSearch={onSearch} onReset={onReset} />
           </Suspense>
           <div className="table-responsive">

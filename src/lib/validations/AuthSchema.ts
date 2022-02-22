@@ -7,6 +7,7 @@ const useAuthValidation = () => {
   const LoginSchema = useMemo(() => Yup.object({
     email: Yup
       .string()
+      .email()
       .required(EMAIL_REQUIRED),
 
     password: Yup
@@ -24,6 +25,7 @@ const useAuthValidation = () => {
   const ForgotPasswordSchema = useMemo(() => Yup.object({
     email: Yup
       .string()
+      .email()
       .required(EMAIL_REQUIRED),
   }), []);
 
@@ -34,6 +36,7 @@ const useAuthValidation = () => {
       .required(OTP_REQUIRED),
     email: Yup
       .string()
+      .email()
       .required(EMAIL_REQUIRED),
     password: Yup
       .string()
@@ -44,7 +47,14 @@ const useAuthValidation = () => {
       .oneOf([Yup.ref('password'), null], CONFIRM_PASSWORD_MATCH)
   }), []);
 
-  return { LoginSchema, VerifyOtpSchema, ForgotPasswordSchema, ResetPasswordSchema };
+  const InviteUserSchema = useMemo(() => Yup.object({
+    email: Yup
+      .string()
+      .email()
+      .required(EMAIL_REQUIRED)
+  }), []);
+
+  return { LoginSchema, VerifyOtpSchema, ForgotPasswordSchema, ResetPasswordSchema, InviteUserSchema };
 }
 
 export { useAuthValidation };

@@ -8,17 +8,28 @@ import NavigationService from 'src/routes/NavigationService';
 import store from 'react-app-store';
 import { logoutCompletely } from '../../lib/utils/Service';
 export interface UserModel {
+  isInvitationSend: boolean;
+  setIsInvitationSend: Action<UserModel, boolean>;
+  flushData: Action<UserModel>;
   response: string | object | any;
   setResponse: Action<UserModel, object | any>;
   getUsers: Thunk<UserModel, object>;
 	logout:Thunk<UserModel, object>;
   enableDisable:Thunk<UserModel, object>;
+  inviteUser:Thunk<UserModel, object>;
 }
 
 const user: UserModel = {
   response: {},
+  isInvitationSend: false,
   setResponse: action((state, payload) => {
     state.response = payload;
+  }),
+  setIsInvitationSend: action((state, payload) => {
+    state.isInvitationSend = payload;
+  }),
+  flushData: action((state, payload) => {
+    state.isInvitationSend = false;
   }),
   getUsers: thunk<UserModel,IPayload,any,StoreModel>(async (actions, payload: IPayload, { getStoreActions,getState  }) => {
 		// if(!getState().response?.data?.length){
@@ -74,6 +85,23 @@ const user: UserModel = {
 			return true;
 		}
 	}),
+  inviteUser: thunk<UserModel,IPayload,any,StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
+		actions.setIsInvitationSend(false);
+    getStoreActions().common.setLoading(true);
+		let response = await postApi(payload);
+		if (response && response.status !== 200) {
+			toast.error(response.message);
+			getStoreActions().common.setLoading(false);
+		} else if (response && response.status === 200) {
+			toast.success(response.message);
+			getStoreActions().common.setLoading(false);
+      actions.setIsInvitationSend(true);
+		}
+		else {
+			getStoreActions().common.setLoading(false);
+			return true;
+		}
+	})
 };
 
 export default user;

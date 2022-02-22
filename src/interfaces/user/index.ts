@@ -16,3 +16,6 @@ export interface IEnableDisable {
   type: string;
   status: string | number;
 }
+export interface IInviteuser {
+  email: string;
+}
