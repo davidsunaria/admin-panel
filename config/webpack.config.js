@@ -322,6 +322,7 @@ module.exports = function (webpackEnv) {
         "react-app-interfaces": path.resolve(__dirname, "../src/interfaces"),
         "react-app-utils": path.resolve(__dirname, "../src/lib/utils"),
         "react-app-message": path.resolve(__dirname, "../src/lib/message"),
+        "react-app-config": path.resolve(__dirname, "../src/config"),
         'react-native': 'react-native-web',
         // Allows for better profiling with ReactDevTools
         ...(isEnvProductionProfile && {

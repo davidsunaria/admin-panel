@@ -12,6 +12,7 @@ const Groups = React.lazy(() => import('../web/pages/Groups'));
 const Events = React.lazy(() => import('../web/pages/Events'));
 const ForgotPassword = React.lazy(() => import('../web/pages/ForgotPassword'));
 const VerifyOtp = React.lazy(() => import('../web/pages/VerifyOtp'));
+const NotFound = React.lazy(() => import('../../src/web/components/NotFound'));
 
 const AppRouter: React.FC = (): JSX.Element => {
   const isLoggedIn = true;
@@ -34,7 +35,7 @@ const AppRouter: React.FC = (): JSX.Element => {
     <Layout>
       <UserContext.Provider value={isLoggedIn}>
         <Routes >
-          <Route path="/" element={<PublicRoute restricted={true}>
+          <Route path="/"  element={<PublicRoute restricted={true}>
             <Suspense fallback={<>Loading...</>}><Login /></Suspense>
           </PublicRoute>}></Route>
           
@@ -71,10 +72,6 @@ const AppRouter: React.FC = (): JSX.Element => {
   );
 }
 
-
-export const NotFound = () => {
-  return <div>This is a 404 page</div>
-}
 export const Dashboard = () => {
   return <div>This is a Dashboard page</div>
 }

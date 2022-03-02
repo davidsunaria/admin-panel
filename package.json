@@ -34,6 +34,7 @@
     "dotenv": "^10.0.0",
     "dotenv-expand": "^5.1.0",
     "easy-peasy": "^5.0.4",
+    "env-cmd": "^10.1.0",
     "eslint": "^8.3.0",
     "eslint-config-react-app": "^7.0.0",
     "eslint-webpack-plugin": "^3.1.1",
@@ -89,9 +90,12 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "start": "node scripts/start.js",
+    "start": "env-cmd -f .env node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "build:local": "env-cmd -f .env node scripts/build.js",
+    "build:dev": "env-cmd -f .env.development node scripts/build.js",
+    "build:prod": "env-cmd -f .env.production node scripts/build.js"
   },
   "eslintConfig": {
     "extends": [

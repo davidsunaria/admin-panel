@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from 'react';
-import { useStoreActions, useStoreState } from '../../store';
+import { useStoreActions, useStoreState } from 'react-app-store';
 
 const Dashboard: React.FC = (): JSX.Element => {
 

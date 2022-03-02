@@ -13,7 +13,8 @@ function WaitForStateRehydration({ children }: {children: any}) {
 }
 ReactDOM.render(
   <React.StrictMode>
-    <ToastContainer limit={1} transition={Zoom} />
+    <ToastContainer limit={2} transition={Zoom} autoClose={3000}
+ />
     <StoreProvider store={store}>
     <WaitForStateRehydration>
       <BrowserRouter>

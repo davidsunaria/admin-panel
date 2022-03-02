@@ -13,7 +13,7 @@ export const postApi = async (formData: IPayload): Promise<any> => {
 };
 
 export const getApi = async (formData: IPayload): Promise<any> => {
-  let queryString;
+  let queryString="";
   const { url, payload } = formData;
   if(payload){
    queryString =  objectToQuery(payload);

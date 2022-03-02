@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 export function isLoggedIn() {
   return localStorage.getItem("isLoggedIn");
 }
@@ -61,5 +62,9 @@ export const showNavbar = (toggleId: string, navId: string, bodyId: string, head
         // add padding to header
       headerpd.classList.toggle('body-pd')
   }
+}
+
+export const truncate = (text: any) => {
+  return _.truncate(text, {length: 30, omission: '...'});
 }
 

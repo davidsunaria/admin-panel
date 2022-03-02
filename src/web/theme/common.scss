@@ -641,3 +641,16 @@ a {
 .modal-body{
   padding:0px!important;
 }
+.overideImageCircle{
+  display: flex;
+  height: 60px;
+  width: 60px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  @include border-radius(50px);
+  img{
+    object-fit: cover;
+    object-position: center;
+  }
+}
