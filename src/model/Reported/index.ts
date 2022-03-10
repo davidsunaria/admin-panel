@@ -6,9 +6,9 @@ import { getApi, postApi } from 'react-app-api';
 import { IPayload } from 'react-app-interfaces';
 
 export interface ReportedModel {
-  groupsReportedResponse: string | object | any;
-  usersReportedResponse: string | object | any;
-  eventsReportedResponse: string | object | any;
+  reportedGroupsResponse: string | object | any;
+  reportedUsersResponse: string | object | any;
+  reportedEventsResponse: string | object | any;
   isEnabledDisabled: boolean;
   //**************State Actions************///
   flushData: Action<ReportedModel>;
@@ -26,19 +26,19 @@ export interface ReportedModel {
   //**************Thunk Actions************///
 }
 
-const ReportedData: ReportedModel = {
-  groupsReportedResponse: {},
-  usersReportedResponse:{},
-  eventsReportedResponse:{},
+const reportedResource: ReportedModel = {
+  reportedGroupsResponse: {},
+  reportedUsersResponse:{},
+  reportedEventsResponse:{},
   isEnabledDisabled: false,
   setReportedGroupResponse: action((state, payload) => {
-    state.groupsReportedResponse = payload;
+    state.reportedGroupsResponse = payload;
   }),
   setReportedUsersResponse: action((state, payload) => {
-    state.usersReportedResponse = payload;
+    state.reportedUsersResponse = payload;
   }),
   setReportedEventsResponse: action((state, payload) => {
-    state.eventsReportedResponse = payload;
+    state.reportedEventsResponse = payload;
   }),
   flushData: action((state, payload) => {
     state.isEnabledDisabled = false;
@@ -117,4 +117,4 @@ const ReportedData: ReportedModel = {
   }),
 };
 
-export default ReportedData;
+export default reportedResource;

@@ -6,7 +6,6 @@ import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import LOGO from 'react-app-images/logo.png';
 import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
 import { truncate } from '../../../lib/utils/Service';
@@ -46,12 +45,12 @@ const ReportedUsers: React.FC = (): JSX.Element => {
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
-  const response = useStoreState(state => state.ReportedData.usersReportedResponse);
-  const isEnabledDisabled = useStoreState(state => state.ReportedData.isEnabledDisabled);
+  const response = useStoreState(state => state.reportedResource.reportedUsersResponse);
+  const isEnabledDisabled = useStoreState(state => state.reportedResource.isEnabledDisabled);
   //Actions
-  const flushData = useStoreActions(actions => actions.ReportedData.flushData);
-  const getUser = useStoreActions(actions => actions.ReportedData.getReportedUsers);
-  const enableDisable = useStoreActions(actions => actions.ReportedData.enableDisable);
+  const flushData = useStoreActions(actions => actions.reportedResource.flushData);
+  const getUser = useStoreActions(actions => actions.reportedResource.getReportedUsers);
+  const enableDisable = useStoreActions(actions => actions.reportedResource.enableDisable);
 
   const getUserData = useCallback(async (payload: IUsers) => {
     await getUser({ url: "resource/get-reported-resources", payload });

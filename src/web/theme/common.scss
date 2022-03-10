@@ -659,23 +659,31 @@ a {
 
 .submenu-link{
   height: 0px;
-  overflow: hidden;
-  animation-name: submenu;
   position: absolute;
-  transition: height 0.5s;
   left: 100%;
   top: 367px;
   background-color: #122e3b;
+  display:none ;
 }
 
 .submenu-active{
   height: 180px;
-  overflow: hidden;
-  animation-name: example;
-  transition: height 0.5s;
   position: absolute;
   left: 100%;
     top: 367px;
     background-color: #122e3b;
+    display: block;
+    height:auto;
+    padding:10px;
+    padding-left:0px;
+
+    .nav_link{
+      margin-bottom: 0px!important;
+      font-size: 13px;
+    }
+}
+
+.cursor{
+ cursor: pointer;
 }
 
