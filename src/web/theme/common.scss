@@ -654,3 +654,28 @@ a {
     object-position: center;
   }
 }
+
+ 
+
+.submenu-link{
+  height: 0px;
+  overflow: hidden;
+  animation-name: submenu;
+  position: absolute;
+  transition: height 0.5s;
+  left: 100%;
+  top: 367px;
+  background-color: #122e3b;
+}
+
+.submenu-active{
+  height: 180px;
+  overflow: hidden;
+  animation-name: example;
+  transition: height 0.5s;
+  position: absolute;
+  left: 100%;
+    top: 367px;
+    background-color: #122e3b;
+}
+

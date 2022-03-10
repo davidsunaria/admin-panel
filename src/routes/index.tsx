@@ -5,11 +5,17 @@ import PublicRoute from '../web/hooks/PublicRoute';
 import PrivateRoute from '../web/hooks/PrivateRoute';
 import Layout from '../web/layouts/Layout';
 import NavigationService from './NavigationService';
+// import ReportedUsers from 'src/web/pages/ReportedUsers';
+// import ReportedGroups from 'src/web/pages/ReportedGroups';
+//import ReportedEvents from 'src/web/pages/ReportedEvents';
 
 const Users = React.lazy(() => import('../web/pages/Users'));
 const Login = React.lazy(() => import('../web/pages/Login'));
 const Groups = React.lazy(() => import('../web/pages/Groups'));
 const Events = React.lazy(() => import('../web/pages/Events'));
+const ReportedGroups = React.lazy(() => import('../web/pages/ReportedGroups'));
+const ReportedUsers = React.lazy(() => import('../web/pages/ReportedUsers'));
+const ReportedEvents = React.lazy(() => import('../web/pages/ReportedEvents'));
 const ForgotPassword = React.lazy(() => import('../web/pages/ForgotPassword'));
 const VerifyOtp = React.lazy(() => import('../web/pages/VerifyOtp'));
 const NotFound = React.lazy(() => import('../../src/web/components/NotFound'));
@@ -64,6 +70,17 @@ const AppRouter: React.FC = (): JSX.Element => {
 
           <Route path="/events" element={<PrivateRoute>
             <Suspense fallback={<>Loading...</>}><Events /></Suspense>
+          </PrivateRoute>} />
+
+          <Route path="/reported-groups" element={<PrivateRoute>
+            <Suspense fallback={<>Loading...</>}><ReportedGroups /></Suspense>
+          </PrivateRoute>} />
+
+          <Route path="/reported-events" element={<PrivateRoute>
+            <Suspense fallback={<>Loading...</>}><ReportedEvents /></Suspense>
+          </PrivateRoute>} />
+          <Route path="/reported-users" element={<PrivateRoute>
+            <Suspense fallback={<>Loading...</>}><ReportedUsers /></Suspense>
           </PrivateRoute>} />
 
         </Routes>

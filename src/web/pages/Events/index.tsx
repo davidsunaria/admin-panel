@@ -5,7 +5,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import 'react-lazy-load-image-component/src/effects/blur.css';
+ import 'react-lazy-load-image-component/src/effects/blur.css';
 import LOGO from 'react-app-images/logo.png';
 import DEFAULT_EVENT_IMG from 'react-app-images/default_event.png';
 import env from '../../../config';

@@ -5,31 +5,33 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
- import 'react-lazy-load-image-component/src/effects/blur.css';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import LOGO from 'react-app-images/logo.png';
 import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
-import { truncate } from  '../../../lib/utils/Service';
+import { truncate } from '../../../lib/utils/Service';
+import moment from "moment"
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
 const Navbar = React.lazy(() => import('../../components/Navbar'));
 
-
-const Groups: React.FC = (): JSX.Element => {
+const ReportedEvents: React.FC = (): JSX.Element => {
   const tableHeader = useMemo(() => {
     return [
       { key: 'image', value: 'Image' },
       { key: 'name', value: 'Name' },
-      { key: 'creator', value: 'Owner'},
-      { key: 'category', value: 'Purpose' },
+      { key: 'creator', value: 'Owner' },
+      { key: 'group', value: 'Group' },
       { key: 'address', value: 'Address' },
-      { key: 'status', value: 'Status' },
+      { key: 'Created', value: 'Created at' },
+      { key: 'reported', value: 'Reported by' },
+      { key: 'action', value: 'Action' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
     return {
-      q: '', page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE, status: ''
+      q: '', page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE, is_blocked_by_admin: "all", resource_type: "event"
     }
   }, []);
 
@@ -42,15 +44,15 @@ const Groups: React.FC = (): JSX.Element => {
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
-  const response = useStoreState(state => state.group.response);
-  const isEnabledDisabled = useStoreState(state => state.group.isEnabledDisabled);
+  const response = useStoreState(state => state.ReportedData.eventsReportedResponse);
+  const isEnabledDisabled = useStoreState(state => state.ReportedData.isEnabledDisabled);
   //Actions
-  const flushData = useStoreActions(actions => actions.group.flushData);
-  const getGroups = useStoreActions(actions => actions.group.getGroups);
-  const enableDisable = useStoreActions(actions => actions.group.enableDisable);
+  const flushData = useStoreActions(actions => actions.ReportedData.flushData);
+  const getReportedEvents = useStoreActions(actions => actions.ReportedData.getReportedEvents);
+  const enableDisable = useStoreActions(actions => actions.ReportedData.enableDisable);
 
-  const getGroupData = useCallback(async (payload: IUsers) => {
-    await getGroups({ url: "group/get-all-groups", payload });
+  const getEvents = useCallback(async (payload: IUsers) => {
+    await getReportedEvents({ url: "resource/get-reported-resources", payload });
   }, []);
 
   useEffect(() => {
@@ -80,7 +82,7 @@ const Groups: React.FC = (): JSX.Element => {
 
   useEffect(() => {
     if (formData) {
-      getGroupData(formData);
+      getEvents(formData);
     }
   }, [formData]);
 
@@ -88,18 +90,18 @@ const Groups: React.FC = (): JSX.Element => {
     setFormData(_ => ({ ..._, page: parseInt((_.page ?? 1)?.toString()) + 1 }));
   }, []);
 
-  const onYes = useCallback(async (id: string, status: string | number) => {
+  const onYes = useCallback(async (id: string, is_blocked_by_admin: string | number) => {
     setCurrentUserId(id);
-    setCurrentUserStatus(status);
+    setCurrentUserStatus(is_blocked_by_admin);
     const payload: IEnableDisable = {
-      _id: id, type: "group", status: status === 1 ? 0 : 1
+      _id: id, type: "group", is_blocked_by_admin: is_blocked_by_admin === 1 ? 0 : 1
     }
-    await enableDisable({ url: 'common/enable-disable', payload });
+    await enableDisable({ url: 'resource/enable-disable-resource', payload });
   }, []);
 
-  const enableDisableGroup = useCallback((id, status) => {
+  const enableDisableGroup = useCallback((id, is_blocked_by_admin) => {
     let text: string;
-    if (status === 1) {
+    if (is_blocked_by_admin === 1) {
       text = 'You want to inactivate group?';
     }
     else {
@@ -108,7 +110,7 @@ const Groups: React.FC = (): JSX.Element => {
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
-          <ConfirmAlert onClose={onClose} onYes={() => onYes(id, status)} heading="Are you sure?" subHeading={text} onCloseText="No" onSubmitText="Yes" />
+          <ConfirmAlert onClose={onClose} onYes={() => onYes(id, is_blocked_by_admin)} heading="Are you sure?" subHeading={text} onCloseText="No" onSubmitText="Yes" />
         );
       }
     });
@@ -121,8 +123,8 @@ const Groups: React.FC = (): JSX.Element => {
   useEffect(() => {
     async function changeData() {
       let localStateData = [...data];
-      let index = localStateData.findIndex(item => item._id === currentUserId);
-      localStateData[index].status = currentUserStatus === 1 ? 0 : 1;
+      let index = localStateData.findIndex(item => item.reported_events._id === currentUserId);
+      localStateData[index].reported_events.is_blocked_by_admin = currentUserStatus === 1 ? 0 : 1;
       //console.log('localStateData', localStateData);
       setData(localStateData);
       await flushData();
@@ -137,11 +139,11 @@ const Groups: React.FC = (): JSX.Element => {
     <>
       <div className="Content">
         <Suspense fallback={<>Loading...</>}>
-          <Navbar text={"Manage groups"} />
+          <Navbar text={"Reported Events"} />
         </Suspense>
         <div className="cardBox">
           <Suspense fallback={<>Loading...</>}>
-            <SearchUser type={"groups"} onSearch={onSearch} onReset={onReset} />
+            <SearchUser type={"reported"} onSearch={onSearch} onReset={onReset} />
           </Suspense>
           <div className="table-responsive">
             {
@@ -164,31 +166,39 @@ const Groups: React.FC = (): JSX.Element => {
                         <tr key={index}>
                           <td>
                             {<LazyLoadImage
-                            wrapperClassName={"overideImageCircle"}
+                              wrapperClassName={"overideImageCircle"}
                               placeholderSrc={DEFAULT_GROUP_IMG}
                               effect={val?.image ? "blur" : undefined}
                               alt={'image'}
                               height={60}
-                              src={val?.image ? getImageUrl(val?.image, { type: 'groups', width: 60 }) : DEFAULT_GROUP_IMG} // use normal <img> attributes as props
+                              src={val?.reported_events?.image ? getImageUrl(val?.reported_events?.image, { type: 'events', width: 60 }) : DEFAULT_GROUP_IMG} // use normal <img> attributes as props
                               width={60} />
                             }
                           </td>
-                          <td>{val?.name || '-'}</td>
-                          <td><div title={val?.creator_of_group?.first_name +" "+ val?.creator_of_group?.last_name}>{truncate(val?.creator_of_group?.first_name +" "+ val?.creator_of_group?.last_name) || '-'}</div></td>
-                          
+                          <td>{val?.reported_events?.name || '-'}</td>
+                          <td><div title={val?.event_creator?.first_name + " " + val?.event_creator?.last_name}>{truncate(val?.event_creator?.first_name + " " + val?.event_creator?.last_name) || '-'}</div></td>
+
                           <td>{val?.category || '-'}</td>
-                          <td><div title={val?.address}>{truncate(val?.address) || '-'}</div></td>
-                          <td className={"onHover"} onClick={() => enableDisableGroup(val?._id, val?.status)}>
-                            
-                            <div className={(val?.status === 1 || val?.status === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.status === 1 || val?.status === true) ? 'Active' : 'Inactive'}</div></td>
+                          <td><div title={val?.event_creator?.address}>{truncate(val?.reported_events?.address) || '-'}</div></td>
+                          <td>{moment(val?.created_at).format('MMMM Do YYYY, h:mm:ss a') || '-'}</td>
+                          <td>
+                            {val?.resource_reporter.map((value: any, i: number, row: Array<object>) => {
+                              return (
+                                <span title={value?.first_name + " " + value?.last_name}>{
+                                  truncate(i + 1 !== row.length ? value?.first_name + " " + value?.last_name + ", " : value?.first_name + " " + value?.last_name) || '-'}
+                                </span>)
+                            })}
+                          </td>
+                          <td className={"onHover"} onClick={() => enableDisableGroup(val?.reported_events?._id, val?.reported_events?.is_blocked_by_admin)}>
+                            <div className={(val?.reported_events?.is_blocked_by_admin === 1 || val?.reported_events?.is_blocked_by_admin === true) ? "manageStatus inactive" : "manageStatus active"}> {(val?.reported_events?.is_blocked_by_admin === 1 || val?.reported_events?.is_blocked_by_admin === true) ? 'Inactive' : 'Active'}</div></td>
                         </tr>
                       ))
 
                     ) : (
-                      <tr>
-                        <td colSpan={6} className="text-center">No record found</td>
-                      </tr>
-                    )}
+                        <tr>
+                          <td colSpan={6} className="text-center">No record found</td>
+                        </tr>
+                      )}
 
 
                   </tbody>
@@ -201,4 +211,4 @@ const Groups: React.FC = (): JSX.Element => {
     </>
   )
 }
-export default Groups;
+export default ReportedEvents;

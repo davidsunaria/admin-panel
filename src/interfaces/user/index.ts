@@ -5,19 +5,23 @@ export interface IUsers {
   status?: any;
   is_premium?: string | number;
   group_id?: string | number;
+  is_blocked_by_admin?: string | number;
 }
 
 export interface IUsersProps extends IUsers{
   onSearch: (payload?: any) => any;
   onReset: () => any;
-  type?: String;
+  type?: string;
 }
 
 export interface IEnableDisable {
   _id: string;
   type: string;
-  status: any;
+  status?: any;
+  is_blocked_by_admin?:any
 }
+
+
 export interface IInviteuser {
   email: string;
 }

@@ -6,10 +6,14 @@ import { useStoreActions, useStoreState } from 'react-app-store';
 
 const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
   const [statusData, setStatusdata] = useState([
-    { key: 'All', value: 'all' }, { key: 'Active', value: 1 }, { key: 'Inactive', value: '0' },
+    { key: 'All', value: 'all' }, { key: 'Active', value: "1" }, { key: 'Inactive', value: '0' }
+  ]);
+
+  const [reportedStatus, setReportedStatus] = useState([
+    { key: 'All', value: 'all' }, { key: 'Active', value: "1" }, { key: 'Inactive', value: '0' }
   ]);
   const [premiumData, setPremiumData] = useState([
-    { key: 'All', value: 'all' }, { key: 'Yes', value: 1 }, { key: 'No', value: '0' },
+    { key: 'All', value: 'all' }, { key: 'Yes', value: 1 }, { key: 'No', value: '0' }
   ]);
   const userInititalState = useCallback((): IUsers => {
     return {
@@ -22,25 +26,45 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
       q: '', status: '', group_id: ''
     }
   }, []);
+
+  const reportedResourceInititalState = useCallback((): IUsers => {
+    return {
+      q: '', is_blocked_by_admin: ''
+    }
+  }, []);
   const groups = useStoreState(state => state.event.groups);
-  
   const getGroups = useStoreActions(actions => actions.event.getGroups);
 
 
-  const getGroupData = useCallback( () => {
-     getGroups({ url: "event/get-groups"});
+  const getGroupData = useCallback(() => {
+    getGroups({ url: "event/get-groups" });
   }, []);
 
   useEffect(() => {
-    if(props.type && props.type === 'events'){
+    if (props.type && props.type === 'events') {
       getGroupData();
     }
   }, [props.type]);
 
+  const searchInitialState = (type: any): IUsers => {
+    switch (type) {
+      case 'users':
+        return userInititalState();
+      case 'events':
+        return groupInititalState();
+      case 'groups':
+        return groupInititalState();
+      case 'reported':
+        return reportedResourceInititalState();
+      default:
+        return userInititalState();
+    }
+  }
+
   return (
     <Formik
       enableReinitialize={true}
-      initialValues={props.type === 'users' ? userInititalState(): groupInititalState()}
+      initialValues={searchInitialState(props?.type)}
       onSubmit={async values => {
         //setFormData(JSON.stringify(values, null, 2))
         props.onSearch(values);
@@ -73,7 +97,20 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
               <div className="ms-auto">
                 <div className="filter mb-2 me-sm-3">
                   <label>Status:</label>
-                  <select name="status"
+                  {props.type === 'reported' && <select name="is_blocked_by_admin"
+                    value={values?.is_blocked_by_admin}
+                    onChange={(e) => {
+                      handleChange(e);
+                      submitForm();
+                    }}
+                    onBlur={handleBlur} className="form-select" aria-label="Default select example">
+                    {
+                      reportedStatus && reportedStatus.length > 0 && reportedStatus.map((val, index) => (
+                        <option key={index} value={val?.value}>{val?.key}</option>
+                      ))
+                    }
+                  </select>}
+                  {props.type !== 'reported' && <select name="status"
                     value={values?.status}
                     onChange={(e) => {
                       handleChange(e);
@@ -85,7 +122,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                         <option key={index} value={val?.value}>{val?.key}</option>
                       ))
                     }
-                  </select>
+                  </select>}
                 </div>
                 {props.type === 'users' && <div className="filter mb-2 me-sm-2">
                   <label>Premium:</label>
@@ -102,7 +139,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                     }
                   </select>
                 </div>}
-                    
+
                 {props.type === 'events' && <div className="filter mb-2 me-sm-2">
                   <label>Groups:</label>
                   <select name="group_id" value={values?.group_id}
@@ -111,7 +148,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                       submitForm();
                     }}
                     onBlur={handleBlur} className="form-select" aria-label="Default select example">
-                   <option value="all">All</option>
+                    <option value="all">All</option>
                     {
                       groups?.length > 0 && groups?.map((val: any, index: number) => (
                         <option key={index} value={val?._id}>{val?.name}</option>
@@ -119,7 +156,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                     }
                   </select>
                 </div>}
-                
+
                 <div className="btn btn-outline-primary align-top" onClick={() => {
                   resetForm();
                   props.onReset();
