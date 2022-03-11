@@ -182,7 +182,7 @@ const ReportedGroups: React.FC = (): JSX.Element => {
                           <td>
                             {val?.resource_reporter.map((value: any, i: number, row: Array<object>) => {
                               return (
-                                <span title={value?.first_name + " " + value?.last_name}>{
+                                <span key={i} title={value?.first_name + " " + value?.last_name}>{
                                   truncate(i + 1 !== row.length ? value?.first_name + " " + value?.last_name + ", " : value?.first_name + " " + value?.last_name) || '-'}
                                 </span>)
                             })}

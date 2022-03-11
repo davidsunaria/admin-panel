@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense } from 'react';
+import React, { useEffect, Suspense ,useRef} from 'react';
 import { UserContext } from '../web/hooks/UserContext';
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import PublicRoute from '../web/hooks/PublicRoute';
@@ -37,8 +37,9 @@ const AppRouter: React.FC = (): JSX.Element => {
   }, [])
 
 
+
   return (
-    <Layout>
+    <Layout >
       <UserContext.Provider value={isLoggedIn}>
         <Routes >
           <Route path="/"  element={<PublicRoute restricted={true}>
