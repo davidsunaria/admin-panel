@@ -17,7 +17,7 @@ axiosApi.interceptors.request.use((request: any) => {
 });
 
 axiosApi.interceptors.response.use((response: any) => {
-  if (response.data.status === "error" && response.data.status === 403) {
+  if (response.data.status && response.data.status === 401) {
     handleInvalidToken();
   }
   return response;

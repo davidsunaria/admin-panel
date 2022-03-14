@@ -5,7 +5,7 @@ export function isLoggedIn() {
 export function handleInvalidToken() {
   //clearToken();
   clearUserData();
-  //window.location.href = "/login";
+  window.location.href = "/login";
 }
 
 export function clearUserData() {

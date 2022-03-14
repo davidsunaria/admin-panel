@@ -12,12 +12,12 @@ const NotFound: React.FC = (): JSX.Element => {
           <img src={LOGO} alt="logo" />
         </div>
 
-        <div className="card loginOuter">
+        <div className="card loginOuter text-center ">
           <article className="card-body">
             <h1>Page Not Found</h1>
 
-            <div className="form-group">
-              <Link to="/login" className="btn btn-primary btn-block">Back to login</Link>
+            <div className="form-group  p-3">
+              <Link to="/login" className="btn btn-primary btn-block ">Back to login</Link>
             </div>
           </article>
         </div>

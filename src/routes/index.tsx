@@ -46,7 +46,8 @@ const AppRouter: React.FC = (): JSX.Element => {
             <Suspense fallback={<>Loading...</>}><Login /></Suspense>
           </PublicRoute>}></Route>
           
-          <Route path="*" element={<PublicRoute restricted={false}><NotFound /></PublicRoute>}></Route>
+          <Route path="*" element={<PublicRoute restricted={false}> 
+           <Suspense fallback={<>Loading...</>}><NotFound /></Suspense></PublicRoute>}></Route>
 
           <Route path="/login" element={<PublicRoute restricted={true}>
             <Suspense fallback={<>Loading...</>}><Login /></Suspense>
