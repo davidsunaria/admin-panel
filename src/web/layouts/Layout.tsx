@@ -9,13 +9,9 @@ interface Props {
   children: ReactNode;
 }
 const Layout: FC<Props> = ({ children }) => {
-  const [dropDownClass, setDropDownClass] = useState(false)
   const isLoading = useStoreState(state => state.common.isLoading);
-  const hideDropDown = () => {
-    setDropDownClass(!dropDownClass)
-  }
+ 
   return (
-    <div onClick={hideDropDown}>
       <Fragment>
         {isLoading && <LoadingOverlay
           active={isLoading}
@@ -24,10 +20,9 @@ const Layout: FC<Props> = ({ children }) => {
         >
         </LoadingOverlay>}
         {isLogin() && <Header />}
-        {isLogin() && <Sidebar class={dropDownClass} />}
+        {isLogin() && <Sidebar  />}
         {children}
       </Fragment>
-    </div>
   )
 }
 

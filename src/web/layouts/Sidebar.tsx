@@ -1,14 +1,11 @@
-import React, { Fragment, useState, useRef, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import {
   NavLink
 } from "react-router-dom";
 import LOGOICON from 'react-app-images/logo.png';
 import { showNavbar } from 'src/lib/utils/Service';
-interface ISideBar {
-  class: boolean;
-}
-const Sidebar: React.FC<ISideBar> = (props): JSX.Element => {
-  const dropdown = useRef<HTMLDivElement | any>(null);
+
+const Sidebar: React.FC = (): JSX.Element => {
 
   const dropDownKey = [{
     route: "reported_groups",
