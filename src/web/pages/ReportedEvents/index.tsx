@@ -21,11 +21,11 @@ const ReportedEvents: React.FC = (): JSX.Element => {
       { key: 'image', value: 'Image' },
       { key: 'name', value: 'Name' },
       { key: 'creator', value: 'Owner' },
-      { key: 'group', value: 'Group' },
+      { key: 'group', value: 'Associate group' },
       { key: 'address', value: 'Address' },
-      { key: 'Created', value: 'Created at' },
+      { key: 'Created', value: 'Last reported at' },
       { key: 'reported', value: 'Reported by' },
-      { key: 'action', value: 'Action' },
+      { key: 'action', value: 'Status' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -101,10 +101,10 @@ const ReportedEvents: React.FC = (): JSX.Element => {
   const enableDisableGroup = useCallback((id, is_blocked_by_admin) => {
     let text: string;
     if (is_blocked_by_admin === 1) {
-      text = 'You want to inactivate group?';
+      text = 'You want to unblocked event?';
     }
     else {
-      text = 'You want to activate group?';
+      text = 'You want to Blocked event?';
     }
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -177,7 +177,7 @@ const ReportedEvents: React.FC = (): JSX.Element => {
                           <td>{val?.reported_events?.name || '-'}</td>
                           <td><div title={val?.event_creator?.first_name + " " + val?.event_creator?.last_name}>{truncate(val?.event_creator?.first_name + " " + val?.event_creator?.last_name) || '-'}</div></td>
 
-                          <td>{val?.category || '-'}</td>
+                          <td>{val?.event_group?.name || '-'}</td>
                           <td><div title={val?.event_creator?.address}>{truncate(val?.reported_events?.address) || '-'}</div></td>
                           <td>{moment(val?.created_at).format('MMMM Do YYYY, h:mm:ss a') || '-'}</td>
                           <td>
@@ -189,7 +189,7 @@ const ReportedEvents: React.FC = (): JSX.Element => {
                             })}
                           </td>
                           <td className={"onHover"} onClick={() => enableDisableGroup(val?.reported_events?._id, val?.reported_events?.is_blocked_by_admin)}>
-                            <div className={(val?.reported_events?.is_blocked_by_admin === 1 || val?.reported_events?.is_blocked_by_admin === true) ? "manageStatus inactive" : "manageStatus active"}> {(val?.reported_events?.is_blocked_by_admin === 1 || val?.reported_events?.is_blocked_by_admin === true) ? 'Inactive' : 'Active'}</div></td>
+                            <div className={(val?.reported_events?.is_blocked_by_admin === 1 || val?.reported_events?.is_blocked_by_admin === true) ? "manageStatus inactive" : "manageStatus active"}> {(val?.reported_events?.is_blocked_by_admin === 1 || val?.reported_events?.is_blocked_by_admin === true) ? 'Blocked' : 'Unblocked'}</div></td>
                         </tr>
                       ))
 

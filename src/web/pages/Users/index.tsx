@@ -27,6 +27,7 @@ const Users: React.FC = (): JSX.Element => {
       { key: 'username', value: 'Username' },
       { key: 'status', value: 'Status' },
       { key: 'is_premium', value: 'Premium' },
+      { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -243,6 +244,9 @@ const Users: React.FC = (): JSX.Element => {
                           <td className={"onHover"} onClick={() => enableDisableUser(val?._id, val?.active)}><div className={(val?.active === 1 || val?.active === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.active === 1 || val?.active === true) ? 'Active' : 'Inactive'}</div></td>
                           <td>
                             <div className={val?.is_premium === 1 ? "manageStatus active" : "manageStatus inactive"}>{val?.is_premium === 1 ? 'Yes' : 'No'}</div>
+                          </td>
+                          <td>
+                            <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
                           </td>
                         </tr>
                       ))

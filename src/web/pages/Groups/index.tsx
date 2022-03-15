@@ -5,10 +5,10 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
- import 'react-lazy-load-image-component/src/effects/blur.css';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
-import { truncate } from  '../../../lib/utils/Service';
+import { truncate } from '../../../lib/utils/Service';
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
@@ -20,10 +20,11 @@ const Groups: React.FC = (): JSX.Element => {
     return [
       { key: 'image', value: 'Image' },
       { key: 'name', value: 'Name' },
-      { key: 'creator', value: 'Owner'},
+      { key: 'creator', value: 'Owner' },
       { key: 'category', value: 'Purpose' },
       { key: 'address', value: 'Address' },
       { key: 'status', value: 'Status' },
+      { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -163,7 +164,7 @@ const Groups: React.FC = (): JSX.Element => {
                         <tr key={index}>
                           <td>
                             {<LazyLoadImage
-                            wrapperClassName={"overideImageCircle"}
+                              wrapperClassName={"overideImageCircle"}
                               placeholderSrc={DEFAULT_GROUP_IMG}
                               effect={val?.image ? "blur" : undefined}
                               alt={'image'}
@@ -173,21 +174,23 @@ const Groups: React.FC = (): JSX.Element => {
                             }
                           </td>
                           <td>{val?.name || '-'}</td>
-                          <td><div title={val?.creator_of_group?.first_name +" "+ val?.creator_of_group?.last_name}>{truncate(val?.creator_of_group?.first_name +" "+ val?.creator_of_group?.last_name) || '-'}</div></td>
-                          
+                          <td><div title={val?.creator_of_group?.first_name + " " + val?.creator_of_group?.last_name}>{truncate(val?.creator_of_group?.first_name + " " + val?.creator_of_group?.last_name) || '-'}</div></td>
+
                           <td>{val?.category || '-'}</td>
                           <td><div title={val?.address}>{truncate(val?.address) || '-'}</div></td>
                           <td className={"onHover"} onClick={() => enableDisableGroup(val?._id, val?.status)}>
-                            
                             <div className={(val?.status === 1 || val?.status === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.status === 1 || val?.status === true) ? 'Active' : 'Inactive'}</div></td>
+                          <td>
+                            <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
+                          </td>
                         </tr>
                       ))
 
                     ) : (
-                      <tr>
-                        <td colSpan={6} className="text-center">No record found</td>
-                      </tr>
-                    )}
+                        <tr>
+                          <td colSpan={6} className="text-center">No record found</td>
+                        </tr>
+                      )}
 
 
                   </tbody>

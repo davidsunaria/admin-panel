@@ -24,10 +24,9 @@ const ReportedUsers: React.FC = (): JSX.Element => {
       { key: 'last_name', value: 'Last Name' },
       { key: 'email', value: 'Email' },
       { key: 'username', value: 'Username' },
-      { key: 'Created', value: 'Created at' },
+      { key: 'Created', value: 'Last reported at' },
       { key: 'reported', value: 'Reported by' },
-      { key: 'action', value: 'Action' },
-
+      { key: 'action', value: 'Status' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -103,10 +102,10 @@ const ReportedUsers: React.FC = (): JSX.Element => {
   const enableDisableGroup = useCallback((id, is_blocked_by_admin) => {
     let text: string;
     if (is_blocked_by_admin === 1) {
-      text = 'You want to inactivate group?';
+      text = 'You want to unblocked user?';
     }
     else {
-      text = 'You want to activate group?';
+      text = 'You want to blocked user?';
     }
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -190,7 +189,7 @@ const ReportedUsers: React.FC = (): JSX.Element => {
                             })}
                           </td>
                           <td className={"onHover"} onClick={() => enableDisableGroup(val?.reported_users?._id, val?.reported_users?.is_blocked_by_admin)}>
-                            <div className={(val?.reported_users?.is_blocked_by_admin === 1 || val?.reported_users?.is_blocked_by_admin === true) ? "manageStatus inactive" : "manageStatus active"}> {(val?.reported_users?.is_blocked_by_admin === 1 || val?.reported_users?.is_blocked_by_admin === true) ? 'Inactive' : 'active'}</div></td>
+                            <div className={(val?.reported_users?.is_blocked_by_admin === 1 || val?.reported_users?.is_blocked_by_admin === true) ? "manageStatus inactive" : "manageStatus active"}> {(val?.reported_users?.is_blocked_by_admin === 1 || val?.reported_users?.is_blocked_by_admin === true) ? 'Blocked' : 'Unblocked'}</div></td>
 
                         </tr>
                       ))

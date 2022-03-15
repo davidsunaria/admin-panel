@@ -10,7 +10,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
   ]);
 
   const [reportedStatus, setReportedStatus] = useState([
-    { key: 'All', value: 'all' }, { key: 'Active', value: "1" }, { key: 'Inactive', value: '0' }
+    { key: 'All', value: 'all' }, { key: 'Blocked', value: "1" }, { key: 'Unblocked', value: '0' }
   ]);
   const [premiumData, setPremiumData] = useState([
     { key: 'All', value: 'all' }, { key: 'Yes', value: 1 }, { key: 'No', value: '0' }
@@ -96,7 +96,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
 
               <div className="ms-auto">
                 <div className="filter mb-2 me-sm-3">
-                  <label>Status:</label>
+                  <label>Blocked status:</label>
                   {props.type === 'reported' && <select name="is_blocked_by_admin"
                     value={values?.is_blocked_by_admin}
                     onChange={(e) => {

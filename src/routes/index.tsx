@@ -29,7 +29,6 @@ const AppRouter: React.FC = (): JSX.Element => {
      }
    }, [response.isLoggedIn]);*/
   const navigation = useNavigate()
-  console.log(navigation)
   useEffect(() => {
     NavigationService.setNavigateRef(navigation)
   }, [])
@@ -72,14 +71,14 @@ const AppRouter: React.FC = (): JSX.Element => {
             <Suspense fallback={<>Loading...</>}><Events /></Suspense>
           </PrivateRoute>} />
 
-          <Route path="/reported-groups" element={<PrivateRoute>
+          <Route path="/reported_groups" element={<PrivateRoute>
             <Suspense fallback={<>Loading...</>}><ReportedGroups /></Suspense>
           </PrivateRoute>} />
 
-          <Route path="/reported-events" element={<PrivateRoute>
+          <Route path="/reported_events" element={<PrivateRoute>
             <Suspense fallback={<>Loading...</>}><ReportedEvents /></Suspense>
           </PrivateRoute>} />
-          <Route path="/reported-users" element={<PrivateRoute>
+          <Route path="/reported_users" element={<PrivateRoute>
             <Suspense fallback={<>Loading...</>}><ReportedUsers /></Suspense>
           </PrivateRoute>} />
 

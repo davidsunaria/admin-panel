@@ -20,13 +20,13 @@ const ReportedGroups: React.FC = (): JSX.Element => {
   const tableHeader = useMemo(() => {
     return [
       { key: 'image', value: 'Image' },
-      { key: 'name', value: 'Group Name' },
-      { key: 'creator', value: 'Admin' },
+      { key: 'name', value: 'Name' },
+      { key: 'creator', value: 'Owner' },
       { key: 'category', value: 'Purpose' },
       { key: 'address', value: 'Address' },
-      { key: 'reported', value: 'Reported at' },
+      { key: 'reported', value: 'Last reported at' },
       { key: 'reported', value: 'Reported by' },
-      { key: 'action', value: 'Action' },
+      { key: 'action', value: 'Status' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -101,10 +101,10 @@ const ReportedGroups: React.FC = (): JSX.Element => {
   const enableDisableGroup = useCallback((id, is_blocked_by_admin) => {
     let text: string;
     if (is_blocked_by_admin === 1) {
-      text = 'You want to inactivate group?';
+      text = 'You want to unblocked group?';
     }
     else {
-      text = 'You want to activate group?';
+      text = 'You want to blocked group?';
     }
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -176,7 +176,7 @@ const ReportedGroups: React.FC = (): JSX.Element => {
                           <td>{val?.reported_groups?.name || '-'}</td>
                           <td><div title={val?.group_creator?.first_name + " " + val?.group_creator?.last_name}>{truncate(val?.group_creator?.first_name + " " + val?.group_creator?.last_name) || '-'}</div></td>
 
-                          <td>{val?.category || '-'}</td>
+                          <td>{val?.reported_groups?.category || '-'}</td>
                           <td><div title={val?.reported_groups?.address}>{truncate(val?.reported_groups?.address) || '-'}</div></td>
                           <td>{moment(val?.created_at).format('MMMM Do YYYY, h:mm:ss a') || '-'}</td>
                           <td>
@@ -188,7 +188,7 @@ const ReportedGroups: React.FC = (): JSX.Element => {
                             })}
                           </td>
                           <td className={"onHover"} onClick={() => enableDisableGroup(val?.reported_groups?._id, val?.reported_groups?.is_blocked_by_admin)}>
-                            <div className={(val?.reported_groups?.is_blocked_by_admin === 1 || val?.reported_groups?.is_blocked_by_admin === false) ? "manageStatus inactive" : "manageStatus active"}> {(val?.reported_groups?.is_blocked_by_admin === 1 || val?.reported_groups?.is_blocked_by_admin === true) ? 'Inactive' : 'active'}</div></td>
+                            <div className={(val?.reported_groups?.is_blocked_by_admin === 1 || val?.reported_groups?.is_blocked_by_admin === false) ? "manageStatus inactive" : "manageStatus active"}> {(val?.reported_groups?.is_blocked_by_admin === 1 || val?.reported_groups?.is_blocked_by_admin === true) ? 'Blocked' : 'Unblocked'}</div></td>
                         </tr>
                       ))
 

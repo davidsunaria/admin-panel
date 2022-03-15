@@ -1,4 +1,4 @@
-import React, { Fragment, useState,useRef, useEffect } from 'react';
+import React, { Fragment, useState, useRef, useEffect } from 'react';
 import {
   NavLink
 } from "react-router-dom";
@@ -11,24 +11,20 @@ const Sidebar: React.FC<ISideBar> = (props): JSX.Element => {
   const dropdown = useRef<HTMLDivElement | any>(null);
 
   const dropDownKey = [{
-    route:"reported-groups",
-    title:"Reported Groups"
+    route: "reported_groups",
+    title: "Groups"
   },
   {
-    route:"reported-users",
-    title:"Reported Users"
+    route: "reported_events",
+    title: "Events"
   },
   {
-    route:"reported-events",
-    title:"Reported Events"
+    route: "reported_users",
+    title: "Members"
   }
-]
-  const setSubMenu = () =>{
-    dropdown.current.className="submenu-active"
-  }
-  useEffect(()=>{
-    dropdown.current.className="submenu-link"
-  },[props.class])
+  
+  ]
+
 
   return (
     <Fragment>
@@ -39,20 +35,21 @@ const Sidebar: React.FC<ISideBar> = (props): JSX.Element => {
 
               <span className="nav_logo-name"><img height="25" src={LOGOICON} alt="Logo" /></span>
             </div>
-            <div className="nav_list">
-              <NavLink className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to="dashboard"><i className="bi bi-grid"></i><span className="nav_name">Dashboard</span></NavLink>
-              <NavLink className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to="users"><i className="bi bi-person"></i><span className="nav_name">Users</span></NavLink>
-              <NavLink className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to="groups"><i className="bi bi-people"></i><span className="nav_name">Groups</span></NavLink>
-              <NavLink className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to="events"><i className="bi bi-calendar2-event"></i><span className="nav_name">Events</span></NavLink>
-              <div className={"nav_link cursor"}  onMouseEnter={() => { setSubMenu() }} ><i className="bi  bi-bounding-box" onMouseEnter={() => { setSubMenu() }} > </i>Reported Detail</div>
-              <div ref ={dropdown}>
-                {dropDownKey.map((value,i)=>{
-                 return <NavLink key ={i} className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to={value.route} onClick={() => { setSubMenu() }}><span className="nav_name">{value.title}</span></NavLink>
+            <ul className="nav_list">
+              <li><NavLink className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to="dashboard"><i className="bi bi-grid"></i><span className="nav_name">Dashboard</span></NavLink></li>
+              <li><NavLink className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to="users"><i className="bi bi-person"></i><span className="nav_name">Users</span></NavLink></li>
+              <li><NavLink className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to="groups"><i className="bi bi-people"></i><span className="nav_name">Groups</span></NavLink></li>
+              <li><NavLink className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to="events"><i className="bi bi-calendar2-event"></i><span className="nav_name">Events</span></NavLink></li>
+              <li><div className={"nav_link cursor"} ><i className="bi  bi-bounding-box" > </i><span className="nav_name">Reported</span>
+              <ul className="subNav">
+              {dropDownKey.map((value, i) => {
+                  return <li><NavLink key={i} className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to={value.route} ><span className="nav_name">{value.title}</span></NavLink></li>
                 })}
-              </div>
-            </div>
-          </div>
+              </ul>
+            </div></li>
+          </ul>
           <div className="nav_link d-none"> <i className="bi bi-box-arrow-left"></i> <span className="nav_name">SignOut</span></div>
+         </div>
         </nav>
       </div>
     </Fragment>
