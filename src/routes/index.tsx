@@ -5,9 +5,6 @@ import PublicRoute from '../web/hooks/PublicRoute';
 import PrivateRoute from '../web/hooks/PrivateRoute';
 import Layout from '../web/layouts/Layout';
 import NavigationService from './NavigationService';
-// import ReportedUsers from 'src/web/pages/ReportedUsers';
-// import ReportedGroups from 'src/web/pages/ReportedGroups';
-//import ReportedEvents from 'src/web/pages/ReportedEvents';
 
 const Users = React.lazy(() => import('../web/pages/Users'));
 const Login = React.lazy(() => import('../web/pages/Login'));
@@ -32,6 +29,7 @@ const AppRouter: React.FC = (): JSX.Element => {
      }
    }, [response.isLoggedIn]);*/
   const navigation = useNavigate()
+  console.log(navigation)
   useEffect(() => {
     NavigationService.setNavigateRef(navigation)
   }, [])
