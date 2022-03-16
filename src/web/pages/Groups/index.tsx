@@ -59,7 +59,6 @@ const Groups: React.FC = (): JSX.Element => {
     //console.log('Response', response);
     if (response?.data) {
       const { data, pagination: [paginationObject] } = response;
-      console.log("paginationObject",paginationObject)
       setPagination(paginationObject);
       setCurrentPage(paginationObject?.currentPage);
 
