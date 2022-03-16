@@ -18,7 +18,7 @@ const Sidebar: React.FC = (): JSX.Element => {
               <span className="nav_logo-name"><img height="25" src={LOGOICON} alt="Logo" /></span>
           </div>
             <div className="nav_list">
-              <NavLink className={({ isActive }: {isActive: any}) => isActive ? ' nav_link active' : 'nav_link '} to="dashboard"><i className="bi bi-grid"></i><span className="nav_name">Dashboard</span></NavLink>
+              {/* <NavLink className={({ isActive }: {isActive: any}) => isActive ? ' nav_link active' : 'nav_link '} to="dashboard"><i className="bi bi-grid"></i><span className="nav_name">Dashboard</span></NavLink> */}
               <NavLink className={({ isActive }: {isActive: any}) => isActive ? ' nav_link active' : 'nav_link '} to="users"><i className="bi bi-person"></i><span className="nav_name">Users</span></NavLink>
               <NavLink className={({ isActive }: {isActive: any}) => isActive ? ' nav_link active' : 'nav_link '} to="groups"><i className="bi bi-people"></i><span className="nav_name">Groups</span></NavLink>
               <NavLink className={({ isActive }: {isActive: any}) => isActive ? ' nav_link active' : 'nav_link '} to="events"><i className="bi bi-calendar2-event"></i><span className="nav_name">Events</span></NavLink>
