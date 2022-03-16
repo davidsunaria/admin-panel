@@ -1,4 +1,5 @@
-import React, { Suspense, useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import CustomSuspense from '../../components/CustomSuspense';
 import { useStoreActions, useStoreState } from 'react-app-store';
 import { IUsers, IEnableDisable, IPagination } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -138,27 +139,27 @@ const Events: React.FC = (): JSX.Element => {
   return (
     <>
       <div className="Content">
-        <Suspense fallback={<>Loading...</>}>
+     < CustomSuspense>
           <Navbar text={"Manage events"} />
-        </Suspense>
+          </CustomSuspense>
         <div className="cardBox">
-          <Suspense fallback={<>Loading...</>}>
+        < CustomSuspense>
             <SearchUser type={"events"} onSearch={onSearch} onReset={onReset} />
-          </Suspense>
+            </CustomSuspense>
           <div className="table-responsive">
             {
               <InfiniteScroll
                 dataLength={currentPage}
                 next={loadMore}
                 hasMore={(pagination?.nextPage == null) ? false : true}
-                loader={isLoading && <h4>Loading...</h4>}
+                loader={isLoading && <h4 className="listingLoader">Loading...</h4>}
                 scrollThreshold={0.8}
               >
 
                 <table className="table mb-0">
-                  <Suspense fallback={<>Loading...</>}>
+                < CustomSuspense>
                     <TableHeader fields={tableHeader} />
-                  </Suspense>
+                    </CustomSuspense>
                   <tbody>
 
                     {data && data.length > 0 ? (
