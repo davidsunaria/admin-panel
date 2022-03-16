@@ -22,6 +22,12 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
       q: '', status: '', group_id: ''
     }
   }, []);
+
+  const eventInititalState = useCallback((): IUsers => {
+    return {
+      q: '', status: '', group_id: ''
+    }
+  }, []);
   const groups = useStoreState(state => state.event.groups);
   
   const getGroups = useStoreActions(actions => actions.event.getGroups);
@@ -37,10 +43,26 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
     }
   }, [props.type]);
 
+const initialState = useCallback( (value) => {
+  switch ( value )   {
+    case "events":
+      return  eventInititalState()
+        break;
+        case "users":
+        return  userInititalState()
+        break;
+        case "groups":
+        return  groupInititalState()
+        break;
+    default: 
+        break;
+ }
+}, []);
   return (
     <Formik
       enableReinitialize={true}
-      initialValues={props.type === 'users' ? userInititalState(): groupInititalState()}
+    //  initialValues={props.type === 'users' ? userInititalState(): groupInititalState()}
+      initialValues={()=>initialState(props.type)}
       onSubmit={async values => {
         //setFormData(JSON.stringify(values, null, 2))
         props.onSearch(values);

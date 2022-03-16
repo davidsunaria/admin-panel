@@ -1,8 +1,9 @@
-import React, { Suspense, useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
 import { IUsers, IEnableDisable, IPagination } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
+import CustomSuspense from '../../components/CustomSuspense';
 import { confirmAlert } from 'react-confirm-alert';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
@@ -53,10 +54,12 @@ const Groups: React.FC = (): JSX.Element => {
     await getGroups({ url: "group/get-all-groups", payload });
   }, []);
 
+  
   useEffect(() => {
     //console.log('Response', response);
     if (response?.data) {
       const { data, pagination: [paginationObject] } = response;
+      console.log("paginationObject",paginationObject)
       setPagination(paginationObject);
       setCurrentPage(paginationObject?.currentPage);
 
@@ -136,27 +139,27 @@ const Groups: React.FC = (): JSX.Element => {
   return (
     <>
       <div className="Content">
-        <Suspense fallback={<>Loading...</>}>
+        <CustomSuspense>
           <Navbar text={"Manage groups"} />
-        </Suspense>
+        </CustomSuspense>
         <div className="cardBox">
-          <Suspense fallback={<>Loading...</>}>
+          <CustomSuspense>
             <SearchUser type={"groups"} onSearch={onSearch} onReset={onReset} />
-          </Suspense>
+          </CustomSuspense>
           <div className="table-responsive">
             {
               <InfiniteScroll
                 dataLength={currentPage}
                 next={loadMore}
                 hasMore={(pagination?.nextPage == null) ? false : true}
-                loader={isLoading && <h4>Loading...</h4>}
+                loader={isLoading && <h4 className="listingLoader">Loading...</h4>}
                 scrollThreshold={0.8}
               >
 
                 <table className="table mb-0">
-                  <Suspense fallback={<>Loading...</>}>
+                  <CustomSuspense>
                     <TableHeader fields={tableHeader} />
-                  </Suspense>
+                  </CustomSuspense>
                   <tbody>
 
                     {data && data.length > 0 ? (

@@ -1,9 +1,10 @@
-import React, { Suspense, useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
 import { IUsers, IEnableDisable, IPagination, IInviteuser } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
+import CustomSuspense from '../../components/CustomSuspense';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { Formik } from 'formik';
@@ -159,11 +160,11 @@ const Users: React.FC = (): JSX.Element => {
   return (
     <>
       <div className="Content">
-        <Suspense fallback={<>Loading...</>}>
+        <CustomSuspense>
           <Navbar toggle={toggle} text={"Manage users"} />
-        </Suspense>
+        </CustomSuspense>
         <div className="cardBox">
-          <Suspense fallback={<>Loading...</>}>
+          <CustomSuspense >
             <MyModal heading={"Invite user"} showSubmitBtn={false} isOpen={isOpen} toggle={toggle}>
               <Formik
                 enableReinitialize={true}
@@ -205,21 +206,21 @@ const Users: React.FC = (): JSX.Element => {
 
             </MyModal>
             <SearchUser type={"users"} onSearch={onSearch} onReset={onReset} />
-          </Suspense>
+          </CustomSuspense>
           <div className="table-responsive">
             {
               <InfiniteScroll
                 dataLength={currentPage}
                 next={loadMore}
                 hasMore={(pagination?.nextPage == null) ? false : true}
-                loader={isLoading && <h4>Loading...</h4>}
+                loader={isLoading && <h4 className="listingLoader">Loading...</h4>}
                 scrollThreshold={0.8}
               >
 
                 <table className="table customTable mb-0">
-                  <Suspense fallback={<>Loading...</>}>
+                  <CustomSuspense>
                     <TableHeader fields={tableHeader} />
-                  </Suspense>
+                  </CustomSuspense>
                   <tbody>
 
                     {data && data.length > 0 ? (
