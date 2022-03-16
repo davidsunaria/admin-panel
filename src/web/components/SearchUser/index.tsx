@@ -23,6 +23,12 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
 
   const groupInititalState = useCallback((): IUsers => {
     return {
+      q: '', status: ''
+    }
+  }, []);
+
+  const eventInititalState = useCallback((): IUsers => {
+    return {
       q: '', status: '', group_id: ''
     }
   }, []);
@@ -51,7 +57,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
       case 'users':
         return userInititalState();
       case 'events':
-        return groupInititalState();
+        return eventInititalState();
       case 'groups':
         return groupInititalState();
       case 'reported':
