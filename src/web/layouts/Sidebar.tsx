@@ -15,10 +15,10 @@ const Sidebar: React.FC = (): JSX.Element => {
     route: "reported_events",
     title: "Events"
   },
-  {
-    route: "reported_users",
-    title: "Members"
-  }
+  // {
+  //   route: "reported_users",
+  //   title: "Members"
+  // }
   
   ]
 
