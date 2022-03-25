@@ -39,6 +39,8 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
     }
   }, []);
   const groups = useStoreState(state => state.event.groups);
+
+
   const getGroups = useStoreActions(actions => actions.event.getGroups);
 
 
@@ -130,6 +132,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                     }
                   </select>}
                 </div>
+               
                 {props.type === 'users' && <div className="filter mb-2 me-sm-2">
                   <label>Premium:</label>
                   <select name="is_premium" value={values?.is_premium}

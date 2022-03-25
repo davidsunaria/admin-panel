@@ -5,10 +5,14 @@ import PublicRoute from '../web/hooks/PublicRoute';
 import PrivateRoute from '../web/hooks/PrivateRoute';
 import Layout from '../web/layouts/Layout';
 import NavigationService from './NavigationService';
+import CustomSuspense from '../web/components/CustomSuspense';
+
+
+
 
 const Users = React.lazy(() => import('../web/pages/Users'));
 const Login = React.lazy(() => import('../web/pages/Login'));
-const Groups = React.lazy(() => import('../web/pages/Groups'));
+ const Groups = React.lazy(() => import('../web/pages/Groups'));
 const Events = React.lazy(() => import('../web/pages/Events'));
 const ReportedGroups = React.lazy(() => import('../web/pages/ReportedGroups'));
 const ReportedUsers = React.lazy(() => import('../web/pages/ReportedUsers'));
@@ -40,35 +44,35 @@ const AppRouter: React.FC = (): JSX.Element => {
       <UserContext.Provider value={isLoggedIn}>
         <Routes >
           <Route path="/"  element={<PublicRoute restricted={true}>
-            <Suspense fallback={<>Loading...</>}><Login /></Suspense>
+            <CustomSuspense><Login /></CustomSuspense>
           </PublicRoute>}></Route>
           
           <Route path="*" element={<PublicRoute restricted={false}> 
            <Suspense fallback={<>Loading...</>}><NotFound /></Suspense></PublicRoute>}></Route>
 
           <Route path="/login" element={<PublicRoute restricted={true}>
-            <Suspense fallback={<>Loading...</>}><Login /></Suspense>
+          <CustomSuspense><Login /></CustomSuspense>
           </PublicRoute>}></Route>
 
           <Route path="/forgot-password" element={<PublicRoute restricted={true}>
-            <Suspense fallback={<>Loading...</>}><ForgotPassword /></Suspense>
+          <CustomSuspense><ForgotPassword /></CustomSuspense>
           </PublicRoute>}></Route>
 
           <Route path="/verify-otp" element={<PublicRoute restricted={true}>
-            <Suspense fallback={<>Loading...</>}><VerifyOtp /></Suspense>
+          <CustomSuspense><VerifyOtp /></CustomSuspense>
           </PublicRoute>}></Route>
 
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/users" element={<PrivateRoute>
-            <Suspense fallback={<>Loading...</>}><Users /></Suspense>
+            <CustomSuspense><Users /></CustomSuspense>
           </PrivateRoute>} />
 
           <Route path="/groups" element={<PrivateRoute>
-            <Suspense fallback={<>Loading...</>}><Groups /></Suspense>
+            <CustomSuspense><Groups /></CustomSuspense>
           </PrivateRoute>} />
 
           <Route path="/events" element={<PrivateRoute>
-            <Suspense fallback={<>Loading...</>}><Events /></Suspense>
+            <CustomSuspense><Events /></CustomSuspense>
           </PrivateRoute>} />
 
           <Route path="/reported_groups" element={<PrivateRoute>
