@@ -23,6 +23,9 @@ const Sidebar: React.FC = (): JSX.Element => {
   //   title: "Members"
   // }
   
+  ]
+
+
   const showNavbar = useCallback(() => {
     NavigationService.navigate("/users");
 
@@ -35,6 +38,8 @@ const Sidebar: React.FC = (): JSX.Element => {
       <div className="l-navbar" id="nav-bar">
         <nav className="nav">
           <div>
+
+
           <div className="nav_logo" onClick={() => showNavbar()}>
           
               <span className="nav_logo-name"><img height="25" src={LOGOICON} alt="Logo" /></span>

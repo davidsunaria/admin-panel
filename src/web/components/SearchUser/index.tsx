@@ -40,6 +40,8 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
   }, []);
   const groups = useStoreState(state => state.event.groups);
 
+
+
   const getGroups = useStoreActions(actions => actions.event.getGroups);
 
 
@@ -53,18 +55,19 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
     }
   }, [props.type]);
 
-const searchInitialState = (type: any): IUsers => {
-  switch (type) {
-    case 'users':
-      return userInititalState();
-    case 'events':
-      return eventInititalState();
-    case 'groups':
-      return groupInititalState();
-    case 'reported':
-      return reportedResourceInititalState();
-    default:
-      return userInititalState();
+  const searchInitialState = (type: any): IUsers => {
+    switch (type) {
+      case 'users':
+        return userInititalState();
+      case 'events':
+        return eventInititalState();
+      case 'groups':
+        return groupInititalState();
+      case 'reported':
+        return reportedResourceInititalState();
+      default:
+        return userInititalState();
+    }
   }
 }
   return (
