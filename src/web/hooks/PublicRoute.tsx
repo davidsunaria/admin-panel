@@ -3,7 +3,12 @@ import { isLogin } from '../../lib/middlewares/Auth';
 import { Navigate, } from 'react-router-dom';
 // import { useStoreState } from 'react-app-store';
 
-const PublicRoute = ({ children, restricted }: { children: JSX.Element, restricted: boolean }) => {
+interface PublicRoute {
+  children: JSX.Element;
+  restricted?: boolean;
+}
+
+const PublicRoute = ({ children, restricted }:PublicRoute ) => {
   /*const navigate = useNavigate();
 
     const login = useStoreState(state => state.auth.isLogin);

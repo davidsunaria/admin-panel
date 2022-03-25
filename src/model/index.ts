@@ -3,6 +3,7 @@ import common, { CommonModel } from './Common';
 import user, { UserModel } from './User';
 import group, { GroupModel } from './Group';
 import event, { EventModel } from './Event';
+import reportedResource, { ReportedModel } from './Reported';
 
 export interface StoreModel {
   auth: AuthModel;
@@ -10,6 +11,7 @@ export interface StoreModel {
   user: UserModel;
   group:GroupModel;
   event:EventModel;
+  reportedResource:ReportedModel;
 };
 
 const model: StoreModel = {
@@ -17,7 +19,8 @@ const model: StoreModel = {
   common,
   user,
   group,
-  event
+  event,
+  reportedResource,
 };
 
 export default model;

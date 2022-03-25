@@ -7,10 +7,9 @@ import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import LOGO from 'react-app-images/logo.png';
 import DEFAULT_EVENT_IMG from 'react-app-images/default_event.png';
 import env from '../../../config';
-import { truncate } from  '../../../lib/utils/Service';
+import { truncate } from '../../../lib/utils/Service';
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
@@ -22,12 +21,13 @@ const Events: React.FC = (): JSX.Element => {
     return [
       { key: 'image', value: 'Image' },
       { key: 'name', value: 'Name' },
-      { key: 'creator', value: 'Owner'},
-      { key: 'group', value: 'Group' },
+      { key: 'creator', value: 'Owner' },
+      { key: 'group', value: 'Associate group' },
       { key: 'address', value: 'Address' },
       { key: 'capacity', value: 'Capacity' },
       { key: 'capacity_type', value: 'Capacity Type' },
       { key: 'status', value: 'Status' },
+      { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -177,21 +177,25 @@ const Events: React.FC = (): JSX.Element => {
                             }
                           </td>
                           <td>{val?.name || '-'}</td>
-                          <td><div title={val?.creator_of_event?.first_name +" "+ val?.creator_of_event?.last_name}>{truncate(val?.creator_of_event?.first_name +" "+ val?.creator_of_event?.last_name) || '-'}</div></td>
+                          <td><div title={val?.creator_of_event?.first_name + " " + val?.creator_of_event?.last_name}>{truncate(val?.creator_of_event?.first_name + " " + val?.creator_of_event?.last_name) || '-'}</div></td>
                           <td><div title={val?.event_group?.name}>{truncate(val?.event_group?.name) || '-'}</div></td>
                           <td><div title={val?.address}>{truncate(val?.address) || '-'}</div></td>
                           <td>{val?.capacity || '-'}</td>
                           <td>{val?.capacity_type || '-'}</td>
                           <td className={"onHover"} onClick={() => enableDisableGroup(val?._id, val?.status)}>
                             <div className={(val?.status === 1 || val?.status === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.status === 1 || val?.status === true) ? 'Active' : 'Inactive'}</div></td>
+                          <td>
+                            <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
+                          </td>
+
                         </tr>
                       ))
 
                     ) : (
-                      <tr>
-                        <td colSpan={8} className="text-center">No record found</td>
-                      </tr>
-                    )}
+                        <tr>
+                          <td colSpan={8} className="text-center">No record found</td>
+                        </tr>
+                      )}
 
 
                   </tbody>

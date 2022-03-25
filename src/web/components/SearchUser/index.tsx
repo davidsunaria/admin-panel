@@ -6,10 +6,14 @@ import { useStoreActions, useStoreState } from 'react-app-store';
 
 const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
   const [statusData, setStatusdata] = useState([
-    { key: 'All', value: 'all' }, { key: 'Active', value: 1 }, { key: 'Inactive', value: '0' },
+    { key: 'All', value: 'all' }, { key: 'Active', value: "1" }, { key: 'Inactive', value: '0' }
+  ]);
+
+  const [reportedStatus, setReportedStatus] = useState([
+    { key: 'All', value: 'all' }, { key: 'Blocked', value: "1" }, { key: 'Unblocked', value: '0' }
   ]);
   const [premiumData, setPremiumData] = useState([
-    { key: 'All', value: 'all' }, { key: 'Yes', value: 1 }, { key: 'No', value: '0' },
+    { key: 'All', value: 'all' }, { key: 'Yes', value: 1 }, { key: 'No', value: '0' }
   ]);
   const userInititalState = useCallback((): IUsers => {
     return {
@@ -28,6 +32,12 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
       q: '', status: '', group_id: ''
     }
   }, []);
+
+  const reportedResourceInititalState = useCallback((): IUsers => {
+    return {
+      q: '', is_blocked_by_admin: ''
+    }
+  }, []);
   const groups = useStoreState(state => state.event.groups);
 
   const getGroups = useStoreActions(actions => actions.event.getGroups);
@@ -43,25 +53,24 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
     }
   }, [props.type]);
 
-  const initialState = useCallback((value: any): IUsers => {
-    switch (value) {
-      case "events":
-        return eventInititalState()
-        break;
-      case "users":
-        return userInititalState()
-        break;
-      case "groups":
-        return groupInititalState()
-        break;
-      default:
-        return userInititalState();
-    }
-  }, []);
+const searchInitialState = (type: any): IUsers => {
+  switch (type) {
+    case 'users':
+      return userInititalState();
+    case 'events':
+      return eventInititalState();
+    case 'groups':
+      return groupInititalState();
+    case 'reported':
+      return reportedResourceInititalState();
+    default:
+      return userInititalState();
+  }
+}
   return (
     <Formik
       enableReinitialize={true}
-      initialValues={initialState(props?.type)}
+      initialValues={searchInitialState(props?.type)}
       onSubmit={async values => {
         //setFormData(JSON.stringify(values, null, 2))
         props.onSearch(values);
@@ -93,8 +102,21 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
 
               <div className="ms-auto">
                 <div className="filter mb-2 me-sm-3">
-                  <label>Status:</label>
-                  <select name="status"
+                  <label>Blocked status:</label>
+                  {props.type === 'reported' && <select name="is_blocked_by_admin"
+                    value={values?.is_blocked_by_admin}
+                    onChange={(e) => {
+                      handleChange(e);
+                      submitForm();
+                    }}
+                    onBlur={handleBlur} className="form-select" aria-label="Default select example">
+                    {
+                      reportedStatus && reportedStatus.length > 0 && reportedStatus.map((val, index) => (
+                        <option key={index} value={val?.value}>{val?.key}</option>
+                      ))
+                    }
+                  </select>}
+                  {props.type !== 'reported' && <select name="status"
                     value={values?.status}
                     onChange={(e) => {
                       handleChange(e);
@@ -106,7 +128,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                         <option key={index} value={val?.value}>{val?.key}</option>
                       ))
                     }
-                  </select>
+                  </select>}
                 </div>
                
                 {props.type === 'users' && <div className="filter mb-2 me-sm-2">
