@@ -190,7 +190,7 @@ const Groups: React.FC = (): JSX.Element => {
 
                     ) : (
                         <tr>
-                          <td colSpan={6} className="text-center">No record found</td>
+                          <td colSpan={7} className="text-center">No record found</td>
                         </tr>
                       )}
 

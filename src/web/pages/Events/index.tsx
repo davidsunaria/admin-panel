@@ -193,7 +193,7 @@ const Events: React.FC = (): JSX.Element => {
 
                     ) : (
                         <tr>
-                          <td colSpan={8} className="text-center">No record found</td>
+                          <td colSpan={9} className="text-center">No record found</td>
                         </tr>
                       )}
 
