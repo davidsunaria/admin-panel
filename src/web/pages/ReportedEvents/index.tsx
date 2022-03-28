@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useEffect, useState, useMemo } from 'react';
+import React, {  useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
 import { IUsers, IEnableDisable, IPagination } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -9,6 +9,7 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
 import { truncate } from '../../../lib/utils/Service';
+import CustomSuspense from '../../components/CustomSuspense';
 import moment from "moment"
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
@@ -21,7 +22,7 @@ const ReportedEvents: React.FC = (): JSX.Element => {
       { key: 'image', value: 'Image' },
       { key: 'name', value: 'Name' },
       { key: 'creator', value: 'Owner' },
-      { key: 'group', value: 'Associate group' },
+      { key: 'group', value: 'Associated group' },
       { key: 'address', value: 'Address' },
       { key: 'Created', value: 'Last reported at' },
       { key: 'reported', value: 'Reported by' },
@@ -101,10 +102,10 @@ const ReportedEvents: React.FC = (): JSX.Element => {
   const enableDisableGroup = useCallback((id, is_blocked_by_admin) => {
     let text: string;
     if (is_blocked_by_admin === 1) {
-      text = 'You want to unblocked event?';
+      text = 'You want to unblock event?';
     }
     else {
-      text = 'You want to Blocked event?';
+      text = 'You want to block event?';
     }
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -137,13 +138,13 @@ const ReportedEvents: React.FC = (): JSX.Element => {
   return (
     <>
       <div className="Content">
-        <Suspense fallback={<>Loading...</>}>
+        <CustomSuspense>
           <Navbar text={"Reported Events"} />
-        </Suspense>
+        </CustomSuspense>
         <div className="cardBox">
-          <Suspense fallback={<>Loading...</>}>
+          <CustomSuspense>
             <SearchUser type={"reported"} onSearch={onSearch} onReset={onReset} />
-          </Suspense>
+          </CustomSuspense>
           <div className="table-responsive">
             {
               <InfiniteScroll
@@ -155,9 +156,9 @@ const ReportedEvents: React.FC = (): JSX.Element => {
               >
 
                 <table className="table mb-0">
-                  <Suspense fallback={<>Loading...</>}>
+                  <CustomSuspense>
                     <TableHeader fields={tableHeader} />
-                  </Suspense>
+                  </CustomSuspense>
                   <tbody>
 
                     {data && data.length > 0 ? (
