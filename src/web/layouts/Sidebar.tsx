@@ -10,15 +10,15 @@ import NavigationService from 'src/routes/NavigationService';
 const Sidebar: React.FC = (): JSX.Element => {
 
   const dropDownKey = [{
-    route: "reported_groups",
+    route: "reported-groups",
     title: "Groups"
   },
   {
-    route: "reported_events",
+    route: "reported-events",
     title: "Events"
   },
   // {
-  //   route: "reported_users",
+  //   route: "reported-users",
   //   title: "Members"
   // }
   

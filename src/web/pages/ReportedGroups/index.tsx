@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
 import { IUsers, IEnableDisable, IPagination } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
