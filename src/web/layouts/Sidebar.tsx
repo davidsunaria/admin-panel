@@ -23,7 +23,7 @@ const Sidebar: React.FC = (): JSX.Element => {
   //   title: "Members"
   // }
   
-  ]
+  
 
 
   const showNavbar = useCallback(() => {

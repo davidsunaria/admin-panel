@@ -69,7 +69,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
         return userInititalState();
     }
   }
-}
+
   return (
     <Formik
       enableReinitialize={true}
