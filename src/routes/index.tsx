@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense ,useRef} from 'react';
+import React, { useEffect, useRef} from 'react';
 import { UserContext } from '../web/hooks/UserContext';
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import PublicRoute from '../web/hooks/PublicRoute';
@@ -48,7 +48,7 @@ const AppRouter: React.FC = (): JSX.Element => {
           </PublicRoute>}></Route>
           
           <Route path="*" element={<PublicRoute restricted={false}> 
-           <Suspense fallback={<>Loading...</>}><NotFound /></Suspense></PublicRoute>}></Route>
+           <CustomSuspense><NotFound /></CustomSuspense></PublicRoute>}></Route>
 
           <Route path="/login" element={<PublicRoute restricted={true}>
           <CustomSuspense><Login /></CustomSuspense>
@@ -75,15 +75,15 @@ const AppRouter: React.FC = (): JSX.Element => {
             <CustomSuspense><Events /></CustomSuspense>
           </PrivateRoute>} />
 
-          <Route path="/reported_groups" element={<PrivateRoute>
-            <Suspense fallback={<>Loading...</>}><ReportedGroups /></Suspense>
+          <Route path="/reported-groups" element={<PrivateRoute>
+            <CustomSuspense><ReportedGroups /></CustomSuspense>
           </PrivateRoute>} />
 
-          <Route path="/reported_events" element={<PrivateRoute>
-            <Suspense fallback={<>Loading...</>}><ReportedEvents /></Suspense>
+          <Route path="/reported-events" element={<PrivateRoute>
+            <CustomSuspense ><ReportedEvents /></CustomSuspense>
           </PrivateRoute>} />
-          <Route path="/reported_users" element={<PrivateRoute>
-            <Suspense fallback={<>Loading...</>}><ReportedUsers /></Suspense>
+          <Route path="/reported-users" element={<PrivateRoute>
+            <CustomSuspense><ReportedUsers /></CustomSuspense>
           </PrivateRoute>} />
 
         </Routes>
