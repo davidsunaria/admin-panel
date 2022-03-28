@@ -254,7 +254,7 @@ const Users: React.FC = (): JSX.Element => {
 
                     ) : (
                       <tr>
-                        <td  colSpan={7} className="text-center">No record found</td>
+                        <td  colSpan={8} className="text-center">No record found</td>
                       </tr>
                     )}
 
