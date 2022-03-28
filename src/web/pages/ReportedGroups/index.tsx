@@ -9,6 +9,7 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
 import { truncate } from '../../../lib/utils/Service';
+import CustomSuspense from '../../components/CustomSuspense';
 import moment from "moment"
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
@@ -101,10 +102,10 @@ const ReportedGroups: React.FC = (): JSX.Element => {
   const enableDisableGroup = useCallback((id, is_blocked_by_admin) => {
     let text: string;
     if (is_blocked_by_admin === 1) {
-      text = 'You want to unblocked group?';
+      text = 'You want to unblock group?';
     }
     else {
-      text = 'You want to blocked group?';
+      text = 'You want to block group?';
     }
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -137,13 +138,13 @@ const ReportedGroups: React.FC = (): JSX.Element => {
   return (
     <>
       <div className="Content">
-        <Suspense fallback={<>Loading...</>}>
+        <CustomSuspense>
           <Navbar text={"Reported groups"} />
-        </Suspense>
+        </CustomSuspense>
         <div className="cardBox">
-          <Suspense fallback={<>Loading...</>}>
+          <CustomSuspense >
             <SearchUser type={"reported"} onSearch={onSearch} onReset={onReset} />
-          </Suspense>
+          </CustomSuspense>
           <div className="table-responsive">
             {
               <InfiniteScroll
@@ -155,9 +156,9 @@ const ReportedGroups: React.FC = (): JSX.Element => {
               >
 
                 <table className="table mb-0">
-                  <Suspense fallback={<>Loading...</>}>
+                  <CustomSuspense >
                     <TableHeader fields={tableHeader} />
-                  </Suspense>
+                  </CustomSuspense>
                   <tbody>
                     {data && data.length > 0 ? (
                       data.map((val: any, index: number) => (

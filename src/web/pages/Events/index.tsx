@@ -22,7 +22,7 @@ const Events: React.FC = (): JSX.Element => {
       { key: 'image', value: 'Image' },
       { key: 'name', value: 'Name' },
       { key: 'creator', value: 'Owner' },
-      { key: 'group', value: 'Associate group' },
+      { key: 'group', value: 'Associated group' },
       { key: 'address', value: 'Address' },
       { key: 'capacity', value: 'Capacity' },
       { key: 'capacity_type', value: 'Capacity Type' },
