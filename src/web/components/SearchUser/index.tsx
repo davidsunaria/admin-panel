@@ -105,7 +105,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
 
               <div className="ms-auto">
                 <div className="filter mb-2 me-sm-3">
-                  <label>Blocked status:</label>
+                  <label>Status:</label>
                   {props.type === 'reported' && <select name="is_blocked_by_admin"
                     value={values?.is_blocked_by_admin}
                     onChange={(e) => {

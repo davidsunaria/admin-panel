@@ -28,7 +28,7 @@ const Users: React.FC = (): JSX.Element => {
       { key: 'username', value: 'Username' },
       { key: 'status', value: 'Status' },
       { key: 'is_premium', value: 'Premium' },
-      { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
+      // { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -246,15 +246,15 @@ const Users: React.FC = (): JSX.Element => {
                           <td>
                             <div className={val?.is_premium === 1 ? "manageStatus active" : "manageStatus inactive"}>{val?.is_premium === 1 ? 'Yes' : 'No'}</div>
                           </td>
-                          <td>
+                          {/* <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
-                          </td>
+                          </td> */}
                         </tr>
                       ))
 
                     ) : (
                       <tr>
-                        <td  colSpan={8} className="text-center">No record found</td>
+                        <td  colSpan={7} className="text-center">No record found</td>
                       </tr>
                     )}
 
