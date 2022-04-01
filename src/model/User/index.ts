@@ -7,6 +7,12 @@ import { IPayload } from 'react-app-interfaces';
 import NavigationService from 'src/routes/NavigationService';
 import store from 'react-app-store';
 import { logoutCompletely } from '../../lib/utils/Service';
+
+const initialState = {
+ response: {},
+  isInvitationSend: false,
+  isEnabledDisabled: false,
+}
 export interface UserModel {
   isInvitationSend: boolean;
   isEnabledDisabled:boolean;
@@ -14,6 +20,7 @@ export interface UserModel {
   //**************State Actions************///
   setIsInvitationSend: Action<UserModel, boolean>;
   flushData: Action<UserModel>;
+  reset: Action<UserModel>;
   setEnabledDisabled: Action<UserModel, boolean>;
   setResponse: Action<UserModel, object | any>;
   //**************State  Actions************///
@@ -27,9 +34,8 @@ export interface UserModel {
 }
 
 const user: UserModel = {
-  response: {},
-  isInvitationSend: false,
-  isEnabledDisabled: false,
+
+  ...initialState,
   setResponse: action((state, payload) => {
     state.response = payload;
   }),
@@ -43,8 +49,9 @@ const user: UserModel = {
   setEnabledDisabled: action((state, payload) => {
     state.isEnabledDisabled = payload;
   }),
+  reset: action(state =>state=initialState),
   getUsers: thunk<UserModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    if (getState().response?.data?.length > 0 && payload?.payload?.page != 1) {
+    if ((getState().response?.data ==undefined && payload?.payload?.page == 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
       getStoreActions().common.setLoading(true);
     }
    // getStoreActions().common.setLoading(true);
@@ -72,6 +79,10 @@ const user: UserModel = {
       logoutCompletely();
       getStoreActions().auth.setIsLogin(false);
       getStoreActions().common.setLoading(false);
+      getStoreActions().group.reset();
+      getStoreActions().event.reset();
+      getStoreActions().reportedResource.reset();
+      actions.reset();
       NavigationService.navigate("/login");
       setTimeout(async () => {
         await store.persist.clear();
