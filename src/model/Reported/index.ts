@@ -47,7 +47,9 @@ const reportedResource: ReportedModel = {
     state.isEnabledDisabled = payload;
   }),
   getReportedGroups: thunk<ReportedModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    getStoreActions().common.setLoading(true);
+    if (getState().reportedGroupsResponse?.data?.length > 0 && payload?.payload?.page != 1) {
+      getStoreActions().common.setLoading(true);
+    }
     let response = await getApi(payload);
     if (response && response.status !== 200) {
       toast.error(response.message);
@@ -63,9 +65,9 @@ const reportedResource: ReportedModel = {
   }),
 
   getReportedUsers: thunk<ReportedModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    // if(!getState().response?.data?.length){
-    //   getStoreActions().common.setLoading(true);
-    // }
+    if (getState().reportedUsersResponse?.data?.length > 0 && payload?.payload?.page != 1) {
+      getStoreActions().common.setLoading(true);
+    }
     getStoreActions().common.setLoading(true);
     let response = await getApi(payload);
     if (response && response.status !== 200) {
@@ -82,7 +84,9 @@ const reportedResource: ReportedModel = {
   }),
 
   getReportedEvents: thunk<ReportedModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    getStoreActions().common.setLoading(true);
+    if (getState().reportedEventsResponse?.data?.length > 0 && payload?.payload?.page != 1) {
+      getStoreActions().common.setLoading(true);
+    }
     let response = await getApi(payload);
     if (response && response.status !== 200) {
       toast.error(response?.message);

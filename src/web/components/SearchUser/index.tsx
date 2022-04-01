@@ -42,7 +42,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
 
 
   const getGroups = useStoreActions(actions => actions.event.getGroups);
-
+  const setLoading =useStoreActions(actions => actions.common.setLoading);
 
   const getGroupData = useCallback(() => {
     getGroups({ url: "event/get-groups" });
@@ -75,6 +75,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
       initialValues={searchInitialState(props?.type)}
       onSubmit={async values => {
         //setFormData(JSON.stringify(values, null, 2))
+        setLoading(true)
         props.onSearch(values);
       }}
 
@@ -168,6 +169,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
 
                 <div className="btn btn-outline-primary align-top" onClick={() => {
                   resetForm();
+                  setLoading(true)
                   props.onReset();
                 }}>Reset</div>
               </div>

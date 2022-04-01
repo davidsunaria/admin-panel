@@ -40,7 +40,10 @@ const event: EventModel = {
     state.isEnabledDisabled = payload;
   }),
   getEvents: thunk<EventModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
+   // getStoreActions().common.setLoading(true);
+   if (getState().response?.data?.length > 0 && payload?.payload?.page != 1) {
     getStoreActions().common.setLoading(true);
+  }
     let response = await getApi(payload);
     if (response && response.status !== 200) {
       toast.error(response?.message);
@@ -54,6 +57,8 @@ const event: EventModel = {
       return true;
     }
   }),
+
+
   enableDisable: thunk<EventModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
     getStoreActions().common.setLoading(true);
     actions.setEnabledDisabled(false);
@@ -72,7 +77,10 @@ const event: EventModel = {
     }
   }),
   getGroups: thunk<EventModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    getStoreActions().common.setLoading(true);
+   // getStoreActions().common.setLoading(true);
+    if (getState().response?.data?.length  ==undefined) {
+      getStoreActions().common.setLoading(true);
+    }
     let response = await getApi(payload);
     if (response && response.status !== 200) {
       toast.error(response.message);

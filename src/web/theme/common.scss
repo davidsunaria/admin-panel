@@ -211,6 +211,11 @@ a {
 .nav_link.active {
     color: var(--white-color)
 }
+
+.dropActive {
+  color: var(--white-color)
+}
+
 .active::before {
     content: '';
     position: absolute;
@@ -743,7 +748,7 @@ nav ul.subNav{
     i{display: none;}
   }
 }
-.nav_list li:hover ul.subNav{
+ .nav_list li:hover ul.subNav{
   display: block;
 }
 

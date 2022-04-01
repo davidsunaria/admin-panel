@@ -1,6 +1,6 @@
 export interface IPayload {
   url: string;
-  payload?: string | object;
+  payload?: any;
 }
 
 export interface IPagination {
