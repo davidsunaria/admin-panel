@@ -4,6 +4,12 @@ import { toast } from "react-toastify";
 
 import { getApi, postApi } from 'react-app-api';
 import { IPayload } from 'react-app-interfaces';
+import { compact } from 'lodash';
+
+const initialState = {
+  response: {},
+  isEnabledDisabled: false,
+}
 
 export interface GroupModel {
   response: string | object | any;
@@ -11,25 +17,23 @@ export interface GroupModel {
   //**************State Actions************///
   flushData: Action<GroupModel>;
   setEnabledDisabled: Action<GroupModel, boolean>;
+  reset: Action<GroupModel>;
   setResponse: Action<GroupModel, object | any>;
   //**************State  Actions************///
 
   //**************Thunk Actions************///
   getGroups: Thunk<GroupModel, object>;
   enableDisable: Thunk<GroupModel, object>;
-  
+
   //**************Thunk Actions************///
 }
 
 const group: GroupModel = {
-  response: {},
-  isEnabledDisabled: false,
+  ...initialState,
   setResponse: action((state, payload) => {
     state.response = payload;
   }),
-
- 
-
+  reset: action(state =>state=initialState),
   flushData: action((state, payload) => {
     state.isEnabledDisabled = false;
   }),
@@ -37,10 +41,10 @@ const group: GroupModel = {
     state.isEnabledDisabled = payload;
   }),
   getGroups: thunk<GroupModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-   
-    if (getState().response?.data?.length > 0 && payload?.payload?.page != 1) {
+    if ((getState().response?.data ==undefined && payload?.payload?.page == 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
       getStoreActions().common.setLoading(true);
     }
+
     let response = await getApi(payload);
     if (response && response.status !== 200) {
       toast.error(response.message);
@@ -56,8 +60,8 @@ const group: GroupModel = {
     }
   }),
 
- 
-  
+
+
 
 
   enableDisable: thunk<GroupModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {

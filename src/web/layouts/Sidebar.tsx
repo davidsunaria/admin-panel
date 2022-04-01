@@ -53,7 +53,7 @@ const Sidebar: React.FC = (): JSX.Element => {
               <li><div className={"nav_link cursor"} ><i className= {`bi  bi-bounding-box ${pathName=="/reported-groups" || pathName=="/reported-events"?"dropActive":""}`} > </i><span className= {`nav_name ${pathName=="/reported-groups" || pathName=="/reported-events"?"dropActive":""}`}>Reported Items</span>
               <ul className="subNav">
               {dropDownKey.map((value, i) => {
-                  return <li><NavLink key={i} className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to={value.route} ><span className="nav_name">{value.title}</span></NavLink></li>
+                  return <li key={i}><NavLink key={i} className={({ isActive }: { isActive: any }) => isActive ? ' nav_link active' : 'nav_link '} to={value.route} ><span className="nav_name">{value.title}</span></NavLink></li>
                 })}
               </ul>
             </div></li>

@@ -5,6 +5,14 @@ import { toast } from "react-toastify";
 import { getApi, postApi } from 'react-app-api';
 import { IPayload } from 'react-app-interfaces';
 
+
+const initialState = {
+  reportedGroupsResponse: {},
+  reportedUsersResponse: {},
+  reportedEventsResponse:{},
+  isEnabledDisabled: false,
+}
+
 export interface ReportedModel {
   reportedGroupsResponse: string | object | any;
   reportedUsersResponse: string | object | any;
@@ -16,6 +24,7 @@ export interface ReportedModel {
   setReportedGroupResponse: Action<ReportedModel, object | any>;
   setReportedUsersResponse:Action<ReportedModel, object | any>;
   setReportedEventsResponse:Action<ReportedModel, object | any>;
+  reset: Action<ReportedModel>;
   //**************State  Actions************///
 
   //**************Thunk Actions************///
@@ -27,10 +36,7 @@ export interface ReportedModel {
 }
 
 const reportedResource: ReportedModel = {
-  reportedGroupsResponse: {},
-  reportedUsersResponse:{},
-  reportedEventsResponse:{},
-  isEnabledDisabled: false,
+  ...initialState,
   setReportedGroupResponse: action((state, payload) => {
     state.reportedGroupsResponse = payload;
   }),
@@ -46,8 +52,9 @@ const reportedResource: ReportedModel = {
   setEnabledDisabled: action((state, payload) => {
     state.isEnabledDisabled = payload;
   }),
+  reset: action(state =>state=initialState),
   getReportedGroups: thunk<ReportedModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    if (getState().reportedGroupsResponse?.data?.length > 0 && payload?.payload?.page != 1) {
+    if ((getState().reportedGroupsResponse?.data ==undefined && payload?.payload?.page == 1) ||(getState().reportedGroupsResponse?.data?.length >0 && payload?.payload?.page > 1)  ) {
       getStoreActions().common.setLoading(true);
     }
     let response = await getApi(payload);
@@ -65,7 +72,7 @@ const reportedResource: ReportedModel = {
   }),
 
   getReportedUsers: thunk<ReportedModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    if (getState().reportedUsersResponse?.data?.length > 0 && payload?.payload?.page != 1) {
+    if ((getState().reportedUsersResponse?.data ==undefined && payload?.payload?.page == 1) ||(getState().reportedUsersResponse?.data?.length >0 && payload?.payload?.page > 1)  ) {
       getStoreActions().common.setLoading(true);
     }
     getStoreActions().common.setLoading(true);
@@ -84,7 +91,7 @@ const reportedResource: ReportedModel = {
   }),
 
   getReportedEvents: thunk<ReportedModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    if (getState().reportedEventsResponse?.data?.length > 0 && payload?.payload?.page != 1) {
+    if ((getState().reportedEventsResponse?.data ==undefined && payload?.payload?.page == 1) ||(getState().reportedEventsResponse?.data?.length >0 && payload?.payload?.page > 1)  ) {
       getStoreActions().common.setLoading(true);
     }
     let response = await getApi(payload);

@@ -5,6 +5,12 @@ import { toast } from "react-toastify";
 import { getApi, postApi } from 'react-app-api';
 import { IPayload } from 'react-app-interfaces';
 
+
+const initialState = {
+  response: {},
+  groups: {},
+  isEnabledDisabled: false,
+}
 export interface EventModel {
   response: string | object | any;
   groups: string | object | any;
@@ -14,6 +20,7 @@ export interface EventModel {
   setEnabledDisabled: Action<EventModel, boolean>;
   setResponse: Action<EventModel, object | any>;
   setGroups: Action<EventModel, object | any>;
+  reset: Action<EventModel>;
   //**************State  Actions************///
 
   //**************Thunk Actions************///
@@ -24,9 +31,7 @@ export interface EventModel {
 }
 
 const event: EventModel = {
-  response: {},
-  groups: {},
-  isEnabledDisabled: false,
+  ...initialState,
   setResponse: action((state, payload) => {
     state.response = payload;
   }),
@@ -39,9 +44,12 @@ const event: EventModel = {
   setEnabledDisabled: action((state, payload) => {
     state.isEnabledDisabled = payload;
   }),
+
+  reset: action(state =>state=initialState),
+  
   getEvents: thunk<EventModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
    // getStoreActions().common.setLoading(true);
-   if (getState().response?.data?.length > 0 && payload?.payload?.page != 1) {
+   if ((getState().response?.data ==undefined && payload?.payload?.page == 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
     getStoreActions().common.setLoading(true);
   }
     let response = await getApi(payload);
