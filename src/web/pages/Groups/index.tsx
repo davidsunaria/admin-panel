@@ -50,11 +50,12 @@ const Groups: React.FC = (): JSX.Element => {
   const getGroups = useStoreActions(actions => actions.group.getGroups);
   const enableDisable = useStoreActions(actions => actions.group.enableDisable);
 
+  
+
   const getGroupData = useCallback(async (payload: IUsers) => {
     await getGroups({ url: "group/get-all-groups", payload });
   }, []);
 
-  
   useEffect(() => {
     //console.log('Response', response);
     if (response?.data) {

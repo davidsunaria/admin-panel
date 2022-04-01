@@ -54,7 +54,6 @@ const ReportedGroups: React.FC = (): JSX.Element => {
   const getGroupData = useCallback(async (payload: IUsers) => {
     await getGroups({ url: "resource/get-reported-resources", payload });
   }, []);
-
   useEffect(() => {
     //console.log('Response', response);
     if (response?.data) {

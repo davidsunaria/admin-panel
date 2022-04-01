@@ -17,6 +17,7 @@ export interface GroupModel {
   //**************Thunk Actions************///
   getGroups: Thunk<GroupModel, object>;
   enableDisable: Thunk<GroupModel, object>;
+  
   //**************Thunk Actions************///
 }
 
@@ -26,6 +27,9 @@ const group: GroupModel = {
   setResponse: action((state, payload) => {
     state.response = payload;
   }),
+
+ 
+
   flushData: action((state, payload) => {
     state.isEnabledDisabled = false;
   }),
@@ -33,12 +37,16 @@ const group: GroupModel = {
     state.isEnabledDisabled = payload;
   }),
   getGroups: thunk<GroupModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    getStoreActions().common.setLoading(true);
+   
+    if (getState().response?.data?.length > 0 && payload?.payload?.page != 1) {
+      getStoreActions().common.setLoading(true);
+    }
     let response = await getApi(payload);
     if (response && response.status !== 200) {
       toast.error(response.message);
       getStoreActions().common.setLoading(false);
     } else if (response && response.status === 200) {
+      // console.log("response",response)
       actions.setResponse(response.data);
       getStoreActions().common.setLoading(false);
     }
@@ -47,6 +55,11 @@ const group: GroupModel = {
       return true;
     }
   }),
+
+ 
+  
+
+
   enableDisable: thunk<GroupModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
     getStoreActions().common.setLoading(true);
     actions.setEnabledDisabled(false);

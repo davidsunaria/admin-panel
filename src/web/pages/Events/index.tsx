@@ -45,15 +45,15 @@ const Events: React.FC = (): JSX.Element => {
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
-  const response = useStoreState(state => state.group.response);
+  const response = useStoreState(state => state.event.response);
   const isEnabledDisabled = useStoreState(state => state.group.isEnabledDisabled);
   //Actions
   const flushData = useStoreActions(actions => actions.group.flushData);
-  const getGroups = useStoreActions(actions => actions.group.getGroups);
+  const getEvents = useStoreActions(actions => actions.event.getEvents);
   const enableDisable = useStoreActions(actions => actions.group.enableDisable);
 
   const getGroupData = useCallback(async (payload: IUsers) => {
-    await getGroups({ url: "event/get-all-events", payload });
+    await getEvents({ url: "event/get-all-events", payload });
   }, []);
 
   useEffect(() => {

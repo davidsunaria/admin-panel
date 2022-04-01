@@ -44,10 +44,10 @@ const user: UserModel = {
     state.isEnabledDisabled = payload;
   }),
   getUsers: thunk<UserModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    // if(!getState().response?.data?.length){
-    //   getStoreActions().common.setLoading(true);
-    // }
-    getStoreActions().common.setLoading(true);
+    if (getState().response?.data?.length > 0 && payload?.payload?.page != 1) {
+      getStoreActions().common.setLoading(true);
+    }
+   // getStoreActions().common.setLoading(true);
     let response = await getApi(payload);
     if (response && response.status !== 200) {
       toast.error(response.message);
