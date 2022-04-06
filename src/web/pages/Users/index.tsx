@@ -1,24 +1,30 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
-import { IUsers, IEnableDisable, IPagination, IInviteuser } from 'react-app-interfaces';
+import { IUsers, IEnableDisable, IPagination, IInviteuser, IPremiumuser } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
 import CustomSuspense from '../../components/CustomSuspense';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import { Formik } from 'formik';
+import { Formik, Field,ErrorMessage } from 'formik';
 import { useAuthValidation } from '../../../lib/validations/AuthSchema';
 import env from '../../../config';
 import DEFAULT_USER_IMG from 'react-app-images/default_user.png';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { date, number } from 'yup/lib/locale';
+import moment from "moment"
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
 const MyModal = React.lazy(() => import('../../components/MyModal'));
 const Input = React.lazy(() => import('../../components/Input'));
+const RadioInput = React.lazy(() => import('../../components/RadioInput'));
+const CustomDatePicker = React.lazy(() => import('../../components/CustomDatePicker'));
 const Navbar = React.lazy(() => import('../../components/Navbar'));
 const Users: React.FC = (): JSX.Element => {
-  const { InviteUserSchema } = useAuthValidation();
+  const { InviteUserSchema,PremiumSchema } = useAuthValidation();
   const tableHeader = useMemo(() => {
     return [
       { key: 'image', value: 'Image' },
@@ -28,6 +34,7 @@ const Users: React.FC = (): JSX.Element => {
       { key: 'username', value: 'Username' },
       { key: 'status', value: 'Status' },
       { key: 'is_premium', value: 'Premium' },
+      { key: 'action', value: 'Action' },
       // { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
     ]
   }, []);
@@ -41,6 +48,14 @@ const Users: React.FC = (): JSX.Element => {
       email: ''
     }
   }, []);
+
+  const premiumInititalState = useCallback((): IPremiumuser => {
+    return {
+      type: '', is_premium: '',
+      user_id: '',
+      expire_at: ''
+    }
+  }, []);
   const [currentUserId, setCurrentUserId] = useState<String>("");
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
   const [formData, setFormData] = useState<IUsers>(userInititalState);
@@ -48,6 +63,9 @@ const Users: React.FC = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isPremiumModalOpen, setPremiumOpen] = useState(false);
+  const [userId, setUserId] = useState("");
+  const [isPremium, setPremium] = useState<any>("");
 
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
@@ -58,11 +76,28 @@ const Users: React.FC = (): JSX.Element => {
   const getUsers = useStoreActions(actions => actions.user.getUsers);
   const enableDisable = useStoreActions(actions => actions.user.enableDisable);
   const inviteUser = useStoreActions(actions => actions.user.inviteUser);
+  const updatePremiumStatus = useStoreActions(actions => actions.user.updatePremiumStatus);
   const flushData = useStoreActions(actions => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
+  const setPremiumValues = (id:string,isPremiumValue:any) =>{
+    togglePremium()
+    setPremiumOpen(!isPremiumModalOpen);
+    setUserId(id);
+    setPremium(isPremiumValue)
+  } 
+
+  const togglePremium = () =>{
+    setPremiumOpen(!isPremiumModalOpen);
+  } 
+
+  const [startDate, setStartDate] = useState(new Date());
 
   const getUserData = useCallback(async (payload: IUsers) => {
     await getUsers({ url: "user/get-all-users", payload });
+  }, []);
+
+  const handleDateSelect = useCallback(async (payload) => {
+    setStartDate(payload)
   }, []);
 
   useEffect(() => {
@@ -132,6 +167,17 @@ const Users: React.FC = (): JSX.Element => {
     await inviteUser({ 'url': "user/invite-user", payload });
     // 
   }
+
+  const setMarkPremuim = async (payload: IPremiumuser) => {
+    let formData = {
+      ...payload,
+      user_id: userId,
+      is_premium: isPremium
+    }
+    console.log("formdata",formData)
+  }
+
+
   useEffect(() => {
     async function flush() {
       toggle();
@@ -157,7 +203,7 @@ const Users: React.FC = (): JSX.Element => {
       setCurrentUserStatus("");
     }
   }, [isEnabledDisabled]);
-  
+
   return (
     <>
       <div className="Content">
@@ -208,6 +254,75 @@ const Users: React.FC = (): JSX.Element => {
             </MyModal>
             <SearchUser type={"users"} onSearch={onSearch} onReset={onReset} />
           </CustomSuspense>
+         
+          <CustomSuspense >
+          <MyModal heading={"Mark Premium"}   showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={()=>togglePremium()}>
+            <Formik
+              enableReinitialize={true}
+              initialValues={premiumInititalState()}
+              onSubmit={async values => {
+                //setFormData(JSON.stringify(values, null, 2))
+               // console.log("values", val.first_name)
+               console.log("submit valuse",values)
+               setMarkPremuim(values);
+               togglePremium()
+              }}
+             validationSchema={PremiumSchema}
+            >
+              {props => {
+                const {
+                  values,
+                  handleChange,
+                  handleBlur,
+                  handleSubmit,
+                  setFieldValue
+                } = props;
+                return (
+                  <form onSubmit={handleSubmit} >
+                    <div className="p-3">
+                      <div className="mb-3">
+                        <label html-for="name" className="form-label w-100">Frequency</label>
+                        <div>
+                          <RadioInput value="monthly" label="Monthly" name="type"/>
+                          <RadioInput value="yearly" label="Yearly" name="type"/>
+                        </div>
+                        <ErrorMessage name="type" component="span" className="errorMsg" />
+                      </div>
+                      
+                      <CustomDatePicker  value={values?.expire_at} label="Expiry at" name="expire_at" 
+                      props={props} />
+
+                      {/* <div className="mb-3">
+                        <label html-for="name" className="form-label w-100">Expiry at</label>
+                        <div>
+                          <DatePicker
+                            name="expire_at"
+                            value={values?.expire_at}
+                            onChange={date => {
+                              const formattedDate = moment(date).format("YYYY-MM-DD");
+                              setFieldValue('expire_at', formattedDate)
+                            }}
+                          />
+
+                        </div>
+                      </div>  */}
+                    </div>
+
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-secondary" onClick={()=>togglePremium}>Cancel</button>
+                      <button type="submit" className="btn btn-primary">Submit</button>
+                    </div>
+                  </form>
+                );
+              }}
+            </Formik>
+            {/* Expire at: <DatePicker selected={startDate}
+                               onChange={(date:Date) => setStartDate(date)} 
+                               className="fieldInput"
+                              //  onSelect={handleDateSelect} //when day is clicked
+                               /> */}
+          </MyModal>
+          </CustomSuspense>
           <div className="table-responsive">
             {
               <InfiniteScroll
@@ -226,10 +341,12 @@ const Users: React.FC = (): JSX.Element => {
 
                     {data && data.length > 0 ? (
                       data.map((val: any, index: number) => (
+
                         <tr key={index}>
+                          {/* {console.log(val)}   */}
                           <td>
                             {<LazyLoadImage
-                            wrapperClassName={"overideImageCircle"}
+                              wrapperClassName={"overideImageCircle"}
                               placeholderSrc={DEFAULT_USER_IMG}
                               effect={val?.image ? "blur" : undefined}
                               alt={'image'}
@@ -246,6 +363,9 @@ const Users: React.FC = (): JSX.Element => {
                           <td>
                             <div className={val?.is_premium === 1 ? "manageStatus active" : "manageStatus inactive"}>{val?.is_premium === 1 ? 'Yes' : 'No'}</div>
                           </td>
+                          <td className={"onHover"}>
+                            <div className={"manageStatus managePremium active"} onClick={() => setPremiumValues(val._id,val.is_premium)}>Mark Premium</div>
+                          </td>
                           {/* <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
                           </td> */}
@@ -253,10 +373,10 @@ const Users: React.FC = (): JSX.Element => {
                       ))
 
                     ) : (
-                      <tr>
-                        <td  colSpan={7} className="text-center">No record found</td>
-                      </tr>
-                    )}
+                        <tr>
+                          <td colSpan={8} className="text-center">No record found</td>
+                        </tr>
+                      )}
 
 
                   </tbody>

@@ -10,7 +10,7 @@ interface IModal {
   showSubmitBtn: boolean;
 }
 const MyModal: React.FC<IModal> = ({ children, isOpen, toggle, onSubmit, heading, showSubmitBtn }) => (
-  <div>
+<div>
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
         {heading}

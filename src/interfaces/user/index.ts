@@ -26,6 +26,13 @@ export interface IInviteuser {
   email: string;
 }
 
+export interface IPremiumuser {
+  type?: string | number;
+  is_premium?:string | number;
+  user_id?:string | number;
+  expire_at?: any;
+}
+
 
 export interface IEventGroups extends IUsersProps {
   _id?: string;

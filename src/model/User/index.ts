@@ -12,6 +12,7 @@ const initialState = {
  response: {},
   isInvitationSend: false,
   isEnabledDisabled: false,
+  
 }
 export interface UserModel {
   isInvitationSend: boolean;
@@ -30,6 +31,7 @@ export interface UserModel {
   logout: Thunk<UserModel, object>;
   enableDisable: Thunk<UserModel, object>;
   inviteUser: Thunk<UserModel, object>;
+  updatePremiumStatus: Thunk<UserModel, object>;
   //**************Thunk Actions************///
 }
 
@@ -127,7 +129,25 @@ const user: UserModel = {
       getStoreActions().common.setLoading(false);
       return true;
     }
-  })
+  }),
+
+  updatePremiumStatus: thunk<UserModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
+    actions.setIsInvitationSend(false);
+    getStoreActions().common.setLoading(true);
+    let response = await postApi(payload);
+    if (response && response.status !== 200) {
+      toast.error(response.message);
+      getStoreActions().common.setLoading(false);
+    } else if (response && response.status === 200) {
+      toast.success(response.message);
+      getStoreActions().common.setLoading(false);
+      actions.setIsInvitationSend(true);
+    }
+    else {
+      getStoreActions().common.setLoading(false);
+      return true;
+    }
+  }),
 };
 
 export default user;
