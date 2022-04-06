@@ -7,7 +7,7 @@ import { confirmAlert } from 'react-confirm-alert';
 import CustomSuspense from '../../components/CustomSuspense';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import { Formik, Field,ErrorMessage } from 'formik';
+import { Formik, Field, ErrorMessage } from 'formik';
 import { useAuthValidation } from '../../../lib/validations/AuthSchema';
 import env from '../../../config';
 import DEFAULT_USER_IMG from 'react-app-images/default_user.png';
@@ -20,11 +20,11 @@ const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
 const MyModal = React.lazy(() => import('../../components/MyModal'));
 const Input = React.lazy(() => import('../../components/Input'));
-const RadioInput = React.lazy(() => import('../../components/RadioInput'));
+const InputRadio = React.lazy(() => import('../../components/InputRadio'));
 const CustomDatePicker = React.lazy(() => import('../../components/CustomDatePicker'));
 const Navbar = React.lazy(() => import('../../components/Navbar'));
 const Users: React.FC = (): JSX.Element => {
-  const { InviteUserSchema,PremiumSchema } = useAuthValidation();
+  const { InviteUserSchema, PremiumSchema } = useAuthValidation();
   const tableHeader = useMemo(() => {
     return [
       { key: 'image', value: 'Image' },
@@ -79,16 +79,16 @@ const Users: React.FC = (): JSX.Element => {
   const updatePremiumStatus = useStoreActions(actions => actions.user.updatePremiumStatus);
   const flushData = useStoreActions(actions => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
-  const setPremiumValues = (id:string,isPremiumValue:any) =>{
+  const setPremiumValues = (id: string, isPremiumValue: any) => {
     togglePremium()
     setPremiumOpen(!isPremiumModalOpen);
     setUserId(id);
     setPremium(isPremiumValue)
-  } 
+  }
 
-  const togglePremium = () =>{
+  const togglePremium = () => {
     setPremiumOpen(!isPremiumModalOpen);
-  } 
+  }
 
   const [startDate, setStartDate] = useState(new Date());
 
@@ -174,7 +174,7 @@ const Users: React.FC = (): JSX.Element => {
       user_id: userId,
       is_premium: isPremium
     }
-    console.log("formdata",formData)
+    console.log("formdata", formData)
   }
 
 
@@ -203,6 +203,11 @@ const Users: React.FC = (): JSX.Element => {
       setCurrentUserStatus("");
     }
   }, [isEnabledDisabled]);
+
+  const radioParameters:any = [
+    { value: "monthly", label: "Monthly", name: "type" },
+    { value: "yearly", label: "Yearly", name: "type" },
+  ]
 
   return (
     <>
@@ -254,45 +259,43 @@ const Users: React.FC = (): JSX.Element => {
             </MyModal>
             <SearchUser type={"users"} onSearch={onSearch} onReset={onReset} />
           </CustomSuspense>
-         
-          <CustomSuspense >
-          <MyModal heading={"Mark Premium"}   showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={()=>togglePremium()}>
-            <Formik
-              enableReinitialize={true}
-              initialValues={premiumInititalState()}
-              onSubmit={async values => {
-                //setFormData(JSON.stringify(values, null, 2))
-               // console.log("values", val.first_name)
-               console.log("submit valuse",values)
-               setMarkPremuim(values);
-               togglePremium()
-              }}
-             validationSchema={PremiumSchema}
-            >
-              {props => {
-                const {
-                  values,
-                  handleChange,
-                  handleBlur,
-                  handleSubmit,
-                  setFieldValue
-                } = props;
-                return (
-                  <form onSubmit={handleSubmit} >
-                    <div className="p-3">
-                      <div className="mb-3">
-                        <label html-for="name" className="form-label w-100">Frequency</label>
-                        <div>
-                          <RadioInput value="monthly" label="Monthly" name="type"/>
-                          <RadioInput value="yearly" label="Yearly" name="type"/>
-                        </div>
-                        <ErrorMessage name="type" component="span" className="errorMsg" />
-                      </div>
-                      
-                      <CustomDatePicker  value={values?.expire_at} label="Expiry at" name="expire_at" 
-                      props={props} />
 
-                      {/* <div className="mb-3">
+          <CustomSuspense >
+            <MyModal heading={"Mark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
+              <Formik
+                enableReinitialize={true}
+                initialValues={premiumInititalState()}
+                onSubmit={async values => {
+                  //setFormData(JSON.stringify(values, null, 2))
+                  // console.log("values", val.first_name)
+                  console.log("submit valuse", values)
+                  setMarkPremuim(values);
+                  togglePremium()
+                }}
+                validationSchema={PremiumSchema}
+              >
+                {props => {
+                  const {
+                    values,
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    setFieldValue
+                  } = props;
+                  return (
+                    <form onSubmit={handleSubmit} >
+                      <div className="p-3">
+                        <div className="mb-3">
+                          <label html-for="name" className="form-label w-100">Frequency</label>
+                            <InputRadio values={radioParameters} />
+                            {/* <RadioInput value="yearly" label="Yearly" name="type"/> */}
+                          {/* <ErrorMessage name="type" component="span" className="errorMsg" /> */}
+                        </div>
+
+                        <CustomDatePicker value={values?.expire_at} label="Expiry at" name="expire_at"
+                          props={props} />
+
+                        {/* <div className="mb-3">
                         <label html-for="name" className="form-label w-100">Expiry at</label>
                         <div>
                           <DatePicker
@@ -306,22 +309,22 @@ const Users: React.FC = (): JSX.Element => {
 
                         </div>
                       </div>  */}
-                    </div>
+                      </div>
 
-                    <div className="modal-footer">
-                      <button type="button" className="btn btn-secondary" onClick={()=>togglePremium}>Cancel</button>
-                      <button type="submit" className="btn btn-primary">Submit</button>
-                    </div>
-                  </form>
-                );
-              }}
-            </Formik>
-            {/* Expire at: <DatePicker selected={startDate}
+                      <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={() => togglePremium}>Cancel</button>
+                        <button type="submit" className="btn btn-primary">Submit</button>
+                      </div>
+                    </form>
+                  );
+                }}
+              </Formik>
+              {/* Expire at: <DatePicker selected={startDate}
                                onChange={(date:Date) => setStartDate(date)} 
                                className="fieldInput"
                               //  onSelect={handleDateSelect} //when day is clicked
                                /> */}
-          </MyModal>
+            </MyModal>
           </CustomSuspense>
           <div className="table-responsive">
             {
@@ -364,7 +367,7 @@ const Users: React.FC = (): JSX.Element => {
                             <div className={val?.is_premium === 1 ? "manageStatus active" : "manageStatus inactive"}>{val?.is_premium === 1 ? 'Yes' : 'No'}</div>
                           </td>
                           <td className={"onHover"}>
-                            <div className={"manageStatus managePremium active"} onClick={() => setPremiumValues(val._id,val.is_premium)}>Mark Premium</div>
+                            <div className={"manageStatus managePremium active"} onClick={() => setPremiumValues(val._id, val.is_premium)}>Mark Premium</div>
                           </td>
                           {/* <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>

@@ -7,16 +7,11 @@ interface CustomDatePicker {
    value?: any;
     label?: string | undefined;
     name: string;
-    changeDate?: any;
     props:any;
 }
 const CustomDatePicker: React.FC<CustomDatePicker> = ({  value, label, name, props}) => {
   
   const {
-    values,
-    handleChange,
-    handleBlur,
-    handleSubmit,
     setFieldValue
   } = props;
     return (
