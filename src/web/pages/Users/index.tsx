@@ -72,33 +72,31 @@ const Users: React.FC = (): JSX.Element => {
   const response = useStoreState(state => state.user.response);
   const isInvitationSend = useStoreState(state => state.user.isInvitationSend);
   const isEnabledDisabled = useStoreState(state => state.user.isEnabledDisabled);
+  const premiumStatus = useStoreState(state => state.user.premiumStatus);
   //Actions
   const getUsers = useStoreActions(actions => actions.user.getUsers);
   const enableDisable = useStoreActions(actions => actions.user.enableDisable);
   const inviteUser = useStoreActions(actions => actions.user.inviteUser);
-  const updatePremiumStatus = useStoreActions(actions => actions.user.updatePremiumStatus);
+  const markAsPremium = useStoreActions(actions => actions.user.markAsPremium);
   const flushData = useStoreActions(actions => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
   const setPremiumValues = (id: string, isPremiumValue: any) => {
     togglePremium()
     setPremiumOpen(!isPremiumModalOpen);
     setUserId(id);
-    setPremium(isPremiumValue)
+    setPremium(isPremiumValue.toString())
   }
 
   const togglePremium = () => {
     setPremiumOpen(!isPremiumModalOpen);
   }
 
-  const [startDate, setStartDate] = useState(new Date());
 
   const getUserData = useCallback(async (payload: IUsers) => {
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
 
-  const handleDateSelect = useCallback(async (payload) => {
-    setStartDate(payload)
-  }, []);
+ 
 
   useEffect(() => {
     if (response?.data) {
@@ -168,13 +166,14 @@ const Users: React.FC = (): JSX.Element => {
     // 
   }
 
-  const setMarkPremuim = async (payload: IPremiumuser) => {
-    let formData = {
-      ...payload,
+  const setMarkPremuim = async (formData: IPremiumuser) => {
+    let payload = {
+      ...formData,
       user_id: userId,
       is_premium: isPremium
     }
-    console.log("formdata", formData)
+    
+    await markAsPremium({ 'url': "user/mark-premium", payload });
   }
 
 
@@ -266,9 +265,6 @@ const Users: React.FC = (): JSX.Element => {
                 enableReinitialize={true}
                 initialValues={premiumInititalState()}
                 onSubmit={async values => {
-                  //setFormData(JSON.stringify(values, null, 2))
-                  // console.log("values", val.first_name)
-                  console.log("submit valuse", values)
                   setMarkPremuim(values);
                   togglePremium()
                 }}
@@ -286,29 +282,10 @@ const Users: React.FC = (): JSX.Element => {
                     <form onSubmit={handleSubmit} >
                       <div className="p-3">
                         <div className="mb-3">
-                          <label html-for="name" className="form-label w-100">Frequency</label>
-                            <InputRadio values={radioParameters} />
-                            {/* <RadioInput value="yearly" label="Yearly" name="type"/> */}
-                          {/* <ErrorMessage name="type" component="span" className="errorMsg" /> */}
+                            <InputRadio values={radioParameters} heading="Frequency"/>
                         </div>
-
                         <CustomDatePicker value={values?.expire_at} label="Expiry at" name="expire_at"
                           props={props} />
-
-                        {/* <div className="mb-3">
-                        <label html-for="name" className="form-label w-100">Expiry at</label>
-                        <div>
-                          <DatePicker
-                            name="expire_at"
-                            value={values?.expire_at}
-                            onChange={date => {
-                              const formattedDate = moment(date).format("YYYY-MM-DD");
-                              setFieldValue('expire_at', formattedDate)
-                            }}
-                          />
-
-                        </div>
-                      </div>  */}
                       </div>
 
                       <div className="modal-footer">
@@ -319,11 +296,6 @@ const Users: React.FC = (): JSX.Element => {
                   );
                 }}
               </Formik>
-              {/* Expire at: <DatePicker selected={startDate}
-                               onChange={(date:Date) => setStartDate(date)} 
-                               className="fieldInput"
-                              //  onSelect={handleDateSelect} //when day is clicked
-                               /> */}
             </MyModal>
           </CustomSuspense>
           <div className="table-responsive">
@@ -366,6 +338,7 @@ const Users: React.FC = (): JSX.Element => {
                           <td>
                             <div className={val?.is_premium === 1 ? "manageStatus active" : "manageStatus inactive"}>{val?.is_premium === 1 ? 'Yes' : 'No'}</div>
                           </td>
+                          {console.log("status",premiumStatus)}
                           <td className={"onHover"}>
                             <div className={"manageStatus managePremium active"} onClick={() => setPremiumValues(val._id, val.is_premium)}>Mark Premium</div>
                           </td>
