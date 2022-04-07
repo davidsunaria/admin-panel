@@ -52,6 +52,7 @@ const user: UserModel = {
   flushData: action((state, payload) => {
     state.isInvitationSend = false;
     state.isEnabledDisabled = false;
+    state.premiumStatus = false;
   }),
   setEnabledDisabled: action((state, payload) => {
     state.isEnabledDisabled = payload;

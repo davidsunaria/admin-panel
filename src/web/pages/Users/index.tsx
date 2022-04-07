@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
-import { IUsers, IEnableDisable, IPagination, IInviteuser, IPremiumuser,IPremiumStatus } from 'react-app-interfaces';
+import { IUsers, IEnableDisable, IPagination, IInviteuser, IPremiumuser, IPremiumStatus } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
@@ -11,10 +11,6 @@ import { Formik, Field, ErrorMessage } from 'formik';
 import { useAuthValidation } from '../../../lib/validations/AuthSchema';
 import env from '../../../config';
 import DEFAULT_USER_IMG from 'react-app-images/default_user.png';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { date, number } from 'yup/lib/locale';
-import moment from "moment"
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
@@ -66,10 +62,8 @@ const Users: React.FC = (): JSX.Element => {
   const [isPremiumModalOpen, setPremiumOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [isPremium, setPremium] = useState<any>("");
-  const [premiumId, setPremiumId] = useState<any>("");
-  const [CurrentUserPremiumStatus, setCurrentUserPremiumStatus] = useState<any>("");
 
-  
+
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.user.response);
@@ -83,29 +77,16 @@ const Users: React.FC = (): JSX.Element => {
   const markAsPremium = useStoreActions(actions => actions.user.markAsPremium);
   const flushData = useStoreActions(actions => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
-  
 
 
-  const setPremiumValues = (id: string, isPremiumValue: any) => {
-    console.log("1")
+  const openPremiumModal = (id: string, is_premium: any) => {
     togglePremium()
-    setPremiumOpen(!isPremiumModalOpen);
     setUserId(id);
-    setPremium(isPremiumValue.toString())
-    //  onPremium(id,isPremiumValue)
+    setPremium(is_premium === 0 ? "1" : "0")
   }
 
 
-  //  const onPremium = useCallback(async (data: IPremiumStatus) => {
-  //    const {user_id,type,is_premium,expire_at} =data
-  //     setPremiumId(user_id);
-  //     setCurrentUserPremiumStatus(is_premium);
-  //    const payload: IPremiumStatus = {
-  //     user_id:user_id, type: type, is_premium: status === "1" ? "0" : "1",expire_at:expire_at
-  //    }
-  //     await markAsPremium({ url: 'user/mark-premium', payload });
-  //  }, []);
-console.log("userid",userId)
+
   const togglePremium = () => {
     setPremiumOpen(!isPremiumModalOpen);
   }
@@ -115,7 +96,7 @@ console.log("userid",userId)
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
 
- 
+
 
   useEffect(() => {
     if (response?.data) {
@@ -147,7 +128,7 @@ console.log("userid",userId)
   }, [formData]);
 
 
-  
+
 
   const loadMore = useCallback(() => {
     setFormData(_ => ({ ..._, page: parseInt((_.page ?? 1)?.toString()) + 1 }));
@@ -179,7 +160,7 @@ console.log("userid",userId)
     });
   }, []);
 
-  
+
 
   const getImageUrl = (url: string, options: any) => {
     return `${env.REACT_APP_MEDIA_URL}` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
@@ -190,36 +171,32 @@ console.log("userid",userId)
     // 
   }
 
-  const setMarkPremuim = async (formData: IPremiumuser) => {
-
-    setPremiumId(userId);    
-     setCurrentUserPremiumStatus(isPremium);
-
+  const markPremium = async (formData: IPremiumuser) => {
     let payload = {
       ...formData,
       user_id: userId,
       is_premium: isPremium
     }
-    
     await markAsPremium({ 'url': "user/mark-premium", payload });
+    togglePremium();
   }
 
-  console.log("premiumStatus",premiumStatus)
 
 
   useEffect(() => {
+
+
     async function changeData() {
       let localStateData = [...data];
-      let index = localStateData.findIndex(item => item._id === premiumId);
-      console.log("index",index,CurrentUserPremiumStatus)
-      localStateData[index].is_premium= CurrentUserPremiumStatus === "1" ? "0" : "1";
+      let index = localStateData.findIndex(item => item._id === userId);
+      localStateData[index].is_premium = parseInt(isPremium);
       setData(localStateData);
       await flushData();
     }
     if (premiumStatus && premiumStatus === true) {
       changeData();
-      setCurrentUserId("");
-      setCurrentUserStatus("");
+      setUserId("");
+      setPremium("")
     }
   }, [premiumStatus]);
 
@@ -235,6 +212,7 @@ console.log("userid",userId)
 
 
   useEffect(() => {
+    console.log("isEnabledDisabled", isEnabledDisabled)
     async function changeData() {
       let localStateData = [...data];
       let index = localStateData.findIndex(item => item._id === currentUserId);
@@ -249,7 +227,7 @@ console.log("userid",userId)
     }
   }, [isEnabledDisabled]);
 
-  const radioParameters:any = [
+  const radioParameters: any = [
     { value: "monthly", label: "Monthly", name: "type" },
     { value: "yearly", label: "Yearly", name: "type" },
   ]
@@ -306,15 +284,12 @@ console.log("userid",userId)
           </CustomSuspense>
 
           <CustomSuspense >
-            <MyModal heading={isPremium==0?"Unmark Premium":"Mark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
+            <MyModal heading={isPremium == 0 ? "Mark Premium" : "Unmark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
               <Formik
                 enableReinitialize={true}
                 initialValues={premiumInititalState()}
                 onSubmit={async values => {
-                  setMarkPremuim(values);
-                  togglePremium()
-                 // onPremium(values)
-                 console.log("2")
+                  markPremium(values);
                 }}
                 validationSchema={PremiumSchema}
               >
@@ -330,14 +305,14 @@ console.log("userid",userId)
                     <form onSubmit={handleSubmit} >
                       <div className="p-3">
                         <div className="mb-3">
-                            <InputRadio values={radioParameters} heading="Frequency"/>
+                          <InputRadio values={radioParameters} heading="Frequency" />
                         </div>
                         <CustomDatePicker value={values?.expire_at} label="Expiry at" name="expire_at"
                           props={props} />
                       </div>
 
                       <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" onClick={() => togglePremium}>Cancel</button>
+                        <button type="button" className="btn btn-secondary" onClick={togglePremium}>Cancel</button>
                         <button type="submit" className="btn btn-primary">Submit</button>
                       </div>
                     </form>
@@ -386,9 +361,9 @@ console.log("userid",userId)
                           <td>
                             <div className={val?.is_premium === 1 ? "manageStatus active" : "manageStatus inactive"}>{val?.is_premium === 1 ? 'Yes' : 'No'}</div>
                           </td>
-                          
+
                           <td className={"onHover"}>
-                            <div className={val?.is_premium === 1 ? "manageStatus managePremium active" : "manageStatus managePremium inactive"} onClick={() => setPremiumValues(val._id, val.is_premium)}>{val?.is_premium === 1 ? 'Unmark Premium' : 'Mark Premium'}</div>
+                            <div className={val?.is_premium === 1 ? "manageStatus managePremium active" : "manageStatus managePremium inactive"} onClick={() => openPremiumModal(val._id, val.is_premium)}>{val?.is_premium === 1 ? 'Unmark Premium' : 'Mark Premium'}</div>
                           </td>
                           {/* <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
