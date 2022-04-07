@@ -16,7 +16,7 @@ const InputRadio: React.FC<InputRadio> = ({ values,heading }) => {
         <label html-for="name" className="form-label w-100">{heading}</label>
             {
                 values.map((data, i) => {
-                    return <div className="form-check form-check-inline">
+                    return <div className="form-check form-check-inline" key={i}>
                         <Field className="form-check-input" type="radio" name={data?.name} id={i + 1} value={data?.value} />
                         <label className="form-check-label" >{data?.label}</label>
                     </div>
