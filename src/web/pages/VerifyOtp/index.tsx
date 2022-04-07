@@ -6,6 +6,9 @@ import { useAuthValidation } from '../../../lib/validations/AuthSchema';
 import LOGO from 'react-app-images/logo.png';
 import { getTempData } from '../../../lib/utils/Service';
 import { Link } from "react-router-dom";
+import CustomSuspense from '../../components/CustomSuspense';
+const Input = React.lazy(() => import('../../components/Input'));
+
 const VerifyOtp: React.FC = (): JSX.Element => {
   const { ResetPasswordSchema } = useAuthValidation();
   const resetPassword = useStoreActions(actions => actions.auth.resetPassword);
@@ -56,7 +59,8 @@ const VerifyOtp: React.FC = (): JSX.Element => {
 
                   <div className="form-group mb-3">
                     <label>OTP</label>
-                    <input
+                    <CustomSuspense>
+                    <Input
                       placeholder="Enter otp"
                       id="otp"
                       name="otp"
@@ -67,12 +71,13 @@ const VerifyOtp: React.FC = (): JSX.Element => {
                       autoComplete="off"
                       className="form-control"
                     />
-                    <ErrorMessage name="otp" component="span" className="errorMsg" />
+                    </CustomSuspense>
                   </div>
              
                   <div className="form-group mb-3">
                     <label>Password</label>
-                    <input
+                    <CustomSuspense>
+                    <Input
                       placeholder="Enter password"
                       id="password"
                       name="password"
@@ -83,11 +88,12 @@ const VerifyOtp: React.FC = (): JSX.Element => {
                       autoComplete="off"
                       className="form-control"
                     />
-                    <ErrorMessage name="password" component="span" className="errorMsg" />
+                    </CustomSuspense>
                   </div>
                   <div className="form-group mb-3">
                     <label>Re-Enter New Password</label>
-                    <input
+                    <CustomSuspense>
+                    <Input
                        placeholder="Re-enter new password"
                        id="password_confirmation"
                        name="password_confirmation"
@@ -98,7 +104,7 @@ const VerifyOtp: React.FC = (): JSX.Element => {
                        autoComplete="off"
                        className="form-control"
                     />
-                    <ErrorMessage name="password_confirmation" component="span" className="errorMsg" />
+                    </CustomSuspense>
                   </div>
 
                   <div className="form-group d-flex justify-content-between">

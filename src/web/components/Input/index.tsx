@@ -10,9 +10,10 @@ interface IInput {
   placeholder?: string | undefined;
   autoComplete?: string | undefined;
   className?: string | undefined;
-  onChange: (e: any) => void;
+  onChange?: (e: any) => void;
   onBlur?: (e: any) => void;
 }
+
 const Input: React.FC<IInput> = ({ type, className, value, label, name, id, placeholder, autoComplete, onChange, onBlur }) => {
   return (
     <div className="mb-3">

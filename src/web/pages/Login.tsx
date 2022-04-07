@@ -6,10 +6,13 @@ import { Formik, ErrorMessage } from 'formik';
 import { useAuthValidation } from '../../lib/validations/AuthSchema';
 import LOGO from 'react-app-images/logo.png';
 import { removeTempData } from '../../lib/utils/Service';
+import CustomSuspense from '../components/CustomSuspense';
+const Input = React.lazy(() => import('../components/Input'));
 
 const Login: React.FC = (): JSX.Element => {
   const { LoginSchema } = useAuthValidation();
   const login = useStoreActions(actions => actions.auth.login);
+  
 
   const userInititalState = useCallback((): ILogin => {
     return {
@@ -56,7 +59,8 @@ const Login: React.FC = (): JSX.Element => {
 
                   <div className="form-group mb-3">
                     <label>Email</label>
-                    <input
+                    <CustomSuspense>
+                    <Input
                       placeholder="Enter email"
                       id="email"
                       name="email"
@@ -67,13 +71,14 @@ const Login: React.FC = (): JSX.Element => {
                       autoComplete="off"
                       className="form-control"
                     />
-                    <ErrorMessage name="email" component="span" className="errorMsg" />
+                    </CustomSuspense>
+                    {/* <ErrorMessage name="email" component="span" className="errorMsg" /> */}
                   </div>
 
                   <div className="form-group mb-3">
                     <Link className="float-end forgotPwd" to="/forgot-password">Forgot Password?</Link>
                     <label>Your password</label>
-                    <input
+                    <Input
                       placeholder="Enter password"
                       id="password"
                       name="password"
@@ -84,7 +89,7 @@ const Login: React.FC = (): JSX.Element => {
                       autoComplete="off"
                       className="form-control"
                     />
-                    <ErrorMessage name="password" component="span" className="errorMsg" />
+                    {/* <ErrorMessage name="password" component="span" className="errorMsg" /> */}
                   </div>
 
                  
