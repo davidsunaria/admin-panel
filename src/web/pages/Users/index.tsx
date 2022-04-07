@@ -11,6 +11,7 @@ import { Formik, Field, ErrorMessage } from 'formik';
 import { useAuthValidation } from '../../../lib/validations/AuthSchema';
 import env from '../../../config';
 import DEFAULT_USER_IMG from 'react-app-images/default_user.png';
+import "react-datepicker/dist/react-datepicker.css";
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
@@ -62,7 +63,7 @@ const Users: React.FC = (): JSX.Element => {
   const [isPremiumModalOpen, setPremiumOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [isPremium, setPremium] = useState<any>("");
-
+  
 
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
@@ -82,7 +83,7 @@ const Users: React.FC = (): JSX.Element => {
   const openPremiumModal = (id: string, is_premium: any) => {
     togglePremium()
     setUserId(id);
-    setPremium(is_premium === 0 ? "1" : "0")
+    setPremium(is_premium ===  0 ? "1": "0")
   }
 
 
@@ -178,14 +179,13 @@ const Users: React.FC = (): JSX.Element => {
       is_premium: isPremium
     }
     await markAsPremium({ 'url': "user/mark-premium", payload });
-    togglePremium();
   }
 
 
 
   useEffect(() => {
-
-
+    
+    
     async function changeData() {
       let localStateData = [...data];
       let index = localStateData.findIndex(item => item._id === userId);
@@ -212,7 +212,6 @@ const Users: React.FC = (): JSX.Element => {
 
 
   useEffect(() => {
-    console.log("isEnabledDisabled", isEnabledDisabled)
     async function changeData() {
       let localStateData = [...data];
       let index = localStateData.findIndex(item => item._id === currentUserId);
@@ -312,7 +311,7 @@ const Users: React.FC = (): JSX.Element => {
                       </div>
 
                       <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" onClick={togglePremium}>Cancel</button>
+                        <button type="button" className="btn btn-secondary" onClick={() => togglePremium}>Cancel</button>
                         <button type="submit" className="btn btn-primary">Submit</button>
                       </div>
                     </form>
