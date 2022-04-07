@@ -21,6 +21,13 @@ export interface IEnableDisable {
   is_blocked_by_admin?:any
 }
 
+export interface IPremiumStatus {
+  type?: any;
+  is_premium?:any;
+  user_id?:any;
+  expire_at?:any
+}
+
 
 export interface IInviteuser {
   email: string;

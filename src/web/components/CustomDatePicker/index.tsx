@@ -17,7 +17,7 @@ const CustomDatePicker: React.FC<CustomDatePicker> = ({  value, label, name, pro
     return (
         <div className="mb-3">
         <label html-for="name" className="form-label w-100">{label}</label>
-        <div>
+        <div className="PopupDatePicker">
           <DatePicker
             name={name}
             value={value || ""}

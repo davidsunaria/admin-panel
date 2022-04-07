@@ -767,3 +767,11 @@ nav ul.subNav{
   padding:10px 0px;
   display: block;
 }
+.PopupDatePicker .react-datepicker__input-container input{
+  border: 1px solid #ced4da;
+  height: 31px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  font-size: 13px;
+  padding: 0px 10px;
+}

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
-import { IUsers, IEnableDisable, IPagination, IInviteuser, IPremiumuser } from 'react-app-interfaces';
+import { IUsers, IEnableDisable, IPagination, IInviteuser, IPremiumuser,IPremiumStatus } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
@@ -66,7 +66,10 @@ const Users: React.FC = (): JSX.Element => {
   const [isPremiumModalOpen, setPremiumOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [isPremium, setPremium] = useState<any>("");
+  const [premiumId, setPremiumId] = useState<any>("");
+  const [CurrentUserPremiumStatus, setCurrentUserPremiumStatus] = useState<any>("");
 
+  
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.user.response);
@@ -80,13 +83,29 @@ const Users: React.FC = (): JSX.Element => {
   const markAsPremium = useStoreActions(actions => actions.user.markAsPremium);
   const flushData = useStoreActions(actions => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
+  
+
+
   const setPremiumValues = (id: string, isPremiumValue: any) => {
+    console.log("1")
     togglePremium()
     setPremiumOpen(!isPremiumModalOpen);
     setUserId(id);
     setPremium(isPremiumValue.toString())
+    //  onPremium(id,isPremiumValue)
   }
 
+
+  //  const onPremium = useCallback(async (data: IPremiumStatus) => {
+  //    const {user_id,type,is_premium,expire_at} =data
+  //     setPremiumId(user_id);
+  //     setCurrentUserPremiumStatus(is_premium);
+  //    const payload: IPremiumStatus = {
+  //     user_id:user_id, type: type, is_premium: status === "1" ? "0" : "1",expire_at:expire_at
+  //    }
+  //     await markAsPremium({ url: 'user/mark-premium', payload });
+  //  }, []);
+console.log("userid",userId)
   const togglePremium = () => {
     setPremiumOpen(!isPremiumModalOpen);
   }
@@ -127,6 +146,9 @@ const Users: React.FC = (): JSX.Element => {
     }
   }, [formData]);
 
+
+  
+
   const loadMore = useCallback(() => {
     setFormData(_ => ({ ..._, page: parseInt((_.page ?? 1)?.toString()) + 1 }));
   }, []);
@@ -157,6 +179,8 @@ const Users: React.FC = (): JSX.Element => {
     });
   }, []);
 
+  
+
   const getImageUrl = (url: string, options: any) => {
     return `${env.REACT_APP_MEDIA_URL}` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
   }
@@ -167,6 +191,10 @@ const Users: React.FC = (): JSX.Element => {
   }
 
   const setMarkPremuim = async (formData: IPremiumuser) => {
+
+    setPremiumId(userId);    
+     setCurrentUserPremiumStatus(isPremium);
+
     let payload = {
       ...formData,
       user_id: userId,
@@ -176,6 +204,24 @@ const Users: React.FC = (): JSX.Element => {
     await markAsPremium({ 'url': "user/mark-premium", payload });
   }
 
+  console.log("premiumStatus",premiumStatus)
+
+
+  useEffect(() => {
+    async function changeData() {
+      let localStateData = [...data];
+      let index = localStateData.findIndex(item => item._id === premiumId);
+      console.log("index",index,CurrentUserPremiumStatus)
+      localStateData[index].is_premium= CurrentUserPremiumStatus === "1" ? "0" : "1";
+      setData(localStateData);
+      await flushData();
+    }
+    if (premiumStatus && premiumStatus === true) {
+      changeData();
+      setCurrentUserId("");
+      setCurrentUserStatus("");
+    }
+  }, [premiumStatus]);
 
   useEffect(() => {
     async function flush() {
@@ -245,7 +291,7 @@ const Users: React.FC = (): JSX.Element => {
                         value={values?.email}
                         name={"email"}
                         id={"name"}
-                        placeholder={"Email"} />
+                        placeholder={"EenableDisableUsermail"} />
                       <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={toggle}>Cancel</button>
                         <button type="submit" className="btn btn-primary">Submit</button>
@@ -260,13 +306,15 @@ const Users: React.FC = (): JSX.Element => {
           </CustomSuspense>
 
           <CustomSuspense >
-            <MyModal heading={"Mark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
+            <MyModal heading={isPremium==0?"Unmark Premium":"Mark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
               <Formik
                 enableReinitialize={true}
                 initialValues={premiumInititalState()}
                 onSubmit={async values => {
                   setMarkPremuim(values);
                   togglePremium()
+                 // onPremium(values)
+                 console.log("2")
                 }}
                 validationSchema={PremiumSchema}
               >
@@ -338,9 +386,9 @@ const Users: React.FC = (): JSX.Element => {
                           <td>
                             <div className={val?.is_premium === 1 ? "manageStatus active" : "manageStatus inactive"}>{val?.is_premium === 1 ? 'Yes' : 'No'}</div>
                           </td>
-                          {console.log("status",premiumStatus)}
+                          
                           <td className={"onHover"}>
-                            <div className={"manageStatus managePremium active"} onClick={() => setPremiumValues(val._id, val.is_premium)}>Mark Premium</div>
+                            <div className={val?.is_premium === 1 ? "manageStatus managePremium active" : "manageStatus managePremium inactive"} onClick={() => setPremiumValues(val._id, val.is_premium)}>{val?.is_premium === 1 ? 'Unmark Premium' : 'Mark Premium'}</div>
                           </td>
                           {/* <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
