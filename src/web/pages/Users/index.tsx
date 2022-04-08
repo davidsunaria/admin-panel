@@ -298,7 +298,6 @@ const Users: React.FC = (): JSX.Element => {
                 enableReinitialize={true}
                 initialValues={premiumInititalState()}
                 onSubmit={async values => {
-                  console.log("i ma")
                   markPremium(values);
                 }}
                 validationSchema={PremiumSchema}

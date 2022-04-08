@@ -63,7 +63,6 @@ const user: UserModel = {
       getStoreActions().common.setLoading(true);
     }
    // getStoreActions().common.setLoading(true);
-   console.log("payload",payload)
     let response = await getApi(payload);
     if (response && response.status !== 200) {
       toast.error(response.message);
@@ -142,7 +141,6 @@ const user: UserModel = {
   markAsPremium: thunk<UserModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
     actions.setPremiumStatus(false);
     getStoreActions().common.setLoading(true);
-    console.log("payload",payload)
     let response = await postApi(payload);
     console.log("response",response)
     if (response && response.status !== 200) {
