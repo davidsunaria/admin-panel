@@ -80,10 +80,20 @@ const Users: React.FC = (): JSX.Element => {
   const toggle = () => setIsOpen(!isOpen);
 
 
-  const openPremiumModal = (id: string, is_premium: any) => {
+  const openPremiumModal = async(id: string, is_premium: any) => {
     togglePremium()
     setUserId(id);
     setPremium(is_premium ===  0 ? "1": "0")
+    if(is_premium==1){
+      let payload = {
+        user_id: id,
+        is_premium: "0",
+        type:"",
+        expire_at:""
+      }
+      await markAsPremium({ 'url': "user/mark-premium", payload });
+
+    }
   }
 
 
@@ -283,11 +293,12 @@ const Users: React.FC = (): JSX.Element => {
           </CustomSuspense>
 
           <CustomSuspense >
-            <MyModal heading={isPremium == 0 ? "Mark Premium" : "Unmark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
+    {isPremium == 1 && <MyModal heading={isPremium == 1 ? "Mark Premium" : "Unmark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
               <Formik
                 enableReinitialize={true}
                 initialValues={premiumInititalState()}
                 onSubmit={async values => {
+                  console.log("i ma")
                   markPremium(values);
                 }}
                 validationSchema={PremiumSchema}
@@ -302,13 +313,15 @@ const Users: React.FC = (): JSX.Element => {
                   } = props;
                   return (
                     <form onSubmit={handleSubmit} >
-                      <div className="p-3">
+                     <div className="p-3">
                         <div className="mb-3">
                           <InputRadio values={radioParameters} heading="Frequency" />
                         </div>
                         <CustomDatePicker value={values?.expire_at} label="Expiry at" name="expire_at"
                           props={props} />
                       </div>
+                      
+                     
 
                       <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={() => togglePremium}>Cancel</button>
@@ -318,7 +331,7 @@ const Users: React.FC = (): JSX.Element => {
                   );
                 }}
               </Formik>
-            </MyModal>
+            </MyModal>}        
           </CustomSuspense>
           <div className="table-responsive">
             {
