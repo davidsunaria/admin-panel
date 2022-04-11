@@ -12,10 +12,12 @@ const initialState = {
  response: {},
   isInvitationSend: false,
   isEnabledDisabled: false,
+  premiumStatus:false
 }
 export interface UserModel {
   isInvitationSend: boolean;
   isEnabledDisabled:boolean;
+  premiumStatus:boolean;
   response: string | object | any;
   //**************State Actions************///
   setIsInvitationSend: Action<UserModel, boolean>;
@@ -23,6 +25,7 @@ export interface UserModel {
   reset: Action<UserModel>;
   setEnabledDisabled: Action<UserModel, boolean>;
   setResponse: Action<UserModel, object | any>;
+  setPremiumStatus:Action<UserModel, boolean>;
   //**************State  Actions************///
 
   //**************Thunk Actions************///
@@ -30,6 +33,7 @@ export interface UserModel {
   logout: Thunk<UserModel, object>;
   enableDisable: Thunk<UserModel, object>;
   inviteUser: Thunk<UserModel, object>;
+  markAsPremium: Thunk<UserModel, object>;
   //**************Thunk Actions************///
 }
 
@@ -39,12 +43,16 @@ const user: UserModel = {
   setResponse: action((state, payload) => {
     state.response = payload;
   }),
+  setPremiumStatus: action((state, payload) => {
+    state.premiumStatus = payload;
+  }),
   setIsInvitationSend: action((state, payload) => {
     state.isInvitationSend = payload;
   }),
   flushData: action((state, payload) => {
     state.isInvitationSend = false;
     state.isEnabledDisabled = false;
+    state.premiumStatus = false;
   }),
   setEnabledDisabled: action((state, payload) => {
     state.isEnabledDisabled = payload;
@@ -115,6 +123,7 @@ const user: UserModel = {
     actions.setIsInvitationSend(false);
     getStoreActions().common.setLoading(true);
     let response = await postApi(payload);
+    console.log("response",response)
     if (response && response.status !== 200) {
       toast.error(response.message);
       getStoreActions().common.setLoading(false);
@@ -127,7 +136,26 @@ const user: UserModel = {
       getStoreActions().common.setLoading(false);
       return true;
     }
-  })
+  }),
+
+  markAsPremium: thunk<UserModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
+    actions.setPremiumStatus(false);
+    getStoreActions().common.setLoading(true);
+    let response = await postApi(payload);
+    console.log("response",response)
+    if (response && response.status !== 200) {
+      toast.error(response.message);
+      getStoreActions().common.setLoading(false);
+    } else if (response && response.status === 200) {
+      toast.success(response.message);
+      getStoreActions().common.setLoading(false);
+      actions.setPremiumStatus(true);
+    }
+    else {
+      getStoreActions().common.setLoading(false);
+      return true;
+    }
+  }),
 };
 
 export default user;

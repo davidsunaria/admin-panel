@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import * as Yup from "yup";
-import { PASSWORD_REQUIRED, OTP_REQUIRED, EMAIL_REQUIRED, CONFIRM_PASSWORD_MATCH, REENTER_PASSWORD } from '../message';
+import { PASSWORD_REQUIRED, OTP_REQUIRED,DATE_REQUIRED, EMAIL_REQUIRED, CONFIRM_PASSWORD_MATCH, REENTER_PASSWORD,RADIO_REQUIRED } from '../message';
 
 const useAuthValidation = () => {
 
@@ -54,7 +54,16 @@ const useAuthValidation = () => {
       .required(EMAIL_REQUIRED)
   }), []);
 
-  return { LoginSchema, VerifyOtpSchema, ForgotPasswordSchema, ResetPasswordSchema, InviteUserSchema };
+  const PremiumSchema = useMemo(() => Yup.object({
+    type: Yup
+      .string()
+      .required(RADIO_REQUIRED),
+      expire_at: Yup
+      .string()
+      .required(DATE_REQUIRED),
+  }), []);
+
+  return { LoginSchema, VerifyOtpSchema, ForgotPasswordSchema, ResetPasswordSchema, InviteUserSchema,PremiumSchema };
 }
 
 export { useAuthValidation };

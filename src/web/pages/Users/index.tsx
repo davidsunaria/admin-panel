@@ -1,24 +1,27 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
-import { IUsers, IEnableDisable, IPagination, IInviteuser } from 'react-app-interfaces';
+import { IUsers, IEnableDisable, IPagination, IInviteuser, IPremiumuser, IPremiumStatus } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
 import CustomSuspense from '../../components/CustomSuspense';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import { Formik } from 'formik';
+import { Formik, Field, ErrorMessage } from 'formik';
 import { useAuthValidation } from '../../../lib/validations/AuthSchema';
 import env from '../../../config';
 import DEFAULT_USER_IMG from 'react-app-images/default_user.png';
+import "react-datepicker/dist/react-datepicker.css";
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
 const MyModal = React.lazy(() => import('../../components/MyModal'));
 const Input = React.lazy(() => import('../../components/Input'));
+const InputRadio = React.lazy(() => import('../../components/InputRadio'));
+const CustomDatePicker = React.lazy(() => import('../../components/CustomDatePicker'));
 const Navbar = React.lazy(() => import('../../components/Navbar'));
 const Users: React.FC = (): JSX.Element => {
-  const { InviteUserSchema } = useAuthValidation();
+  const { InviteUserSchema, PremiumSchema } = useAuthValidation();
   const tableHeader = useMemo(() => {
     return [
       { key: 'image', value: 'Image' },
@@ -28,6 +31,7 @@ const Users: React.FC = (): JSX.Element => {
       { key: 'username', value: 'Username' },
       { key: 'status', value: 'Status' },
       { key: 'is_premium', value: 'Premium' },
+      { key: 'action', value: 'Action' },
       // { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
     ]
   }, []);
@@ -41,6 +45,14 @@ const Users: React.FC = (): JSX.Element => {
       email: ''
     }
   }, []);
+
+  const premiumInititalState = useCallback((): IPremiumuser => {
+    return {
+      type: '', is_premium: '',
+      user_id: '',
+      expire_at: ''
+    }
+  }, []);
   const [currentUserId, setCurrentUserId] = useState<String>("");
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
   const [formData, setFormData] = useState<IUsers>(userInititalState);
@@ -48,22 +60,54 @@ const Users: React.FC = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isPremiumModalOpen, setPremiumOpen] = useState(false);
+  const [userId, setUserId] = useState("");
+  const [isPremium, setPremium] = useState<any>("");
+  
 
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.user.response);
   const isInvitationSend = useStoreState(state => state.user.isInvitationSend);
   const isEnabledDisabled = useStoreState(state => state.user.isEnabledDisabled);
+  const premiumStatus = useStoreState(state => state.user.premiumStatus);
   //Actions
   const getUsers = useStoreActions(actions => actions.user.getUsers);
   const enableDisable = useStoreActions(actions => actions.user.enableDisable);
   const inviteUser = useStoreActions(actions => actions.user.inviteUser);
+  const markAsPremium = useStoreActions(actions => actions.user.markAsPremium);
   const flushData = useStoreActions(actions => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
+
+
+  const openPremiumModal = async(id: string, is_premium: any) => {
+    togglePremium()
+    setUserId(id);
+    setPremium(is_premium ===  0 ? "1": "0")
+    if(is_premium==1){
+      let payload = {
+        user_id: id,
+        is_premium: "0",
+        type:"",
+        expire_at:""
+      }
+      await markAsPremium({ 'url': "user/mark-premium", payload });
+
+    }
+  }
+
+
+
+  const togglePremium = () => {
+    setPremiumOpen(!isPremiumModalOpen);
+  }
+
 
   const getUserData = useCallback(async (payload: IUsers) => {
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
+
+
 
   useEffect(() => {
     if (response?.data) {
@@ -93,6 +137,9 @@ const Users: React.FC = (): JSX.Element => {
       getUserData(formData);
     }
   }, [formData]);
+
+
+
 
   const loadMore = useCallback(() => {
     setFormData(_ => ({ ..._, page: parseInt((_.page ?? 1)?.toString()) + 1 }));
@@ -124,6 +171,8 @@ const Users: React.FC = (): JSX.Element => {
     });
   }, []);
 
+
+
   const getImageUrl = (url: string, options: any) => {
     return `${env.REACT_APP_MEDIA_URL}` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
   }
@@ -132,6 +181,35 @@ const Users: React.FC = (): JSX.Element => {
     await inviteUser({ 'url': "user/invite-user", payload });
     // 
   }
+
+  const markPremium = async (formData: IPremiumuser) => {
+    let payload = {
+      ...formData,
+      user_id: userId,
+      is_premium: isPremium
+    }
+    await markAsPremium({ 'url': "user/mark-premium", payload });
+  }
+
+
+
+  useEffect(() => {
+    
+    
+    async function changeData() {
+      let localStateData = [...data];
+      let index = localStateData.findIndex(item => item._id === userId);
+      localStateData[index].is_premium = parseInt(isPremium);
+      setData(localStateData);
+      await flushData();
+    }
+    if (premiumStatus && premiumStatus === true) {
+      changeData();
+      setUserId("");
+      setPremium("")
+    }
+  }, [premiumStatus]);
+
   useEffect(() => {
     async function flush() {
       toggle();
@@ -157,7 +235,12 @@ const Users: React.FC = (): JSX.Element => {
       setCurrentUserStatus("");
     }
   }, [isEnabledDisabled]);
-  
+
+  const radioParameters: any = [
+    { value: "monthly", label: "Monthly", name: "type" },
+    { value: "yearly", label: "Yearly", name: "type" },
+  ]
+
   return (
     <>
       <div className="Content">
@@ -195,7 +278,7 @@ const Users: React.FC = (): JSX.Element => {
                         value={values?.email}
                         name={"email"}
                         id={"name"}
-                        placeholder={"Email"} />
+                        placeholder={"EenableDisableUsermail"} />
                       <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={toggle}>Cancel</button>
                         <button type="submit" className="btn btn-primary">Submit</button>
@@ -207,6 +290,47 @@ const Users: React.FC = (): JSX.Element => {
 
             </MyModal>
             <SearchUser type={"users"} onSearch={onSearch} onReset={onReset} />
+          </CustomSuspense>
+
+          <CustomSuspense >
+    {isPremium == 1 && <MyModal heading={isPremium == 1 ? "Mark Premium" : "Unmark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
+              <Formik
+                enableReinitialize={true}
+                initialValues={premiumInititalState()}
+                onSubmit={async values => {
+                  markPremium(values);
+                }}
+                validationSchema={PremiumSchema}
+              >
+                {props => {
+                  const {
+                    values,
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    setFieldValue
+                  } = props;
+                  return (
+                    <form onSubmit={handleSubmit} >
+                     <div className="p-3">
+                        <div className="mb-3">
+                          <InputRadio values={radioParameters} heading="Frequency" />
+                        </div>
+                        <CustomDatePicker value={values?.expire_at} label="Expiry at" name="expire_at"
+                          props={props} />
+                      </div>
+                      
+                     
+
+                      <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={() => togglePremium()}>Cancel</button>
+                        <button type="submit" className="btn btn-primary">Submit</button>
+                      </div>
+                    </form>
+                  );
+                }}
+              </Formik>
+            </MyModal>}        
           </CustomSuspense>
           <div className="table-responsive">
             {
@@ -226,10 +350,12 @@ const Users: React.FC = (): JSX.Element => {
 
                     {data && data.length > 0 ? (
                       data.map((val: any, index: number) => (
+
                         <tr key={index}>
+                          {/* {console.log(val)}   */}
                           <td>
                             {<LazyLoadImage
-                            wrapperClassName={"overideImageCircle"}
+                              wrapperClassName={"overideImageCircle"}
                               placeholderSrc={DEFAULT_USER_IMG}
                               effect={val?.image ? "blur" : undefined}
                               alt={'image'}
@@ -246,6 +372,10 @@ const Users: React.FC = (): JSX.Element => {
                           <td>
                             <div className={val?.is_premium === 1 ? "manageStatus active" : "manageStatus inactive"}>{val?.is_premium === 1 ? 'Yes' : 'No'}</div>
                           </td>
+
+                          <td className={"onHover"}>
+                            <div className={val?.is_premium === 1 ? "manageStatus managePremium active" : "manageStatus managePremium inactive"} onClick={() => openPremiumModal(val._id, val.is_premium)}>{val?.is_premium === 1 ? 'Unmark Premium' : 'Mark Premium'}</div>
+                          </td>
                           {/* <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
                           </td> */}
@@ -253,10 +383,10 @@ const Users: React.FC = (): JSX.Element => {
                       ))
 
                     ) : (
-                      <tr>
-                        <td  colSpan={7} className="text-center">No record found</td>
-                      </tr>
-                    )}
+                        <tr>
+                          <td colSpan={8} className="text-center">No record found</td>
+                        </tr>
+                      )}
 
 
                   </tbody>

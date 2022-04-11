@@ -5,6 +5,8 @@ import { IForgotPassword } from 'react-app-interfaces';
 import { Formik, ErrorMessage } from 'formik';
 import { useAuthValidation } from '../../../lib/validations/AuthSchema';
 import LOGO from 'react-app-images/logo.png';
+import CustomSuspense from '../../components/CustomSuspense';
+const Input = React.lazy(() => import('../../components/Input'));
 
 const ForgotPassword: React.FC = (): JSX.Element => {
   const { ForgotPasswordSchema } = useAuthValidation();
@@ -50,7 +52,8 @@ const ForgotPassword: React.FC = (): JSX.Element => {
 
                   <div className="form-group mb-3">
                     <label>Email</label>
-                    <input
+                    <CustomSuspense>
+                    <Input
                       placeholder="Enter email"
                       id="email"
                       name="email"
@@ -61,7 +64,7 @@ const ForgotPassword: React.FC = (): JSX.Element => {
                       autoComplete="off"
                       className="form-control"
                     />
-                    <ErrorMessage name="email" component="span" className="errorMsg" />
+                    </CustomSuspense>
                   </div>
 
                   <div className="form-group d-flex justify-content-between">
