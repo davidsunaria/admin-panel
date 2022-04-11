@@ -323,7 +323,7 @@ const Users: React.FC = (): JSX.Element => {
                      
 
                       <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" onClick={() => togglePremium}>Cancel</button>
+                        <button type="button" className="btn btn-secondary" onClick={() => togglePremium()}>Cancel</button>
                         <button type="submit" className="btn btn-primary">Submit</button>
                       </div>
                     </form>
