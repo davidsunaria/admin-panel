@@ -32,7 +32,7 @@ const Users: React.FC = (): JSX.Element => {
       { key: 'status', value: 'Status' },
       { key: 'is_premium', value: 'Premium' },
       { key: 'action', value: 'Action' },
-      // { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
+       { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -278,7 +278,7 @@ const Users: React.FC = (): JSX.Element => {
                         value={values?.email}
                         name={"email"}
                         id={"name"}
-                        placeholder={"EenableDisableUsermail"} />
+                        placeholder={"email"} />
                       <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={toggle}>Cancel</button>
                         <button type="submit" className="btn btn-primary">Submit</button>
@@ -376,15 +376,15 @@ const Users: React.FC = (): JSX.Element => {
                           <td className={"onHover"}>
                             <div className={val?.is_premium === 1 ? "manageStatus managePremium active" : "manageStatus managePremium inactive"} onClick={() => openPremiumModal(val._id, val.is_premium)}>{val?.is_premium === 1 ? 'Unmark Premium' : 'Mark Premium'}</div>
                           </td>
-                          {/* <td>
+                          <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
-                          </td> */}
+                          </td> 
                         </tr>
                       ))
 
                     ) : (
                         <tr>
-                          <td colSpan={8} className="text-center">No record found</td>
+                          <td colSpan={9} className="text-center">No record found</td>
                         </tr>
                       )}
 
