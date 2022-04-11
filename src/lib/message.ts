@@ -26,8 +26,8 @@ export const CONFIRM_PASSWORD_MATCH = "Passwords must match";
 export const REENTER_PASSWORD = "Please re-enter new password";
 export const OTP_REQUIRED = "Please enter OTP";
 export const EMAIL_REQUIRED = "Please enter email";
-export const RADIO_REQUIRED = "Please select one value";
-export const DATE_REQUIRED = "Please select Date";
+export const RADIO_REQUIRED = "Please select frequency";
+export const DATE_REQUIRED = "Please select expiry at";
 export const PHONE_REQUIRED = "Please enter phone number";
 
 export const FIRST_NAME_REQUIRED = "Please enter first name";
