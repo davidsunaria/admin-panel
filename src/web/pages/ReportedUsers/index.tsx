@@ -178,8 +178,8 @@ const ReportedUsers: React.FC = (): JSX.Element => {
                           </td>
                           <td>{val?.reported_users?.first_name || '-'}</td>
                           <td>{val?.reported_users?.last_name || '-'}</td>
-                          <td>{val?.category || '-'}</td>
-                          <td>{val?.category || '-'}</td>
+                          <td>{val?.reported_users?.email || '-'}</td>
+                          <td>{val?.reported_users?.username|| '-'}</td>
                           <td>{moment(val?.created_at).format('MMMM Do YYYY, h:mm:ss a') || '-'}</td>
                           <td>
                             {val?.resource_reporter.map((value: any, i: number, row: Array<object>) => {
