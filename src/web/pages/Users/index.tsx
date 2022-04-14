@@ -61,7 +61,7 @@ const Users: React.FC = (): JSX.Element => {
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
-  const [ExportedData, setExportedData] = useState<Array<any>>([]);
+  const [exportedData, setExportedData] = useState<Array<any>>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isPremiumModalOpen, setPremiumOpen] = useState(false);
   const [userId, setUserId] = useState("");
@@ -328,8 +328,7 @@ const Users: React.FC = (): JSX.Element => {
               </Formik>
 
             </MyModal>
-            <SearchUser type={"users"} onSearch={onSearch} onReset={onReset} /><br />
-            <ExportToExcel apiData={ExportedData} fileName={"demo"} />
+            <SearchUser type={"users"} onSearch={onSearch} onReset={onReset} exporteddata={exportedData} exportButton={true} />
           </CustomSuspense>
 
           <CustomSuspense >

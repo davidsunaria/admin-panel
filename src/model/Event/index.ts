@@ -8,7 +8,7 @@ import { IPayload } from 'react-app-interfaces';
 
 const initialState = {
   response: {},
-  exportedEvents: {},
+  exportedEvents: [],
   groups: {},
   isEnabledDisabled: false,
 }

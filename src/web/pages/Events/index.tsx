@@ -10,7 +10,6 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 import DEFAULT_EVENT_IMG from 'react-app-images/default_event.png';
 import env from '../../../config';
 import { truncate } from '../../../lib/utils/Service';
-import { ExportToExcel } from '../../components/ExportToExcel'
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
@@ -42,7 +41,7 @@ const Events: React.FC = (): JSX.Element => {
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
-  const [ExportedData, setExportedData] = useState<Array<any>>([]);
+  const [exportedData, setExportedData] = useState<Array<any>>([]);
   const [filterStatus, setFilterStatus] = useState<boolean>(false);
   const [currentUserId, setCurrentUserId] = useState<String>("");
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
@@ -63,7 +62,11 @@ const Events: React.FC = (): JSX.Element => {
   const getExportedData = useCallback(async (data: IUsers) => {
     
     if(!filterStatus){
-      await getExportedEvents({ url: "event/export" });
+      let payload = {
+        q: data.q,
+        status: data.status,
+      }
+      await getExportedEvents({ url: "event/export", payload});
     }
    
     if(filterStatus){
@@ -76,25 +79,24 @@ const Events: React.FC = (): JSX.Element => {
     }
   }, [filterStatus]);
 
-    // useEffect(() => {
+      useEffect(() => {
 
-    //   let newArray: any[] = [];
-    //   exportedEvents?.map((item: any) => {
+        let newArray: any[] = [];
+        exportedEvents?.map((item: any) => {
 
-    //     //here i am  extracting only userId and title
-    //     let obj = {
-    //       Name: item.name, Owner: `${item.creator_of_event.first_name} ${item.creator_of_event.last_name}`, Purpose: item.category,
-    //       Address: item.address, "Associated Group": item.event_group.name, Capacity: item.capacity, "Capacity Type": item.capacity_type,
-    //       Status: item.active == 1 ? "Active" : "Inactive",
-    //       "BlockByAdmin": item.is_blocked_by_admin == 1 ? "Yes" : "No"
-    //     };
-    //     console.log("obh",obj)
-    //     // after extracting what I need, I am adding it to newArray
-    //     newArray?.push(obj);
-    //     // now  I am adding newArray to localstate in order to passing it via props for exporting
-    //     setExportedData(newArray);
-    //   });
-    // }, [exportedEvents]);
+         // here i am  extracting only userId and title
+          let obj = {
+            Name: item.name, Owner: `${item.creator_of_event.first_name} ${item.creator_of_event.last_name}`,
+            Address: item.address, "Associated group":item.event_group?.name, Capacity: item.capacity, "Capacity Type": item.capacity_type,
+            Status: item.active == 1 ? "Active" : "Inactive",
+            "BlockByAdmin": item.is_blocked_by_admin == 1 ? "Yes" : "No"
+          };
+           //after extracting what I need, I am adding it to newArray
+          newArray?.push(obj);
+          // now  I am adding newArray to localstate in order to passing it via props for exporting
+          setExportedData(newArray);
+        });
+      }, [exportedEvents]);
 
   useEffect(() => {
     //console.log('Response', response);
@@ -187,8 +189,7 @@ const Events: React.FC = (): JSX.Element => {
         </CustomSuspense>
         <div className="cardBox">
           < CustomSuspense>
-            <SearchUser type={"events"} onSearch={onSearch} onReset={onReset} />
-            <ExportToExcel apiData={ExportedData} fileName={"demo"} />
+            <SearchUser type={"events"} onSearch={onSearch} onReset={onReset} exporteddata={exportedData} exportButton={true}/>
           </CustomSuspense>
           <div className="table-responsive">
             {

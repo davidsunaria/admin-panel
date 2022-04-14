@@ -10,7 +10,6 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
 import { truncate } from '../../../lib/utils/Service';
-import { ExportToExcel } from '../../components/ExportToExcel'
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
@@ -40,7 +39,7 @@ const Groups: React.FC = (): JSX.Element => {
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
-  const [ExportedData, setExportedData] = useState<Array<any>>([]);
+  const [exportedData, setExportedData] = useState<Array<any>>([]);
   const [currentUserId, setCurrentUserId] = useState<String>("");
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
   //State
@@ -177,8 +176,7 @@ const Groups: React.FC = (): JSX.Element => {
         </CustomSuspense>
         <div className="cardBox">
           <CustomSuspense>
-            <SearchUser type={"groups"} onSearch={onSearch} onReset={onReset} />
-            <ExportToExcel apiData={ExportedData} fileName={"demo"} />
+            <SearchUser type={"groups"} onSearch={onSearch} onReset={onReset} exporteddata={exportedData} exportButton={true}/>
           </CustomSuspense>
           <div className="table-responsive">
             {

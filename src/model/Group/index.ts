@@ -8,7 +8,7 @@ import { compact } from 'lodash';
 
 const initialState = {
   response: {},
-  exportedGroups: {},
+  exportedGroups: [],
   isEnabledDisabled: false,
 }
 

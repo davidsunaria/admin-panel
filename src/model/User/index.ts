@@ -10,7 +10,7 @@ import { logoutCompletely } from '../../lib/utils/Service';
 
 const initialState = {
  response: {},
- exportedUsers:{},
+ exportedUsers:[],
   isInvitationSend: false,
   isEnabledDisabled: false,
   premiumStatus:false

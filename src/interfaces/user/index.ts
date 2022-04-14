@@ -6,6 +6,8 @@ export interface IUsers {
   is_premium?: string | number;
   group_id?: string | number;
   is_blocked_by_admin?: string | number;
+  exporteddata?:any;
+  exportButton?:boolean
 }
 
 export interface IUsersProps extends IUsers{
