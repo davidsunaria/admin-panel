@@ -26,6 +26,7 @@ const Groups: React.FC = (): JSX.Element => {
       { key: 'address', value: 'Address' },
       { key: 'status', value: 'Status' },
       { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
+      { key: 'creator status', value: 'Creator status' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -100,6 +101,8 @@ const Groups: React.FC = (): JSX.Element => {
     await enableDisable({ url: 'common/enable-disable', payload });
   }, []);
 
+
+
   const enableDisableGroup = useCallback((id, status) => {
     let text: string;
     if (status === 1) {
@@ -107,6 +110,23 @@ const Groups: React.FC = (): JSX.Element => {
     }
     else {
       text = 'You want to activate group?';
+    }
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <ConfirmAlert onClose={onClose} onYes={() => onYes(id, status)} heading="Are you sure?" subHeading={text} onCloseText="No" onSubmitText="Yes" />
+        );
+      }
+    });
+  }, []);
+
+  const lockedGroup = useCallback((id, status) => {
+    let text: string;
+    if (status === 1) {
+      text = 'You want to unlocked creator';
+    }
+    else {
+      text = 'You want to locked creator?';
     }
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -186,12 +206,14 @@ const Groups: React.FC = (): JSX.Element => {
                           <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
                           </td>
+                          <td className={"onHover"} onClick={() => lockedGroup(val?._id, val?.status)}>
+                            <div className={(val?.status === 1 || val?.status === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.status === 1 || val?.status === true) ? 'Locked' : 'Unlocked'}</div></td>
                         </tr>
                       ))
 
                     ) : (
                         <tr>
-                          <td colSpan={7} className="text-center">No record found</td>
+                          <td colSpan={8} className="text-center">No record found</td>
                         </tr>
                       )}
 
