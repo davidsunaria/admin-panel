@@ -26,7 +26,7 @@ const Groups: React.FC = (): JSX.Element => {
       { key: 'address', value: 'Address' },
       { key: 'status', value: 'Status' },
       { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
-      { key: 'creator status', value: 'Creator status' },
+      { key: 'creator status', value: 'Locked for posting' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -139,10 +139,10 @@ const Groups: React.FC = (): JSX.Element => {
     console.log("status",status)
     let text: string;
     if (status === true) {
-      text = 'You want to unlocked creator?';
+      text = 'You want to unlock creator?';
     }
     else {
-      text = 'You want to locked creator?';
+      text = 'You want to lock creator?';
     }
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -240,7 +240,7 @@ const Groups: React.FC = (): JSX.Element => {
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
                           </td>
                           <td className={"onHover"} onClick={() => lockedUnlockeddGroup(val?._id, val?.is_only_admin_authorised_to_post)}>
-                            <div className={(val?.is_only_admin_authorised_to_post === 1 || val?.is_only_admin_authorised_to_post === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.is_only_admin_authorised_to_post === 1 || val?.is_only_admin_authorised_to_post === true) ? 'Locked' : 'Unlocked'}</div></td>
+                            <div className={(val?.is_only_admin_authorised_to_post === 1 || val?.is_only_admin_authorised_to_post === true) ? "manageStatus inactive" : "manageStatus active"}> {(val?.is_only_admin_authorised_to_post === 1 || val?.is_only_admin_authorised_to_post === true) ? 'Yes' : 'No'}</div></td>
                         </tr>
                       ))
 
