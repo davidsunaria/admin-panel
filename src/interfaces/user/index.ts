@@ -16,9 +16,10 @@ export interface IUsersProps extends IUsers{
 
 export interface IEnableDisable {
   _id: string;
-  type: string;
+  type?: string;
   status?: any;
-  is_blocked_by_admin?:any
+  is_blocked_by_admin?:any;
+  is_only_admin_authorised_to_post?:boolean | string | number
 }
 
 export interface IPremiumStatus {

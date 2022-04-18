@@ -42,15 +42,19 @@ const Groups: React.FC = (): JSX.Element => {
   const [data, setData] = useState<Array<any>>([]);
   const [currentUserId, setCurrentUserId] = useState<String>("");
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
+  const [currentCreatorStatus, setCurrentCreatorStatus] = useState<String | boolean>("");
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.group.response);
   const isEnabledDisabled = useStoreState(state => state.group.isEnabledDisabled);
+  const isLockedUnlocked = useStoreState(state => state.group.isLockedUnlocked);
+  //Actions
   //Actions
   const flushData = useStoreActions(actions => actions.group.flushData);
   const getGroups = useStoreActions(actions => actions.group.getGroups);
   const enableDisable = useStoreActions(actions => actions.group.enableDisable);
-
+  const lockedUnlocked = useStoreActions(actions => actions.group.lockedUnlocked);
+  
   
 
   const getGroupData = useCallback(async (payload: IUsers) => {
@@ -63,7 +67,6 @@ const Groups: React.FC = (): JSX.Element => {
       const { data, pagination: [paginationObject] } = response;
       setPagination(paginationObject);
       setCurrentPage(paginationObject?.currentPage);
-
 
       if (paginationObject?.currentPage === 1 || !paginationObject) {
         setData(data);
@@ -103,6 +106,7 @@ const Groups: React.FC = (): JSX.Element => {
 
 
 
+
   const enableDisableGroup = useCallback((id, status) => {
     let text: string;
     if (status === 1) {
@@ -120,10 +124,22 @@ const Groups: React.FC = (): JSX.Element => {
     });
   }, []);
 
-  const lockedGroup = useCallback((id, status) => {
+  const onConfirm = useCallback(async (id: string, status: string | boolean) => {
+ 
+    setCurrentUserId(id);
+    setCurrentCreatorStatus(status);
+    const payload: IEnableDisable = {
+      _id: id,is_only_admin_authorised_to_post:status === true? "0": "1"
+    }
+    console.log("payload",payload)
+    await lockedUnlocked({ url: 'group/lock-posting', payload });
+  }, []);
+
+  const lockedUnlockeddGroup = useCallback((id, status) => {
+    console.log("status",status)
     let text: string;
-    if (status === 1) {
-      text = 'You want to unlocked creator';
+    if (status === true) {
+      text = 'You want to unlocked creator?';
     }
     else {
       text = 'You want to locked creator?';
@@ -131,7 +147,7 @@ const Groups: React.FC = (): JSX.Element => {
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
-          <ConfirmAlert onClose={onClose} onYes={() => onYes(id, status)} heading="Are you sure?" subHeading={text} onCloseText="No" onSubmitText="Yes" />
+          <ConfirmAlert onClose={onClose} onYes={() => onConfirm(id, status)} heading="Are you sure?" subHeading={text} onCloseText="No" onSubmitText="Yes" />
         );
       }
     });
@@ -156,6 +172,23 @@ const Groups: React.FC = (): JSX.Element => {
       setCurrentUserStatus("");
     }
   }, [isEnabledDisabled]);
+
+  useEffect(() => {
+    async function changeData() {
+      let localStateData = [...data];
+      console.log("loacl",localStateData)
+      let index = localStateData.findIndex(item => item._id === currentUserId);
+      localStateData[index].is_only_admin_authorised_to_post = currentCreatorStatus === true ? false : true;
+      //console.log('localStateData', localStateData);
+      setData(localStateData);
+      await flushData();
+    }
+    if (isLockedUnlocked && isLockedUnlocked === true) {
+      changeData();
+      setCurrentUserId("");
+      setCurrentCreatorStatus("");
+    }
+  }, [isLockedUnlocked]);
   return (
     <>
       <div className="Content">
@@ -206,8 +239,8 @@ const Groups: React.FC = (): JSX.Element => {
                           <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
                           </td>
-                          <td className={"onHover"} onClick={() => lockedGroup(val?._id, val?.status)}>
-                            <div className={(val?.status === 1 || val?.status === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.status === 1 || val?.status === true) ? 'Locked' : 'Unlocked'}</div></td>
+                          <td className={"onHover"} onClick={() => lockedUnlockeddGroup(val?._id, val?.is_only_admin_authorised_to_post)}>
+                            <div className={(val?.is_only_admin_authorised_to_post === 1 || val?.is_only_admin_authorised_to_post === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.is_only_admin_authorised_to_post === 1 || val?.is_only_admin_authorised_to_post === true) ? 'Locked' : 'Unlocked'}</div></td>
                         </tr>
                       ))
 
