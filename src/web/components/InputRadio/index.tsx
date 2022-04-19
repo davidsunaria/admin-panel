@@ -1,16 +1,15 @@
-import React, { HTMLInputTypeAttribute } from "react";
+import React from "react";
 import { Field,ErrorMessage } from 'formik';
-import { string } from "yup/lib/locale";
 interface RadioInputValue {
     name: string;
     value: string;
     label: string;
 }
-interface InputRadio {
+interface IInputRadio {
     heading?:string,
     values: Array<RadioInputValue>;
 }
-const InputRadio: React.FC<InputRadio> = ({ values,heading }) => {
+const InputRadio: React.FC<IInputRadio> = ({ values,heading }) => {
     return (
         <>
         <label html-for="name" className="form-label w-100">{heading}</label>

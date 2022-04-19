@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
-import { IUsers, IEnableDisable, IPagination, IInviteuser, IPremiumuser, IPremiumStatus } from 'react-app-interfaces';
+import { IUsers, IEnableDisable, IPagination, IInviteuser, IPremiumuser } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
 import CustomSuspense from '../../components/CustomSuspense';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import { Formik, Field, ErrorMessage } from 'formik';
+import { Formik} from 'formik';
 import { useAuthValidation } from '../../../lib/validations/AuthSchema';
 import env from '../../../config';
 import DEFAULT_USER_IMG from 'react-app-images/default_user.png';
@@ -84,7 +84,7 @@ const Users: React.FC = (): JSX.Element => {
     togglePremium()
     setUserId(id);
     setPremium(is_premium ===  0 ? "1": "0")
-    if(is_premium==1){
+    if(is_premium===1){
       let payload = {
         user_id: id,
         is_premium: "0",
@@ -293,7 +293,7 @@ const Users: React.FC = (): JSX.Element => {
           </CustomSuspense>
 
           <CustomSuspense >
-    {isPremium == 1 && <MyModal heading={isPremium == 1 ? "Mark Premium" : "Unmark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
+    {isPremium === "1" && <MyModal heading={isPremium === "1" ? "Mark Premium" : "Unmark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
               <Formik
                 enableReinitialize={true}
                 initialValues={premiumInititalState()}
@@ -305,10 +305,7 @@ const Users: React.FC = (): JSX.Element => {
                 {props => {
                   const {
                     values,
-                    handleChange,
-                    handleBlur,
-                    handleSubmit,
-                    setFieldValue
+                    handleSubmit
                   } = props;
                   return (
                     <form onSubmit={handleSubmit} >

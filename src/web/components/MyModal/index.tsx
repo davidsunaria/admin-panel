@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { ModalHeader, ModalFooter, Button, Modal, ModalBody } from "reactstrap";
 
 interface IModal {
