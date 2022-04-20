@@ -84,7 +84,7 @@ const Users: React.FC = (): JSX.Element => {
     togglePremium()
     setUserId(id);
     setPremium(is_premium ===  0 ? "1": "0")
-    if(is_premium==1){
+    if(is_premium===1){
       let payload = {
         user_id: id,
         is_premium: "0",
@@ -293,7 +293,7 @@ const Users: React.FC = (): JSX.Element => {
           </CustomSuspense>
 
           <CustomSuspense >
-    {isPremium == 1 && <MyModal heading={isPremium == 1 ? "Mark Premium" : "Unmark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
+    {isPremium === "1" && <MyModal heading={isPremium === "1" ? "Mark Premium" : "Unmark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
               <Formik
                 enableReinitialize={true}
                 initialValues={premiumInititalState()}

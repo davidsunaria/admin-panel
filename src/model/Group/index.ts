@@ -39,6 +39,7 @@ const group: GroupModel = {
   reset: action(state =>state=initialState),
   flushData: action((state, payload) => {
     state.isEnabledDisabled = false;
+    state.isLockedUnlocked = false;
   }),
   setEnabledDisabled: action((state, payload) => {
     state.isEnabledDisabled = payload;

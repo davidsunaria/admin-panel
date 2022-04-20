@@ -41,6 +41,11 @@ export interface IPremiumuser {
   expire_at?: any;
 }
 
+export interface ILockedGroup {
+  restriction_mode?:string | number;
+  _id?:string | number;
+}
+
 
 export interface IEventGroups extends IUsersProps {
   _id?: string;
