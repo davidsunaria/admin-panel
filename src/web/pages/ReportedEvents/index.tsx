@@ -78,6 +78,7 @@ const ReportedEvents: React.FC = (): JSX.Element => {
 
   const onReset = useCallback(() => {
     setFormData(userInititalState);
+    getEvents(formData);
   }, []);
 
   useEffect(() => {

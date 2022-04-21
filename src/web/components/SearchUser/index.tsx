@@ -5,14 +5,14 @@ import { IUsers, IUsersProps, IEventGroups } from 'react-app-interfaces';
 import { useStoreActions, useStoreState } from 'react-app-store';
 
 const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
-  const [statusData, setStatusdata] = useState([
+  const [statusData] = useState([
     { key: 'All', value: 'all' }, { key: 'Active', value: "1" }, { key: 'Inactive', value: '0' }
   ]);
 
-  const [reportedStatus, setReportedStatus] = useState([
+  const [reportedStatus] = useState([
     { key: 'All', value: 'all' }, { key: 'Blocked', value: "1" }, { key: 'Unblocked', value: '0' }
   ]);
-  const [premiumData, setPremiumData] = useState([
+  const [premiumData] = useState([
     { key: 'All', value: 'all' }, { key: 'Yes', value: 1 }, { key: 'No', value: '0' }
   ]);
   const userInititalState = useCallback((): IUsers => {

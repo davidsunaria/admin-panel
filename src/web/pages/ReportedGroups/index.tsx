@@ -76,6 +76,7 @@ const ReportedGroups: React.FC = (): JSX.Element => {
   }, []);
 
   const onReset = useCallback(() => {
+    getGroupData(formData);
     setFormData(userInititalState);
   }, []);
 

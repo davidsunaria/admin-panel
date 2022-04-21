@@ -79,6 +79,7 @@ const Events: React.FC = (): JSX.Element => {
 
   const onReset = useCallback(() => {
     setFormData(userInititalState);
+    getGroupData(formData);
   }, []);
 
   useEffect(() => {
