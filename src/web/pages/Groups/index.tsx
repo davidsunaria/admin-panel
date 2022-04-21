@@ -53,8 +53,7 @@ const Groups: React.FC = (): JSX.Element => {
   const getExportedGroups = useStoreActions(actions => actions.group.getExportedGroups);
   const enableDisable = useStoreActions(actions => actions.group.enableDisable);
 
-
-
+//test
   const getGroupData = useCallback(async (payload: IUsers) => {
     await getGroups({ url: "group/get-all-groups", payload });
   }, []);
