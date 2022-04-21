@@ -47,24 +47,33 @@ const Groups: React.FC = (): JSX.Element => {
   const response = useStoreState(state => state.group.response);
   const exportedGroups = useStoreState(state => state.group.exportedGroups);
   const isEnabledDisabled = useStoreState(state => state.group.isEnabledDisabled);
+  const exportStatus = useStoreState(state => state.common.exportStatus);
   //Actions
   const flushData = useStoreActions(actions => actions.group.flushData);
   const getGroups = useStoreActions(actions => actions.group.getGroups);
   const getExportedGroups = useStoreActions(actions => actions.group.getExportedGroups);
   const enableDisable = useStoreActions(actions => actions.group.enableDisable);
+  const setExportStatus = useStoreActions(actions => actions.common.setExportStatus);
 
 //test
   const getGroupData = useCallback(async (payload: IUsers) => {
-    await getGroups({ url: "group/get-all-groups", payload });
-  }, []);
+    if(!exportStatus){
+      await getGroups({ url: "group/get-all-groups", payload });
+    }
+  }, [exportStatus]);
 
   const getExportedData = useCallback(async (data: IUsers) => {
-    let payload = {
-      q: data.q,
-      status: data.status,
+    if(exportStatus===true){
+      console.log("grup",exportStatus)
+      let payload = {
+        q: data.q,
+        status: data.status,
+      }
+      await getExportedGroups({ url: "group/export", payload });
+     await setExportStatus(false)
     }
-    await getExportedGroups({ url: "group/export", payload });
-  }, []);
+    
+  }, [exportStatus]);
 
 
   useEffect(() => {

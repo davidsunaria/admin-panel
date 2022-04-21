@@ -76,6 +76,7 @@ const Users: React.FC = (): JSX.Element => {
   const isInvitationSend = useStoreState(state => state.user.isInvitationSend);
   const isEnabledDisabled = useStoreState(state => state.user.isEnabledDisabled);
   const premiumStatus = useStoreState(state => state.user.premiumStatus);
+  const exportStatus = useStoreState(state => state.common.exportStatus);
   //Actions
   const getUsers = useStoreActions(actions => actions.user.getUsers);
   const getExportedUsers = useStoreActions(actions => actions.user.getExportedUsers);
@@ -83,6 +84,7 @@ const Users: React.FC = (): JSX.Element => {
   const inviteUser = useStoreActions(actions => actions.user.inviteUser);
   const markAsPremium = useStoreActions(actions => actions.user.markAsPremium);
   const flushData = useStoreActions(actions => actions.user.flushData);
+  const setExportStatus = useStoreActions(actions => actions.common.setExportStatus);
   const toggle = () => setIsOpen(!isOpen);
 
 
@@ -110,18 +112,26 @@ const Users: React.FC = (): JSX.Element => {
 
 
   const getUserData = useCallback(async (payload: IUsers) => {
-    await getUsers({ url: "user/get-all-users", payload });
+    if(!exportStatus){
+      await getUsers({ url: "user/get-all-users", payload });
+    }
+    
   }, []);
 
   const getExportedData = useCallback(async (data: IUsers) => {
-    let payload = {
-      q: data.q,
-      status: data.status,
-      is_premium:data.is_premium,
+    if(exportStatus===true){
+      console.log("exportuser",exportStatus)
+      let payload = {
+        q: data.q,
+        status: data.status,
+        is_premium:data.is_premium,
+      }
+      console.log("updated", payload)
+      await getExportedUsers({ url: "user/export", payload });
+      await setExportStatus(false)
     }
-    console.log("updated", payload)
-    await getExportedUsers({ url: "user/export", payload });
-  }, []);
+    
+  }, [exportStatus]);
 
 
 

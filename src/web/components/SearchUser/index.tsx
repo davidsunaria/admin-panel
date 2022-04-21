@@ -173,7 +173,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                   setLoading(true)
                   props.onReset();
                 }}>Reset</div>
-                {props?.exportButton && <ExportToExcel apiData={props.exporteddata} fileName={"demo"} className="btn btn-primary mx-2 mb-2" />}
+                {props?.exportButton && <ExportToExcel apiData={props.exporteddata} fileName={props.type} className="btn btn-primary mx-2 mb-2" />}
               </div>
 
             </div>
