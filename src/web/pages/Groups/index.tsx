@@ -153,6 +153,41 @@ const Groups: React.FC = (): JSX.Element => {
     }
   }, [currentRestrictedMode]);
 
+  const modal = React.useMemo(() => {
+    return <>
+      <MyModal heading={"Restrict Group"} showSubmitBtn={false} isOpen={isOpen} toggle={toggle}>
+      <Formik
+        enableReinitialize={true}
+        initialValues={lockedGroupInititalState()}
+       
+        onSubmit={async values => {
+          restrictedGroup(values);
+        }}
+        //validationSchema={PremiumSchema}
+      >
+        {props => {
+          const {
+            handleSubmit,
+          } = props;
+          return (
+            <form onSubmit={handleSubmit} >
+             <div className="p-3">
+                <div className="mb-3">
+                  <InputRadio values={radioParameters} />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={toggle}>Cancel</button>
+                <button type="submit" className="btn btn-primary">Submit</button>
+              </div>
+            </form>
+          );
+        }}
+      </Formik>
+    </MyModal>  
+    </>
+  }, [currentRestrictedMode,isOpen]);
+
 
 
   const getImageUrl = (url: string, options: any) => {
@@ -215,39 +250,7 @@ const Groups: React.FC = (): JSX.Element => {
             <SearchUser type={"groups"} onSearch={onSearch} onReset={onReset} />
           </CustomSuspense>
           <CustomSuspense >
-          <MyModal heading={"Restrict Group"} showSubmitBtn={false} isOpen={isOpen} toggle={toggle}>
-              <Formik
-                enableReinitialize={true}
-                initialValues={lockedGroupInititalState()}
-               
-                onSubmit={async values => {
-                  restrictedGroup(values);
-                }}
-                //validationSchema={PremiumSchema}
-              >
-                {props => {
-                  const {
-                    handleSubmit,
-                  } = props;
-                  return (
-                    <form onSubmit={handleSubmit} >
-                     <div className="p-3">
-                        <div className="mb-3">
-                          <InputRadio values={radioParameters} />
-                        </div>
-                      </div>
-                      
-                     
-
-                      <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" onClick={toggle}>Cancel</button>
-                        <button type="submit" className="btn btn-primary">Submit</button>
-                      </div>
-                    </form>
-                  );
-                }}
-              </Formik>
-            </MyModal>        
+           {modal}      
           </CustomSuspense> 
           <div className="table-responsive">
             {
