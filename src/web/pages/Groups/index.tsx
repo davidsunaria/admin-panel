@@ -44,6 +44,7 @@ const Groups: React.FC = (): JSX.Element => {
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
+  const [exportedData, setExportedData] = useState<Array<any>>([]);
   const [currentUserId, setCurrentUserId] = useState<String>("");
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
   const [restrictedMode, setRestrictedMode] = useState<any>("");
@@ -53,13 +54,16 @@ const Groups: React.FC = (): JSX.Element => {
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.group.response);
+  const exportedGroups = useStoreState(state => state.group.exportedGroups);
   const isEnabledDisabled = useStoreState(state => state.group.isEnabledDisabled);
   const isLockedUnlocked = useStoreState(state => state.group.isLockedUnlocked);
   //Actions
   //Actions
   const flushData = useStoreActions(actions => actions.group.flushData);
   const getGroups = useStoreActions(actions => actions.group.getGroups);
+  const getExportedGroups = useStoreActions(actions => actions.group.getExportedGroups);
   const enableDisable = useStoreActions(actions => actions.group.enableDisable);
+
   const lockedUnlocked = useStoreActions(actions => actions.group.lockedUnlocked);
   
   const toggle = () => setIsOpen(!isOpen);
@@ -70,10 +74,39 @@ const Groups: React.FC = (): JSX.Element => {
     setCurrentRestrictedMode(restriction_mode)
   }
 
+
   const getGroupData = useCallback(async (payload: IUsers) => {
     await getGroups({ url: "group/get-all-groups", payload });
   }, []);
 
+  const getExportedData = useCallback(async (data: IUsers) => {
+    let payload = {
+      q: data.q,
+      status: data.status,
+    }
+    await getExportedGroups({ url: "group/export", payload });
+  }, []);
+
+
+  useEffect(() => {
+
+    let newArray: any[] = [];
+    exportedGroups?.map((item: any) => {
+
+      // here i am  extracting only userId;
+      let obj = {
+        Name: item.name, Owner: `${item.creator_of_group.first_name} ${item.creator_of_group.last_name}`, Purpose: item.category,
+        Address: item.address, Status: item.active == 1 ? "Active" : "Inactive",
+        "BlockByAdmin": item.is_blocked_by_admin == 1 ? "Yes" : "No"
+      };
+      //     //     // after extracting what I need, I am adding it to newArray
+      newArray?.push(obj);
+      //     //     // now  I am adding newArray to localstate in order to passing it via props for exporting
+      setExportedData(newArray);
+    });
+
+
+  }, [exportedGroups]);
   useEffect(() => {
     //console.log('Response', response);
     if (response?.data) {
@@ -102,6 +135,7 @@ const Groups: React.FC = (): JSX.Element => {
   useEffect(() => {
     if (formData) {
       getGroupData(formData);
+      getExportedData(formData)
     }
   }, [formData]);
 
@@ -248,7 +282,7 @@ const Groups: React.FC = (): JSX.Element => {
         </CustomSuspense>
         <div className="cardBox">
           <CustomSuspense>
-            <SearchUser type={"groups"} onSearch={onSearch} onReset={onReset} />
+            <SearchUser type={"groups"} onSearch={onSearch} onReset={onReset} exporteddata={exportedData} exportButton={true}/>
           </CustomSuspense>
           <CustomSuspense >
            {modal}      

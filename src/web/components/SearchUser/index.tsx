@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import { IUsers, IUsersProps, IEventGroups } from 'react-app-interfaces';
 import { useStoreActions, useStoreState } from 'react-app-store';
+import { ExportToExcel } from '../../components/ExportToExcel'
 
 const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
   const [statusData] = useState([
@@ -43,7 +44,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
 
 
   const getGroups = useStoreActions(actions => actions.event.getGroups);
-  const setLoading =useStoreActions(actions => actions.common.setLoading);
+  const setLoading = useStoreActions(actions => actions.common.setLoading);
 
   const getGroupData = useCallback(() => {
     getGroups({ url: "event/get-groups" });
@@ -134,7 +135,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                     }
                   </select>}
                 </div>
-               
+
                 {props.type === 'users' && <div className="filter mb-2 me-sm-2">
                   <label>Premium:</label>
                   <select name="is_premium" value={values?.is_premium}
@@ -173,6 +174,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                   setLoading(true)
                   props.onReset();
                 }}>Reset</div>
+                {props?.exportButton && <ExportToExcel apiData={props.exporteddata} fileName={"demo"} className="btn btn-primary mx-2 mb-2" />}
               </div>
 
             </div>

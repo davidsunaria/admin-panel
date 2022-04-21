@@ -41,20 +41,62 @@ const Events: React.FC = (): JSX.Element => {
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
+  const [exportedData, setExportedData] = useState<Array<any>>([]);
+  const [filterStatus, setFilterStatus] = useState<boolean>(false);
   const [currentUserId, setCurrentUserId] = useState<String>("");
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.event.response);
+  const exportedEvents = useStoreState(state => state.event.exportedEvents);
   const isEnabledDisabled = useStoreState(state => state.group.isEnabledDisabled);
   //Actions
   const flushData = useStoreActions(actions => actions.group.flushData);
   const getEvents = useStoreActions(actions => actions.event.getEvents);
+  const getExportedEvents = useStoreActions(actions => actions.event.getExportedEvents);
   const enableDisable = useStoreActions(actions => actions.group.enableDisable);
 
   const getGroupData = useCallback(async (payload: IUsers) => {
     await getEvents({ url: "event/get-all-events", payload });
   }, []);
+  const getExportedData = useCallback(async (data: IUsers) => {
+    
+    if(!filterStatus){
+      let payload = {
+        q: data.q,
+        status: data.status,
+      }
+      await getExportedEvents({ url: "event/export", payload});
+    }
+   
+    if(filterStatus){
+      let payload = {
+        q: data.q,
+        status: data.status,
+        group_id: data.group_id?data.group_id:"all",
+      }
+      await getExportedEvents({ url: "event/export", payload });
+    }
+  }, [filterStatus]);
+
+      useEffect(() => {
+
+        let newArray: any[] = [];
+        exportedEvents?.map((item: any) => {
+
+         // here i am  extracting only userId and title
+          let obj = {
+            Name: item.name, Owner: `${item.creator_of_event.first_name} ${item.creator_of_event.last_name}`,
+            Address: item.address, "Associated group":item.event_group?.name, Capacity: item.capacity, "Capacity Type": item.capacity_type,
+            Status: item.active == 1 ? "Active" : "Inactive",
+            "BlockByAdmin": item.is_blocked_by_admin == 1 ? "Yes" : "No"
+          };
+           //after extracting what I need, I am adding it to newArray
+          newArray?.push(obj);
+          // now  I am adding newArray to localstate in order to passing it via props for exporting
+          setExportedData(newArray);
+        });
+      }, [exportedEvents]);
 
   useEffect(() => {
     //console.log('Response', response);
@@ -74,6 +116,8 @@ const Events: React.FC = (): JSX.Element => {
   }, [response]);
 
   const onSearch = useCallback((payload: IUsers) => {
+    console.log("hi")
+    setFilterStatus(true)
     setFormData(_ => ({ ..._, ...payload, page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE }));
   }, []);
 
@@ -85,6 +129,7 @@ const Events: React.FC = (): JSX.Element => {
   useEffect(() => {
     if (formData) {
       getGroupData(formData);
+      getExportedData(formData)
     }
   }, [formData]);
 
@@ -140,13 +185,13 @@ const Events: React.FC = (): JSX.Element => {
   return (
     <>
       <div className="Content">
-     < CustomSuspense>
-          <Navbar text={"Manage events"} />
-          </CustomSuspense>
-        <div className="cardBox">
         < CustomSuspense>
-            <SearchUser type={"events"} onSearch={onSearch} onReset={onReset} />
-            </CustomSuspense>
+          <Navbar text={"Manage events"} />
+        </CustomSuspense>
+        <div className="cardBox">
+          < CustomSuspense>
+            <SearchUser type={"events"} onSearch={onSearch} onReset={onReset} exporteddata={exportedData} exportButton={true}/>
+          </CustomSuspense>
           <div className="table-responsive">
             {
               <InfiniteScroll
@@ -158,9 +203,9 @@ const Events: React.FC = (): JSX.Element => {
               >
 
                 <table className="table mb-0">
-                < CustomSuspense>
+                  < CustomSuspense>
                     <TableHeader fields={tableHeader} />
-                    </CustomSuspense>
+                  </CustomSuspense>
                   <tbody>
 
                     {data && data.length > 0 ? (

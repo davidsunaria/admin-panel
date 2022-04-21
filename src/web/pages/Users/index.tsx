@@ -20,6 +20,7 @@ const Input = React.lazy(() => import('../../components/Input'));
 const InputRadio = React.lazy(() => import('../../components/InputRadio'));
 const CustomDatePicker = React.lazy(() => import('../../components/CustomDatePicker'));
 const Navbar = React.lazy(() => import('../../components/Navbar'));
+
 const Users: React.FC = (): JSX.Element => {
   const { InviteUserSchema, PremiumSchema } = useAuthValidation();
   const tableHeader = useMemo(() => {
@@ -32,7 +33,7 @@ const Users: React.FC = (): JSX.Element => {
       { key: 'status', value: 'Status' },
       { key: 'is_premium', value: 'Premium' },
       { key: 'action', value: 'Action' },
-       { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
+      { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -59,20 +60,24 @@ const Users: React.FC = (): JSX.Element => {
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
+  const [exportedData, setExportedData] = useState<Array<any>>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isPremiumModalOpen, setPremiumOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [isPremium, setPremium] = useState<any>("");
-  
+
 
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.user.response);
+  const exportedUsers = useStoreState(state => state.user.exportedUsers);
+
   const isInvitationSend = useStoreState(state => state.user.isInvitationSend);
   const isEnabledDisabled = useStoreState(state => state.user.isEnabledDisabled);
   const premiumStatus = useStoreState(state => state.user.premiumStatus);
   //Actions
   const getUsers = useStoreActions(actions => actions.user.getUsers);
+  const getExportedUsers = useStoreActions(actions => actions.user.getExportedUsers);
   const enableDisable = useStoreActions(actions => actions.user.enableDisable);
   const inviteUser = useStoreActions(actions => actions.user.inviteUser);
   const markAsPremium = useStoreActions(actions => actions.user.markAsPremium);
@@ -80,16 +85,17 @@ const Users: React.FC = (): JSX.Element => {
   const toggle = () => setIsOpen(!isOpen);
 
 
-  const openPremiumModal = async(id: string, is_premium: any) => {
+  const openPremiumModal = async (id: string, is_premium: any) => {
     togglePremium()
     setUserId(id);
     setPremium(is_premium ===  0 ? "1": "0")
     if(is_premium===1){
+
       let payload = {
         user_id: id,
         is_premium: "0",
-        type:"",
-        expire_at:""
+        type: "",
+        expire_at: ""
       }
       await markAsPremium({ 'url': "user/mark-premium", payload });
 
@@ -107,7 +113,38 @@ const Users: React.FC = (): JSX.Element => {
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
 
+  const getExportedData = useCallback(async (data: IUsers) => {
+    let payload = {
+      q: data.q,
+      status: data.status,
+      is_premium:data.is_premium,
+    }
+    console.log("updated", payload)
+    await getExportedUsers({ url: "user/export", payload });
+  }, []);
 
+
+
+
+  useEffect(() => {
+
+    let newArray: any[] = [];
+    exportedUsers?.map((item: any) => {
+
+      // here i am  extracting only userId and title
+      let obj = {
+        FirstName: item.first_name, LastName: item.last_name, Username: item.username,
+        Email: item.email, Status: item.active == 1 ? "Active" : "Inactive",
+        "BlockByAdmin": item.is_blocked_by_admin == 1 ? "Yes" : "No", Premium: item.is_premium == 1 ? "Yes" : "No"
+      };
+      // after extracting what I need, I am adding it to newArray
+      newArray?.push(obj);
+      // now  I am adding newArray to localstate in order to passing it via props for exporting
+      setExportedData(newArray);
+    });
+
+
+  }, [exportedUsers]);
 
   useEffect(() => {
     if (response?.data) {
@@ -125,6 +162,7 @@ const Users: React.FC = (): JSX.Element => {
   }, [response]);
 
   const onSearch = useCallback((payload: IUsers) => {
+    console.log("filter", payload)
     setFormData(_ => ({ ..._, ...payload, page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE }));
   }, []);
 
@@ -136,6 +174,7 @@ const Users: React.FC = (): JSX.Element => {
   useEffect(() => {
     if (formData) {
       getUserData(formData);
+      getExportedData(formData)
     }
   }, [formData]);
 
@@ -195,8 +234,8 @@ const Users: React.FC = (): JSX.Element => {
 
 
   useEffect(() => {
-    
-    
+
+
     async function changeData() {
       let localStateData = [...data];
       let index = localStateData.findIndex(item => item._id === userId);
@@ -290,11 +329,12 @@ const Users: React.FC = (): JSX.Element => {
               </Formik>
 
             </MyModal>
-            <SearchUser type={"users"} onSearch={onSearch} onReset={onReset} />
+            <SearchUser type={"users"} onSearch={onSearch} onReset={onReset} exporteddata={exportedData} exportButton={true} />
           </CustomSuspense>
 
           <CustomSuspense >
     {isPremium === "1" && <MyModal heading={isPremium === "1" ? "Mark Premium" : "Unmark Premium"} showSubmitBtn={false} isOpen={isPremiumModalOpen} toggle={() => togglePremium()}>
+           
               <Formik
                 enableReinitialize={true}
                 initialValues={premiumInititalState()}
@@ -310,15 +350,15 @@ const Users: React.FC = (): JSX.Element => {
                   } = props;
                   return (
                     <form onSubmit={handleSubmit} >
-                     <div className="p-3">
+                      <div className="p-3">
                         <div className="mb-3">
                           <InputRadio values={radioParameters} heading="Frequency" />
                         </div>
                         <CustomDatePicker value={values?.expire_at} label="Expiry at" name="expire_at"
                           props={props} />
                       </div>
-                      
-                     
+
+
 
                       <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={() => togglePremium()}>Cancel</button>
@@ -328,7 +368,7 @@ const Users: React.FC = (): JSX.Element => {
                   );
                 }}
               </Formik>
-            </MyModal>}        
+            </MyModal>}
           </CustomSuspense>
           <div className="table-responsive">
             {
@@ -376,7 +416,7 @@ const Users: React.FC = (): JSX.Element => {
                           </td>
                           <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
-                          </td> 
+                          </td>
                         </tr>
                       ))
 
