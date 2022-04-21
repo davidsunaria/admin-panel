@@ -130,6 +130,7 @@ const Users: React.FC = (): JSX.Element => {
 
   const onReset = useCallback(() => {
     setFormData(userInititalState);
+    getUserData(formData);
   }, []);
 
   useEffect(() => {
