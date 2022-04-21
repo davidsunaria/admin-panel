@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
-import { IUsers, IEnableDisable, IPagination } from 'react-app-interfaces';
+import { IUsers, IEnableDisable, IPagination ,ILockedGroup} from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
 import CustomSuspense from '../../components/CustomSuspense';
@@ -10,10 +10,13 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
 import { truncate } from '../../../lib/utils/Service';
+import { Formik } from 'formik';
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
 const Navbar = React.lazy(() => import('../../components/Navbar'));
+const MyModal = React.lazy(() => import('../../components/MyModal'));
+const InputRadio = React.lazy(() => import('../../components/InputRadio'));
 
 
 const Groups: React.FC = (): JSX.Element => {
@@ -26,6 +29,8 @@ const Groups: React.FC = (): JSX.Element => {
       { key: 'address', value: 'Address' },
       { key: 'status', value: 'Status' },
       { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
+      { key: 'restrictedMode', value: 'Restricted Mode' },
+      { key: 'action', value: 'Action' },
     ]
   }, []);
   const userInititalState = useMemo(() => {
@@ -41,16 +46,29 @@ const Groups: React.FC = (): JSX.Element => {
   const [data, setData] = useState<Array<any>>([]);
   const [currentUserId, setCurrentUserId] = useState<String>("");
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
+  const [restrictedMode, setRestrictedMode] = useState<any>("");
+  const [currentRestrictedMode, setCurrentRestrictedMode] = useState<any>("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [groupId, setGroupId] = useState<String>("");
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.group.response);
   const isEnabledDisabled = useStoreState(state => state.group.isEnabledDisabled);
+  const isLockedUnlocked = useStoreState(state => state.group.isLockedUnlocked);
+  //Actions
   //Actions
   const flushData = useStoreActions(actions => actions.group.flushData);
   const getGroups = useStoreActions(actions => actions.group.getGroups);
   const enableDisable = useStoreActions(actions => actions.group.enableDisable);
-
+  const lockedUnlocked = useStoreActions(actions => actions.group.lockedUnlocked);
   
+  const toggle = () => setIsOpen(!isOpen);
+
+  const openLockedPostingModal = async(id: string, restriction_mode: any) => {
+    toggle()
+    setGroupId(id);
+    setCurrentRestrictedMode(restriction_mode)
+  }
 
   const getGroupData = useCallback(async (payload: IUsers) => {
     await getGroups({ url: "group/get-all-groups", payload });
@@ -62,7 +80,6 @@ const Groups: React.FC = (): JSX.Element => {
       const { data, pagination: [paginationObject] } = response;
       setPagination(paginationObject);
       setCurrentPage(paginationObject?.currentPage);
-
 
       if (paginationObject?.currentPage === 1 || !paginationObject) {
         setData(data);
@@ -101,6 +118,9 @@ const Groups: React.FC = (): JSX.Element => {
     await enableDisable({ url: 'common/enable-disable', payload });
   }, []);
 
+
+
+
   const enableDisableGroup = useCallback((id, status) => {
     let text: string;
     if (status === 1) {
@@ -117,6 +137,59 @@ const Groups: React.FC = (): JSX.Element => {
       }
     });
   }, []);
+
+  
+
+  const radioParameters: any = [
+    { value: "open", label: "Open", name: "restriction_mode" },
+    { value: "subscribed", label: "Subscriber only", name: "restriction_mode" },
+    { value: "admin", label: "Admin only", name: "restriction_mode" },
+  ]
+
+
+  const lockedGroupInititalState = useCallback((): ILockedGroup => {
+    return {
+      restriction_mode: currentRestrictedMode ??  "",
+      _id: '',
+    }
+  }, [currentRestrictedMode]);
+
+  const modal = React.useMemo(() => {
+    return <>
+      <MyModal heading={"Restrict Group"} showSubmitBtn={false} isOpen={isOpen} toggle={toggle}>
+      <Formik
+        enableReinitialize={true}
+        initialValues={lockedGroupInititalState()}
+       
+        onSubmit={async values => {
+          restrictedGroup(values);
+        }}
+        //validationSchema={PremiumSchema}
+      >
+        {props => {
+          const {
+            handleSubmit,
+          } = props;
+          return (
+            <form onSubmit={handleSubmit} >
+             <div className="p-3">
+                <div className="mb-3">
+                  <InputRadio values={radioParameters} />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={toggle}>Cancel</button>
+                <button type="submit" className="btn btn-primary">Submit</button>
+              </div>
+            </form>
+          );
+        }}
+      </Formik>
+    </MyModal>  
+    </>
+  }, [currentRestrictedMode,isOpen]);
+
+
 
   const getImageUrl = (url: string, options: any) => {
     return `${env.REACT_APP_MEDIA_URL}` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
@@ -137,6 +210,36 @@ const Groups: React.FC = (): JSX.Element => {
       setCurrentUserStatus("");
     }
   }, [isEnabledDisabled]);
+
+  useEffect(() => {
+    
+    async function changeData() {
+      let localStateData = [...data];
+      let index = localStateData.findIndex(item => item._id === groupId);
+      localStateData[index].restriction_mode = restrictedMode ;
+      //console.log('localStateData', localStateData);
+      setData(localStateData);
+      await flushData();
+    }
+    if (isLockedUnlocked && isLockedUnlocked === true) {
+      changeData();
+      setGroupId("");
+      setRestrictedMode("");
+    }
+  }, [isLockedUnlocked]);
+
+  const restrictedGroup = async (formData: ILockedGroup) => {
+    setRestrictedMode(formData.restriction_mode)
+    let payload = {
+      _id: groupId,
+      restriction_mode: formData.restriction_mode
+    }
+    await lockedUnlocked({ 'url': "group/lock-posting", payload });
+    toggle()
+  }
+
+ 
+
   return (
     <>
       <div className="Content">
@@ -147,6 +250,9 @@ const Groups: React.FC = (): JSX.Element => {
           <CustomSuspense>
             <SearchUser type={"groups"} onSearch={onSearch} onReset={onReset} />
           </CustomSuspense>
+          <CustomSuspense >
+           {modal}      
+          </CustomSuspense> 
           <div className="table-responsive">
             {
               <InfiniteScroll
@@ -166,6 +272,7 @@ const Groups: React.FC = (): JSX.Element => {
                     {data && data.length > 0 ? (
                       data.map((val: any, index: number) => (
                         <tr key={index}>
+                          
                           <td>
                             {<LazyLoadImage
                               wrapperClassName={"overideImageCircle"}
@@ -187,12 +294,13 @@ const Groups: React.FC = (): JSX.Element => {
                           <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
                           </td>
+                          <td>{val?.restriction_mode }</td>
+                          <td> <i className="bi bi-lock-fill" onClick={() => openLockedPostingModal(val?._id, val?.restriction_mode)}></i></td>
                         </tr>
                       ))
-
                     ) : (
                         <tr>
-                          <td colSpan={7} className="text-center">No record found</td>
+                          <td colSpan={9} className="text-center">No record found</td>
                         </tr>
                       )}
 
