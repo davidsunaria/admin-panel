@@ -62,7 +62,7 @@ const Events: React.FC = (): JSX.Element => {
     if(!exportStatus){
     await getEvents({ url: "event/get-all-events", payload });
     }
-  }, []);
+  }, [exportStatus]);
   const getExportedData = useCallback(async (data: IUsers) => {
 
     if(exportStatus===true){
@@ -135,6 +135,7 @@ const Events: React.FC = (): JSX.Element => {
 
   useEffect(() => {
     if (formData) {
+      console.log("form data")
       getGroupData(formData);
       getExportedData(formData)
     }

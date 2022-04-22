@@ -63,6 +63,7 @@ const Users: React.FC = (): JSX.Element => {
   const [data, setData] = useState<Array<any>>([]);
   const [exportedData, setExportedData] = useState<Array<any>>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSearch, setIsSearch] = useState<boolean>(false);
   const [isPremiumModalOpen, setPremiumOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [isPremium, setPremium] = useState<any>("");
@@ -116,17 +117,15 @@ const Users: React.FC = (): JSX.Element => {
       await getUsers({ url: "user/get-all-users", payload });
     }
     
-  }, []);
+  }, [exportStatus]);
 
   const getExportedData = useCallback(async (data: IUsers) => {
     if(exportStatus===true){
-      console.log("exportuser",exportStatus)
       let payload = {
         q: data.q,
         status: data.status,
         is_premium:data.is_premium,
       }
-      console.log("updated", payload)
       await getExportedUsers({ url: "user/export", payload });
       await setExportStatus(false)
     }
@@ -172,16 +171,16 @@ const Users: React.FC = (): JSX.Element => {
   }, [response]);
 
   const onSearch = useCallback((payload: IUsers) => {
-    console.log("filter", payload)
     setFormData(_ => ({ ..._, ...payload, page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE }));
   }, []);
-
+  
   const onReset = useCallback(() => {
-    setFormData(userInititalState);
+      setFormData(userInititalState);
   }, []);
 
   useEffect(() => {
     if (formData) {
+      console.log("formdata")
       getUserData(formData);
       getExportedData(formData)
     }
