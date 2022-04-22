@@ -252,7 +252,7 @@ const Events: React.FC = (): JSX.Element => {
                             </div>
                           </td>
                           <td>{val?.capacity || "-"}</td>
-                          <td>{val?.capacity_type || "-"}</td>
+                          <td>{val?.capacity_type.charAt(0).toUpperCase() + val?.capacity_type.slice(1) || "-"}</td>
                           <td
                             className={"onHover"}
                             onClick={() =>
