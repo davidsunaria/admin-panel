@@ -25,7 +25,6 @@ export const ExportToExcel: React.FC<{
     (state) => state.user.exportedExcelData
   );
 
-  const [isBtnClicked, setIsBtnClicked] = useState<Boolean>(false);
   //console.log("exportuser",exportedUsers)
 
   const inititalState = useCallback((type, item) => {
@@ -66,7 +65,7 @@ export const ExportToExcel: React.FC<{
   }, []);
 
   useEffect(() => {
-    if (exportedExcelData?.length && isBtnClicked === true) {
+    if (exportedExcelData?.length ) {
       let newArray: any[] = [];
       exportedExcelData?.map((item: any) => {
         // here i am  extracting only userId and title
@@ -79,13 +78,11 @@ export const ExportToExcel: React.FC<{
       const data = new Blob([excelBuffer], { type: fileType });
       FileSaver.saveAs(data, type + fileExtension);
 
-      setIsBtnClicked(false);
       flushExcelData();
     }
-  }, [exportedExcelData, type, isBtnClicked]);
+  }, [exportedExcelData, type]);
 
   const exportDataToExcel = useCallback(async (type, payload) => {
-    setIsBtnClicked(true);
     if (type === "users") {
       let formData = {
         q: payload?.q,
