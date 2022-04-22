@@ -1,13 +1,20 @@
 import React from 'react'
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
+import { useStoreActions } from 'react-app-store';
+
 
 export const ExportToExcel = ({ apiData, fileName ,className}) => {
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
+ 
+  //Actions
+  const setExportStatus = useStoreActions(actions => actions.common.setExportStatus);
+  
 
-  const exportToCSV = (apiData, fileName) => {
+  const exportToCSV = async (apiData, fileName) => {
+    await setExportStatus(true)
     const ws = XLSX.utils.json_to_sheet(apiData);
     const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });

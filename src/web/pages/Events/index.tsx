@@ -50,34 +50,42 @@ const Events: React.FC = (): JSX.Element => {
   const response = useStoreState(state => state.event.response);
   const exportedEvents = useStoreState(state => state.event.exportedEvents);
   const isEnabledDisabled = useStoreState(state => state.group.isEnabledDisabled);
+  const exportStatus = useStoreState(state => state.common.exportStatus);
   //Actions
   const flushData = useStoreActions(actions => actions.group.flushData);
   const getEvents = useStoreActions(actions => actions.event.getEvents);
   const getExportedEvents = useStoreActions(actions => actions.event.getExportedEvents);
   const enableDisable = useStoreActions(actions => actions.group.enableDisable);
+  const setExportStatus = useStoreActions(actions => actions.common.setExportStatus);
 
   const getGroupData = useCallback(async (payload: IUsers) => {
+    if(!exportStatus){
     await getEvents({ url: "event/get-all-events", payload });
-  }, []);
+    }
+  }, [exportStatus]);
   const getExportedData = useCallback(async (data: IUsers) => {
-    
-    if(!filterStatus){
-      let payload = {
-        q: data.q,
-        status: data.status,
+
+    if(exportStatus===true){
+      if(!filterStatus){
+        let payload = {
+          q: data.q,
+          status: data.status,
+        }
+        await getExportedEvents({ url: "event/export", payload});
+        await setExportStatus(false)
       }
-      await getExportedEvents({ url: "event/export", payload});
-    }
-   
-    if(filterStatus){
-      let payload = {
-        q: data.q,
-        status: data.status,
-        group_id: data.group_id?data.group_id:"all",
+     
+      if(filterStatus){
+        let payload = {
+          q: data.q,
+          status: data.status,
+          group_id: data.group_id?data.group_id:"all",
+        }
+        await getExportedEvents({ url: "event/export", payload });
+        await setExportStatus(false)
       }
-      await getExportedEvents({ url: "event/export", payload });
     }
-  }, [filterStatus]);
+  }, [filterStatus,exportStatus]);
 
       useEffect(() => {
 
@@ -128,6 +136,7 @@ const Events: React.FC = (): JSX.Element => {
 
   useEffect(() => {
     if (formData) {
+      console.log("form data")
       getGroupData(formData);
       getExportedData(formData)
     }
