@@ -4,16 +4,17 @@ import { Formik } from 'formik';
 import { IUsers, IUsersProps, IEventGroups } from 'react-app-interfaces';
 import { useStoreActions, useStoreState } from 'react-app-store';
 import { ExportToExcel } from '../../components/ExportToExcel'
-
+import * as _ from "lodash";
 const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
-  const [statusData, setStatusdata] = useState([
+  
+  const [statusData] = useState([
     { key: 'All', value: 'all' }, { key: 'Active', value: "1" }, { key: 'Inactive', value: '0' }
   ]);
 
-  const [reportedStatus, setReportedStatus] = useState([
+  const [reportedStatus] = useState([
     { key: 'All', value: 'all' }, { key: 'Blocked', value: "1" }, { key: 'Unblocked', value: '0' }
   ]);
-  const [premiumData, setPremiumData] = useState([
+  const [premiumData] = useState([
     { key: 'All', value: 'all' }, { key: 'Yes', value: 1 }, { key: 'No', value: '0' }
   ]);
   const userInititalState = useCallback((): IUsers => {
@@ -69,17 +70,16 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
         return userInititalState();
     }
   }
-
+  const [exportPayload, setExportPayload] = useState<any>(searchInitialState(props?.type));
   return (
     <>
-
     <Formik
       enableReinitialize={true}
       initialValues={searchInitialState(props?.type)}
       onSubmit={async values => {
         //setFormData(JSON.stringify(values, null, 2))
         setLoading(true)
-        console.log("changes");
+        setExportPayload(values);
         props.onSearch(values);
       }}
 
@@ -170,13 +170,15 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                     }
                   </select>
                 </div>}
-
                 <div className="btn btn-outline-primary align-top" onClick={() => {
                   resetForm();
-                  setLoading(true)
+                  if(!_.isEmpty(Object.fromEntries(Object.entries(values).filter(([_, v]) => v !== "")))){
+                    setLoading(true)
+                  }
                   props.onReset();
+                  setExportPayload(searchInitialState(props?.type));
                 }}>Reset</div>
-                    {props?.exportButton && <ExportToExcel payload={searchInitialState(props?.type)} type={props?.type} class_name="btn btn-primary mx-2 mb-2" />}
+                    {props?.exportButton && <ExportToExcel payload={exportPayload} type={props?.type} class_name="btn btn-primary mx-2 mb-2" />}
 
               </div>
 
