@@ -8,7 +8,6 @@ import CustomSuspense from '../../components/CustomSuspense';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { Formik, Field, ErrorMessage } from 'formik';
-import { ExportToExcel } from '../../components/ExportToExcel'
 import { useAuthValidation } from '../../../lib/validations/AuthSchema';
 import env from '../../../config';
 import DEFAULT_USER_IMG from 'react-app-images/default_user.png';
@@ -61,7 +60,6 @@ const Users: React.FC = (): JSX.Element => {
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
-  const [exportedData, setExportedData] = useState<Array<any>>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isSearch, setIsSearch] = useState<boolean>(false);
   const [isPremiumModalOpen, setPremiumOpen] = useState(false);
@@ -72,20 +70,16 @@ const Users: React.FC = (): JSX.Element => {
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.user.response);
-  const exportedUsers = useStoreState(state => state.user.exportedUsers);
 
   const isInvitationSend = useStoreState(state => state.user.isInvitationSend);
   const isEnabledDisabled = useStoreState(state => state.user.isEnabledDisabled);
   const premiumStatus = useStoreState(state => state.user.premiumStatus);
-  const exportStatus = useStoreState(state => state.common.exportStatus);
   //Actions
   const getUsers = useStoreActions(actions => actions.user.getUsers);
-  const getExportedUsers = useStoreActions(actions => actions.user.getExportedUsers);
   const enableDisable = useStoreActions(actions => actions.user.enableDisable);
   const inviteUser = useStoreActions(actions => actions.user.inviteUser);
   const markAsPremium = useStoreActions(actions => actions.user.markAsPremium);
   const flushData = useStoreActions(actions => actions.user.flushData);
-  const setExportStatus = useStoreActions(actions => actions.common.setExportStatus);
   const toggle = () => setIsOpen(!isOpen);
 
 
@@ -93,7 +87,7 @@ const Users: React.FC = (): JSX.Element => {
     togglePremium()
     setUserId(id);
     setPremium(is_premium === 0 ? "1" : "0")
-    if (is_premium == 1) {
+    if (is_premium === 1) {
       let payload = {
         user_id: id,
         is_premium: "0",
@@ -105,55 +99,15 @@ const Users: React.FC = (): JSX.Element => {
     }
   }
 
-
-
   const togglePremium = () => {
     setPremiumOpen(!isPremiumModalOpen);
   }
 
 
   const getUserData = useCallback(async (payload: IUsers) => {
-    if(!exportStatus){
-      await getUsers({ url: "user/get-all-users", payload });
-    }
-    
-  }, [exportStatus]);
-
-  const getExportedData = useCallback(async (data: IUsers) => {
-    if(exportStatus===true){
-      let payload = {
-        q: data.q,
-        status: data.status,
-        is_premium:data.is_premium,
-      }
-      await getExportedUsers({ url: "user/export", payload });
-      await setExportStatus(false)
-    }
-    
-  }, [exportStatus]);
-
-
-
-
-  useEffect(() => {
-
-    let newArray: any[] = [];
-    exportedUsers?.map((item: any) => {
-
-      // here i am  extracting only userId and title
-      let obj = {
-        FirstName: item.first_name, LastName: item.last_name, Username: item.username,
-        Email: item.email, Status: item.active == 1 ? "Active" : "Inactive",
-        "BlockByAdmin": item.is_blocked_by_admin == 1 ? "Yes" : "No", Premium: item.is_premium == 1 ? "Yes" : "No"
-      };
-      // after extracting what I need, I am adding it to newArray
-      newArray?.push(obj);
-      // now  I am adding newArray to localstate in order to passing it via props for exporting
-      setExportedData(newArray);
-    });
-
-
-  }, [exportedUsers]);
+    console.log(4, payload);
+    await getUsers({ url: "user/get-all-users", payload });
+  }, []);
 
   useEffect(() => {
     if (response?.data) {
@@ -171,18 +125,20 @@ const Users: React.FC = (): JSX.Element => {
   }, [response]);
 
   const onSearch = useCallback((payload: IUsers) => {
+    console.log(1);
     setFormData(_ => ({ ..._, ...payload, page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE }));
   }, []);
-  
+
   const onReset = useCallback(() => {
-      setFormData(userInititalState);
+    console.log(2);
+    setFormData(userInititalState);
   }, []);
 
   useEffect(() => {
+    
     if (formData) {
-      console.log("formdata")
+      console.log(3, formData);
       getUserData(formData);
-      getExportedData(formData)
     }
   }, [formData]);
 
@@ -337,7 +293,7 @@ const Users: React.FC = (): JSX.Element => {
               </Formik>
 
             </MyModal>
-            <SearchUser type={"users"} onSearch={onSearch} onReset={onReset} exporteddata={exportedData} exportButton={true} />
+            <SearchUser type={"users"} onSearch={onSearch} onReset={onReset} exportButton={true} />
           </CustomSuspense>
 
           <CustomSuspense >
@@ -431,10 +387,10 @@ const Users: React.FC = (): JSX.Element => {
                       ))
 
                     ) : (
-                        <tr>
-                          <td colSpan={9} className="text-center">No record found</td>
-                        </tr>
-                      )}
+                      <tr>
+                        <td colSpan={9} className="text-center">No record found</td>
+                      </tr>
+                    )}
 
 
                   </tbody>

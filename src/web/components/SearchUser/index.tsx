@@ -71,12 +71,15 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
   }
 
   return (
+    <>
+
     <Formik
       enableReinitialize={true}
       initialValues={searchInitialState(props?.type)}
       onSubmit={async values => {
         //setFormData(JSON.stringify(values, null, 2))
         setLoading(true)
+        console.log("changes");
         props.onSearch(values);
       }}
 
@@ -173,7 +176,8 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                   setLoading(true)
                   props.onReset();
                 }}>Reset</div>
-                {props?.exportButton && <ExportToExcel apiData={props.exporteddata} fileName={props.type} className="btn btn-primary mx-2 mb-2" />}
+                    {props?.exportButton && <ExportToExcel payload={searchInitialState(props?.type)} type={props?.type} class_name="btn btn-primary mx-2 mb-2" />}
+
               </div>
 
             </div>
@@ -181,6 +185,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
         );
       }}
     </Formik>
+    </>
   );
 }
 
