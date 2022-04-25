@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { Link } from "react-router-dom";
 import { useStoreActions } from 'react-app-store';
 import { ILogin } from 'react-app-interfaces';
-import { Formik, ErrorMessage } from 'formik';
+import { Formik } from 'formik';
 import { useAuthValidation } from '../../lib/validations/AuthSchema';
 import LOGO from 'react-app-images/logo.png';
 import { removeTempData } from '../../lib/utils/Service';
