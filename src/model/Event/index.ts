@@ -8,23 +8,27 @@ import { IPayload } from 'react-app-interfaces';
 
 const initialState = {
   response: {},
+  exportedEvents: [],
   groups: {},
   isEnabledDisabled: false,
 }
 export interface EventModel {
   response: string | object | any;
+  exportedEvents: string | object | any;
   groups: string | object | any;
   isEnabledDisabled: boolean;
   //**************State Actions************///
   flushData: Action<EventModel>;
   setEnabledDisabled: Action<EventModel, boolean>;
   setResponse: Action<EventModel, object | any>;
+  setExportedEvents:Action<EventModel, object | any>;
   setGroups: Action<EventModel, object | any>;
   reset: Action<EventModel>;
   //**************State  Actions************///
 
   //**************Thunk Actions************///
   getEvents: Thunk<EventModel, object>;
+  getExportedEvents:Thunk<EventModel, object>;
   enableDisable: Thunk<EventModel, object>;
   getGroups: Thunk<EventModel, object>;
   //**************Thunk Actions************///
@@ -34,6 +38,9 @@ const event: EventModel = {
   ...initialState,
   setResponse: action((state, payload) => {
     state.response = payload;
+  }),
+  setExportedEvents: action((state, payload) => {
+    state.exportedEvents = payload;
   }),
   setGroups: action((state, payload) => {
     state.groups = payload;
@@ -65,6 +72,25 @@ const event: EventModel = {
       return true;
     }
   }),
+
+  getExportedEvents: thunk<EventModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
+    // getStoreActions().common.setLoading(true);
+    if ((getState().response?.data ==undefined && payload?.payload?.page == 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
+     getStoreActions().common.setLoading(true);
+   }
+     let response = await getApi(payload);
+     if (response && response.status !== 200) {
+       toast.error(response?.message);
+       getStoreActions().common.setLoading(false);
+     } else if (response && response.status === 200) {
+       actions.setExportedEvents(response?.data);
+       getStoreActions().common.setLoading(false);
+     }
+     else {
+       getStoreActions().common.setLoading(false);
+       return true;
+     }
+   }),
 
 
   enableDisable: thunk<EventModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
