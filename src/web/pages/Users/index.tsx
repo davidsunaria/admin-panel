@@ -107,6 +107,10 @@ const Users: React.FC = (): JSX.Element => {
   const flushData = useStoreActions((actions) => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
 
+  const togglePremium = () => {
+    setPremiumOpen(!isPremiumModalOpen);
+  };
+
   const openPremiumModal = async (
     id: string,
     is_premium: any,
@@ -126,6 +130,7 @@ const Users: React.FC = (): JSX.Element => {
     }
     
     if (is_premium === 1 && expiredDate===true) {
+
       let payload = {
         user_id: id,
         is_premium: "0",
@@ -133,11 +138,8 @@ const Users: React.FC = (): JSX.Element => {
         expire_at: "",
       };
       await markAsPremium({ url: "user/mark-premium", payload });
-    }
-  };
-  const togglePremium = () => {
-    setPremiumOpen(!isPremiumModalOpen);
-  };
+  }};
+ 
 
   const getUserData = useCallback(async (payload: IUsers) => {
     await getUsers({ url: "user/get-all-users", payload });

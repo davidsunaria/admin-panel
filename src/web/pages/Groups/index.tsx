@@ -55,11 +55,11 @@ const Groups: React.FC = (): JSX.Element => {
   const response = useStoreState(state => state.group.response);
   const isEnabledDisabled = useStoreState(state => state.group.isEnabledDisabled);
   const isLockedUnlocked = useStoreState(state => state.group.isLockedUnlocked);
-  
+  //Actions
+  //Actions
   const flushData = useStoreActions(actions => actions.group.flushData);
   const getGroups = useStoreActions(actions => actions.group.getGroups);
   const enableDisable = useStoreActions(actions => actions.group.enableDisable);
-
   const lockedUnlocked = useStoreActions(actions => actions.group.lockedUnlocked);
   
   const toggle = () => setIsOpen(!isOpen);
@@ -69,8 +69,6 @@ const Groups: React.FC = (): JSX.Element => {
     setGroupId(id);
     setCurrentRestrictedMode(restriction_mode)
   }
-
-
 
   const getGroupData = useCallback(async (payload: IUsers) => {
       await getGroups({ url: "group/get-all-groups", payload });
