@@ -18,6 +18,7 @@ import { useAuthValidation } from "../../../lib/validations/AuthSchema";
 import env from "../../../config";
 import DEFAULT_USER_IMG from "react-app-images/default_user.png";
 import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment"
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const SearchUser = React.lazy(() => import("../../components/SearchUser"));
@@ -38,6 +39,9 @@ const Users: React.FC = (): JSX.Element => {
       { key: "last_name", value: "Last Name" },
       { key: "email", value: "Email" },
       { key: "username", value: "Username" },
+      { key: "created_at", value: "Joined Date" },
+      { key: "last_seen", value: "Last Logged In" },
+      { key: "language", value: "Language" },
       { key: "status", value: "Status" },
       { key: "is_premium", value: "Premium" },
       { key: "action", value: "Action" },
@@ -448,6 +452,9 @@ const Users: React.FC = (): JSX.Element => {
                           <td>{val?.last_name || "-"}</td>
                           <td>{val?.email || "-"}</td>
                           <td>{val?.username || "-"}</td>
+                          <td>{ moment(val?.created_at).format("YYYY-MM-DD") || "-"}</td>
+                          <td>{val?.last_seen || "-"}</td>
+                          <td>{(val?.language==="en" && "English") ||(val?.language==="es" && "Spanish")||"-"}</td>
                           <td
                             className={"onHover"}
                             onClick={() =>
@@ -478,6 +485,8 @@ const Users: React.FC = (): JSX.Element => {
                               {val?.is_premium === 1 ? "Yes" : "No"}
                             </div>
                           </td>
+                         
+                        
 
                           <td className={"onHover"}>
                             <div
