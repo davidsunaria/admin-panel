@@ -82,24 +82,29 @@ const Users: React.FC = (): JSX.Element => {
   const [userId, setUserId] = useState("");
   const [isPremium, setPremium] = useState<any>("");
 
-
-
   //State
-  const isLoading = useStoreState(state => state.common.isLoading);
-  const response = useStoreState(state => state.user.response);
+  const isLoading = useStoreState((state) => state.common.isLoading);
+  const response = useStoreState((state) => state.user.response);
   const memberShipData = useStoreState((state) => state.user.memberShipData);
-  const isInvitationSend = useStoreState(state => state.user.isInvitationSend);
-  const isEnabledDisabled = useStoreState(state => state.user.isEnabledDisabled);
-  const premiumStatus = useStoreState(state => state.user.premiumStatus);
+  const isInvitationSend = useStoreState(
+    (state) => state.user.isInvitationSend
+  );
+  const isEnabledDisabled = useStoreState(
+    (state) => state.user.isEnabledDisabled
+  );
+
+  const premiumStatus = useStoreState((state) => state.user.premiumStatus);
   //Actions
-  const getUsers = useStoreActions(actions => actions.user.getUsers);
-  const enableDisable = useStoreActions(actions => actions.user.enableDisable);
-  const inviteUser = useStoreActions(actions => actions.user.inviteUser);
-  const markAsPremium = useStoreActions(actions => actions.user.markAsPremium);
-  const flushData = useStoreActions(actions => actions.user.flushData);
+  const getUsers = useStoreActions((actions) => actions.user.getUsers);
 
-
- 
+  const enableDisable = useStoreActions(
+    (actions) => actions.user.enableDisable
+  );
+  const inviteUser = useStoreActions((actions) => actions.user.inviteUser);
+  const markAsPremium = useStoreActions(
+    (actions) => actions.user.markAsPremium
+  );
+  const flushData = useStoreActions((actions) => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
 
   const openPremiumModal = async (
@@ -137,26 +142,6 @@ const Users: React.FC = (): JSX.Element => {
   const getUserData = useCallback(async (payload: IUsers) => {
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
-  useEffect(() => {
-
-    let newArray: any[] = [];
-    exportedUsers?.map((item: any) => {
-
-      // here i am  extracting only userId and title
-      let obj = {
-        FirstName: item.first_name, LastName: item.last_name, Username: item.username,
-        Email: item.email, Status: item.active == 1 ? "Active" : "Inactive",
-        "BlockByAdmin": item.is_blocked_by_admin == 1 ? "Yes" : "No", Premium: item.is_premium == 1 ? "Yes" : "No"
-      };
-      // after extracting what I need, I am adding it to newArray
-      newArray?.push(obj);
-      // now  I am adding newArray to localstate in order to passing it via props for exporting
-      setExportedData(newArray);
-    });
-
-
-  }, [exportedUsers]);
-
   useEffect(() => {
     if (response?.data) {
       const {
@@ -265,8 +250,6 @@ const Users: React.FC = (): JSX.Element => {
   };
 
   useEffect(() => {
-
-
     async function changeData() {
       //console.log("change data",isPremium)
       let localStateData = [...data];
@@ -386,9 +369,8 @@ const Users: React.FC = (): JSX.Element => {
                 }}
               </Formik>
             </MyModal>
-            <SearchUser type={"users"} onSearch={onSearch} onReset={onReset} exporteddata={exportedData} exportButton={true} />
+            <SearchUser type={"users"} onSearch={onSearch} onReset={onReset}  exportButton={true} />
           </CustomSuspense>
-
 
           <CustomSuspense>
             {isPremium === "1" && (

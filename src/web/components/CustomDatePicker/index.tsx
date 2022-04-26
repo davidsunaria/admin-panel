@@ -1,15 +1,17 @@
-import React, { HTMLInputTypeAttribute } from "react";
-import { Formik, Field,ErrorMessage } from 'formik';
+import React, { useState } from "react";
+import { ErrorMessage } from 'formik';
 import DatePicker from "react-datepicker";
 import moment from "moment"
 
-interface CustomDatePicker {
+interface ICustomDatePicker {
    value?: any;
     label?: string | undefined;
     name: string;
     props:any;
 }
-const CustomDatePicker: React.FC<CustomDatePicker> = ({  value, label, name, props}) => {
+const CustomDatePicker: React.FC<ICustomDatePicker> = ({  value, label, name, props}) => {
+
+  const [minDate]=useState(new Date())
   
   const {
     setFieldValue
@@ -20,6 +22,7 @@ const CustomDatePicker: React.FC<CustomDatePicker> = ({  value, label, name, pro
         <div className="PopupDatePicker">
           <DatePicker
             name={name}
+             minDate={minDate}
             value={value || ""}
             onChange={date => {
               const formattedDate = moment(date).format("YYYY-MM-DD");
