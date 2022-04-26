@@ -578,6 +578,20 @@ a {
   align-items: center;
   justify-content: center;
 }
+
+.manageExpire{
+  width:93px;
+  height:28px;
+  display:inline-block;
+  border-radius:30px;
+  -webkit-border-radius:30px;
+  vertical-align: middle;
+  font-size: 12px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .manageStatus.active, .manageStatus.active:hover{
   background-color:#00A389;
   color:#ffffff;

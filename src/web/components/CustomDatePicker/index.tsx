@@ -22,7 +22,7 @@ const CustomDatePicker: React.FC<ICustomDatePicker> = ({  value, label, name, pr
         <div className="PopupDatePicker">
           <DatePicker
             name={name}
-            minDate={minDate}
+             minDate={minDate}
             value={value || ""}
             onChange={date => {
               const formattedDate = moment(date).format("YYYY-MM-DD");

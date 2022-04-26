@@ -10,6 +10,7 @@ import { logoutCompletely } from '../../lib/utils/Service';
 
 const initialState = {
  response: {},
+ memberShipData: {},
   isInvitationSend: false,
   isEnabledDisabled: false,
   premiumStatus:false
@@ -19,12 +20,14 @@ export interface UserModel {
   isEnabledDisabled:boolean;
   premiumStatus:boolean;
   response: string | object | any;
+  memberShipData:string | object | any;
   //**************State Actions************///
   setIsInvitationSend: Action<UserModel, boolean>;
   flushData: Action<UserModel>;
   reset: Action<UserModel>;
   setEnabledDisabled: Action<UserModel, boolean>;
-  setResponse: Action<UserModel, object | any>;
+  setResponse: Action<UserModel, object | any>; 
+  setMemberShipData: Action<UserModel, object | any>;
   setPremiumStatus:Action<UserModel, boolean>;
   //**************State  Actions************///
 
@@ -46,6 +49,11 @@ const user: UserModel = {
   setPremiumStatus: action((state, payload) => {
     state.premiumStatus = payload;
   }),
+  setMemberShipData: action((state, payload) => {
+    state.memberShipData = payload;
+  }),
+  
+  
   setIsInvitationSend: action((state, payload) => {
     state.isInvitationSend = payload;
   }),
@@ -142,11 +150,11 @@ const user: UserModel = {
     actions.setPremiumStatus(false);
     getStoreActions().common.setLoading(true);
     let response = await postApi(payload);
-    console.log("response",response)
     if (response && response.status !== 200) {
       toast.error(response.message);
       getStoreActions().common.setLoading(false);
     } else if (response && response.status === 200) {
+      actions.setMemberShipData(response.data.membership);
       toast.success(response.message);
       getStoreActions().common.setLoading(false);
       actions.setPremiumStatus(true);

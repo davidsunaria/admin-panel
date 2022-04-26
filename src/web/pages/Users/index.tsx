@@ -79,21 +79,22 @@ const Users: React.FC = (): JSX.Element => {
   const [isPremiumModalOpen, setPremiumOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [isPremium, setPremium] = useState<any>("");
-  const [isExpired, setExpired] = useState<any>("");
-  const [curerentDate] = useState(new Date());
 
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
   const response = useStoreState((state) => state.user.response);
+  const memberShipData = useStoreState((state) => state.user.memberShipData);
   const isInvitationSend = useStoreState(
     (state) => state.user.isInvitationSend
   );
   const isEnabledDisabled = useStoreState(
     (state) => state.user.isEnabledDisabled
   );
+
   const premiumStatus = useStoreState((state) => state.user.premiumStatus);
   //Actions
   const getUsers = useStoreActions((actions) => actions.user.getUsers);
+
   const enableDisable = useStoreActions(
     (actions) => actions.user.enableDisable
   );
@@ -104,17 +105,25 @@ const Users: React.FC = (): JSX.Element => {
   const flushData = useStoreActions((actions) => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
 
-  const openPremiumModal = async (id: string, is_premium: any,expiredDate:any) => {
-    console.log("expired",expiredDate,is_premium)
-    if(!expiredDate){
-      setPremium("1")
-    }
-    
+  const openPremiumModal = async (
+    id: string,
+    is_premium: any,
+    expiredDate: any
+  ) => {
+
     togglePremium();
     setUserId(id);
-    setPremium(is_premium === 0 ? "1" : "0");
-    if (is_premium === 1 ) {
-      console.log("hi")
+    if(expiredDate===false){
+      setPremium("1");
+    }
+    if(expiredDate===true){
+      setPremium("0");
+    }
+    if(typeof expiredDate==="undefined"){
+      setPremium(is_premium === 0 ? "1" : "0");
+    }
+    
+    if (is_premium === 1 && expiredDate===true) {
       let payload = {
         user_id: id,
         is_premium: "0",
@@ -124,7 +133,6 @@ const Users: React.FC = (): JSX.Element => {
       await markAsPremium({ url: "user/mark-premium", payload });
     }
   };
-
   const togglePremium = () => {
     setPremiumOpen(!isPremiumModalOpen);
   };
@@ -132,7 +140,6 @@ const Users: React.FC = (): JSX.Element => {
   const getUserData = useCallback(async (payload: IUsers) => {
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
-
   useEffect(() => {
     if (response?.data) {
       const {
@@ -242,18 +249,19 @@ const Users: React.FC = (): JSX.Element => {
     async function changeData() {
       //console.log("change data",isPremium)
       let localStateData = [...data];
+
       let index = localStateData.findIndex((item) => item._id === userId);
       localStateData[index].is_premium = parseInt(isPremium);
+      localStateData[index].membership = memberShipData;
       setData(localStateData);
       await flushData();
     }
     if (premiumStatus && premiumStatus === true) {
       changeData();
-      setUserId("");
+       setUserId("");
       setPremium("");
     }
   }, [premiumStatus]);
-console.log("newdata",data)
   useEffect(() => {
     async function flush() {
       toggle();
@@ -297,7 +305,7 @@ console.log("newdata",data)
         return true;
       }
     }
-    return true;
+    // return true;
   }, []);
 
   return (
@@ -361,7 +369,7 @@ console.log("newdata",data)
           </CustomSuspense>
 
           <CustomSuspense>
-            {(isPremium === "1" ) && (
+            {isPremium === "1" && (
               <MyModal
                 heading={isPremium === "1" ? "Mark Premium" : "Unmark Premium"}
                 showSubmitBtn={false}
@@ -480,24 +488,23 @@ console.log("newdata",data)
                           <td>
                             <div
                               className={
-                                val?.is_premium === 1 &&  compareDate(val?.membership?.expire_at)
-                                  ? "manageStatus active"
-                                  : "manageStatus inactive"
+                                val?.is_premium === 1 &&
+                                compareDate(val?.membership?.expire_at)
+                                  ? "manageStatus manageExpire active"
+                                  : "manageStatus  manageExpire inactive"
                               }
                             >
-                              
-                              {val?.is_premium === 1 &&  compareDate(val?.membership?.expire_at) && console.log("yes",val?.first_name)}
-                              {val?.is_premium === 0  && !val?.membership && console.log("no",val?.first_name) }
-                              {val?.is_premium === 1 &&  !compareDate(val?.membership?.expire_at) && console.log("expired",val?.first_name) }
-                              {val?.is_premium === 0 &&  !compareDate(val?.membership?.expire_at) && console.log("expired",val?.first_name)}
-
-                              {val?.is_premium === 1 &&  compareDate(val?.membership?.expire_at) && "Yes" }
-                               {/* {console.log(val?._id, val?.is_premium, val?.membership)}  */}
-                              
-                              {(val?.is_premium === 0  || (val?.is_premium_marked_at===undefined || !compareDate(val?.membership?.expire_at) )) && "No" }
-                              {val?.is_premium === 1 &&  !compareDate(val?.membership?.expire_at) && "No(expired)" }
-                              {val?.is_premium === 0 &&  !compareDate(val?.membership?.expire_at) && "No(expired)" }
-                              
+                              {val?.is_premium === 1 &&
+                                val?.membership &&
+                                compareDate(val?.membership?.expire_at) &&
+                                "Yes"}
+                              {val?.is_premium === 0 &&
+                                typeof val?.membership === "undefined" &&
+                                "No"}
+                              {val?.is_premium === 1 &&
+                                typeof val?.membership !== "undefined" &&
+                                !compareDate(val?.membership?.expire_at) &&
+                                "No(expired)"}
                             </div>
                           </td>
 
@@ -505,15 +512,21 @@ console.log("newdata",data)
                             {/* {JSON.stringify(compareDate(val?.membership?.expire_at))} */}
                             <div
                               className={
-                                val?.is_premium === 1 &&  compareDate(val?.membership?.expire_at) 
-                                  ? "manageStatus managePremium active"
-                                  : "manageStatus managePremium inactive"
+                                val?.is_premium === 1 &&
+                                compareDate(val?.membership?.expire_at)
+                                  ? "manageStatus managePremium  active"
+                                  : "manageStatus managePremium  inactive"
                               }
                               onClick={() =>
-                                openPremiumModal(val._id, val.is_premium,compareDate(val?.membership?.expire_at) )
+                                openPremiumModal(
+                                  val._id,
+                                  val.is_premium,
+                                  compareDate(val?.membership?.expire_at)
+                                )
                               }
                             >
-                              {val?.is_premium === 1 && compareDate(val?.membership?.expire_at)
+                              {val?.is_premium === 1 &&
+                              compareDate(val?.membership?.expire_at)
                                 ? "Unmark Premium"
                                 : "Mark Premium"}
                             </div>
