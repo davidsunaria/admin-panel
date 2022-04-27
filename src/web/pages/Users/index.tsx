@@ -316,6 +316,16 @@ const Users: React.FC = (): JSX.Element => {
     }
     // return true;
   }, []);
+  const getLanguage = useCallback((lang) => {
+    switch (lang) {
+        case 'es':
+            return "Spanish"
+        default:
+            return "English"
+    }
+
+
+}, [])
 
   return (
     <>
@@ -477,7 +487,7 @@ const Users: React.FC = (): JSX.Element => {
                           <td>{val?.username || "-"}</td>
                           <td>{ moment(val?.created_at).format("YYYY-MM-DD") || "-"}</td>
                           <td>{val?.last_seen || "-"}</td>
-                          <td>{(val?.language==="en" && "English") ||(val?.language==="es" && "Spanish")||"-"}</td>
+                          <td>{ getLanguage(val?.lang)}</td>
                           <td
                             className={"onHover"}
                             onClick={() =>
