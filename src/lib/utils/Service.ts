@@ -65,6 +65,6 @@ export const showNavbar = (toggleId: string, navId: string, bodyId: string, head
 }
 
 export const truncate = (text: any) => {
-  return _.truncate(text, {length: 30, omission: '...'});
+  return _.truncate(text, {length: 25, omission: '...'});
 }
 

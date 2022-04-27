@@ -19,6 +19,7 @@ import env from "../../../config";
 import DEFAULT_USER_IMG from "react-app-images/default_user.png";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment"
+import { truncate } from "../../../lib/utils/Service";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const SearchUser = React.lazy(() => import("../../components/SearchUser"));
@@ -481,8 +482,8 @@ const Users: React.FC = (): JSX.Element => {
                               />
                             }
                           </td>
-                          <td>{val?.first_name || "-"}</td>
-                          <td>{val?.last_name || "-"}</td>
+                          <td>{truncate(val?.first_name) || "-"}</td>
+                          <td>{truncate(val?.last_name) || "-"}</td>
                           <td>{val?.email || "-"}</td>
                           <td>{val?.username || "-"}</td>
                           <td>{ moment(val?.created_at).format("YYYY-MM-DD") || "-"}</td>
