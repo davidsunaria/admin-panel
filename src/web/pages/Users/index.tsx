@@ -519,8 +519,8 @@ const Users: React.FC = (): JSX.Element => {
                               }
                               onClick={() =>
                                 openPremiumModal(
-                                  val._id,
-                                  val.is_premium,
+                                  val?._id,
+                                  val?.is_premium,
                                   compareDate(val?.membership?.expire_at)
                                 )
                               }
