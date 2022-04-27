@@ -11,6 +11,8 @@ import { logoutCompletely } from '../../lib/utils/Service';
 const initialState = {
   response: {},
   exportedExcelData: [],
+  memberShipData: {},
+
   isInvitationSend: false,
   isEnabledDisabled: false,
   premiumStatus:false
@@ -21,6 +23,7 @@ export interface UserModel {
   premiumStatus:boolean;
   response: string | object | any;
   exportedExcelData: string | object | any;
+  memberShipData:string | object | any;
   //**************State Actions************///
   setIsInvitationSend: Action<UserModel, boolean>;
   flushData: Action<UserModel>;
@@ -28,6 +31,8 @@ export interface UserModel {
   setEnabledDisabled: Action<UserModel, boolean>;
   setResponse: Action<UserModel, object | any>;
   setExportedExcelData: Action<UserModel, object | any>;
+  setMemberShipData: Action<UserModel, object | any>;
+
   setPremiumStatus:Action<UserModel, boolean>;
   flushExcelData: Action<UserModel>;
   
@@ -55,6 +60,11 @@ const user: UserModel = {
   setPremiumStatus: action((state, payload) => {
     state.premiumStatus = payload;
   }),
+  setMemberShipData: action((state, payload) => {
+    state.memberShipData = payload;
+  }),
+  
+  
   setIsInvitationSend: action((state, payload) => {
     state.isInvitationSend = payload;
   }),
@@ -185,6 +195,7 @@ const user: UserModel = {
       toast.error(response.message);
       getStoreActions().common.setLoading(false);
     } else if (response && response.status === 200) {
+      actions.setMemberShipData(response.data.membership);
       toast.success(response.message);
       getStoreActions().common.setLoading(false);
       actions.setPremiumStatus(true);

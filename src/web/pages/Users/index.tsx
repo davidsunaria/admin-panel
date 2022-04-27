@@ -13,11 +13,12 @@ import { confirmAlert } from "react-confirm-alert";
 import CustomSuspense from "../../components/CustomSuspense";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import { Formik} from "formik";
+import { Formik } from "formik";
 import { useAuthValidation } from "../../../lib/validations/AuthSchema";
 import env from "../../../config";
 import DEFAULT_USER_IMG from "react-app-images/default_user.png";
 import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const SearchUser = React.lazy(() => import("../../components/SearchUser"));
@@ -28,7 +29,6 @@ const CustomDatePicker = React.lazy(
   () => import("../../components/CustomDatePicker")
 );
 const Navbar = React.lazy(() => import("../../components/Navbar"));
-
 const Users: React.FC = (): JSX.Element => {
   const { InviteUserSchema, PremiumSchema } = useAuthValidation();
   const tableHeader = useMemo(() => {
@@ -83,16 +83,18 @@ const Users: React.FC = (): JSX.Element => {
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
   const response = useStoreState((state) => state.user.response);
-
+  const memberShipData = useStoreState((state) => state.user.memberShipData);
   const isInvitationSend = useStoreState(
     (state) => state.user.isInvitationSend
   );
   const isEnabledDisabled = useStoreState(
     (state) => state.user.isEnabledDisabled
   );
+
   const premiumStatus = useStoreState((state) => state.user.premiumStatus);
   //Actions
   const getUsers = useStoreActions((actions) => actions.user.getUsers);
+
   const enableDisable = useStoreActions(
     (actions) => actions.user.enableDisable
   );
@@ -103,11 +105,25 @@ const Users: React.FC = (): JSX.Element => {
   const flushData = useStoreActions((actions) => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
 
-  const openPremiumModal = async (id: string, is_premium: any) => {
+  const openPremiumModal = async (
+    id: string,
+    is_premium: any,
+    expiredDate: any
+  ) => {
+
     togglePremium();
     setUserId(id);
-    setPremium(is_premium ===  0 ? "1": "0")
-    if(is_premium===1){
+    if(expiredDate===false){
+      setPremium("1");
+    }
+    if(expiredDate===true){
+      setPremium("0");
+    }
+    if(typeof expiredDate==="undefined"){
+      setPremium(is_premium === 0 ? "1" : "0");
+    }
+    
+    if (is_premium === 1 && expiredDate===true) {
       let payload = {
         user_id: id,
         is_premium: "0",
@@ -117,7 +133,6 @@ const Users: React.FC = (): JSX.Element => {
       await markAsPremium({ url: "user/mark-premium", payload });
     }
   };
-
   const togglePremium = () => {
     setPremiumOpen(!isPremiumModalOpen);
   };
@@ -126,7 +141,6 @@ const Users: React.FC = (): JSX.Element => {
     console.log(4, payload);
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
-
   useEffect(() => {
     if (response?.data) {
       const {
@@ -145,7 +159,6 @@ const Users: React.FC = (): JSX.Element => {
   }, [response]);
 
   const onSearch = useCallback((payload: IUsers) => {
-    console.log(1);
     setFormData((_) => ({
       ..._,
       ...payload,
@@ -237,19 +250,20 @@ const Users: React.FC = (): JSX.Element => {
 
   useEffect(() => {
     async function changeData() {
+      //console.log("change data",isPremium)
       let localStateData = [...data];
       let index = localStateData.findIndex((item) => item._id === userId);
       localStateData[index].is_premium = parseInt(isPremium);
+      localStateData[index].membership = memberShipData;
       setData(localStateData);
       await flushData();
     }
     if (premiumStatus && premiumStatus === true) {
       changeData();
-      setUserId("");
+       setUserId("");
       setPremium("");
     }
   }, [premiumStatus]);
-
   useEffect(() => {
     async function flush() {
       toggle();
@@ -281,6 +295,20 @@ const Users: React.FC = (): JSX.Element => {
     { value: "monthly", label: "Monthly", name: "type" },
     { value: "yearly", label: "Yearly", name: "type" },
   ];
+
+  const compareDate = useCallback((date?: string) => {
+    if (date) {
+      const today = moment(moment(new Date()).format("YYYY-MM-DD")).unix();
+      const expireAt = moment(moment(date).format("YYYY-MM-DD")).unix();
+
+      if (today > expireAt && date) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    // return true;
+  }, []);
 
   return (
     <>
@@ -364,10 +392,7 @@ const Users: React.FC = (): JSX.Element => {
                   validationSchema={PremiumSchema}
                 >
                   {(props) => {
-                    const {
-                      values,
-                      handleSubmit,
-                    } = props;
+                    const { values, handleSubmit } = props;
                     return (
                       <form onSubmit={handleSubmit}>
                         <div className="p-3">
@@ -443,6 +468,19 @@ const Users: React.FC = (): JSX.Element => {
                                 width={60}
                               />
                             }
+                          
+                            <div
+                              className={
+                                val?.active === 1 || val?.active === true
+                                  ? "manageStatus active"
+                                  : "manageStatus inactive"
+                              }
+                            >
+                              {" "}
+                              {val?.active === 1 || val?.active === true
+                                ? "Active"
+                                : "Inactive"}
+                            </div>
                           </td>
                           <td>{val?.first_name || "-"}</td>
                           <td>{val?.last_name || "-"}</td>
@@ -470,27 +508,45 @@ const Users: React.FC = (): JSX.Element => {
                           <td>
                             <div
                               className={
-                                val?.is_premium === 1
-                                  ? "manageStatus active"
-                                  : "manageStatus inactive"
+                                val?.is_premium === 1 &&
+                                compareDate(val?.membership?.expire_at)
+                                  ? "manageStatus manageExpire active"
+                                  : "manageStatus  manageExpire inactive"
                               }
                             >
-                              {val?.is_premium === 1 ? "Yes" : "No"}
+                              {val?.is_premium === 1 &&
+                                val?.membership &&
+                                compareDate(val?.membership?.expire_at) &&
+                                "Yes"}
+                              {val?.is_premium === 0 &&
+                                typeof val?.membership === "undefined" &&
+                                "No"}
+                              {val?.is_premium === 1 &&
+                                typeof val?.membership !== "undefined" &&
+                                !compareDate(val?.membership?.expire_at) &&
+                                "No(expired)"}
                             </div>
                           </td>
 
                           <td className={"onHover"}>
+                            {/* {JSON.stringify(compareDate(val?.membership?.expire_at))} */}
                             <div
                               className={
-                                val?.is_premium === 1
-                                  ? "manageStatus managePremium active"
-                                  : "manageStatus managePremium inactive"
+                                val?.is_premium === 1 &&
+                                compareDate(val?.membership?.expire_at)
+                                  ? "manageStatus managePremium  active"
+                                  : "manageStatus managePremium  inactive"
                               }
                               onClick={() =>
-                                openPremiumModal(val._id, val.is_premium)
+                                openPremiumModal(
+                                  val?._id,
+                                  val?.is_premium,
+                                  compareDate(val?.membership?.expire_at)
+                                )
                               }
                             >
-                              {val?.is_premium === 1
+                              {val?.is_premium === 1 &&
+                              compareDate(val?.membership?.expire_at)
                                 ? "Unmark Premium"
                                 : "Mark Premium"}
                             </div>
