@@ -469,18 +469,7 @@ const Users: React.FC = (): JSX.Element => {
                               />
                             }
                           
-                            <div
-                              className={
-                                val?.active === 1 || val?.active === true
-                                  ? "manageStatus active"
-                                  : "manageStatus inactive"
-                              }
-                            >
-                              {" "}
-                              {val?.active === 1 || val?.active === true
-                                ? "Active"
-                                : "Inactive"}
-                            </div>
+                            
                           </td>
                           <td>{val?.first_name || "-"}</td>
                           <td>{val?.last_name || "-"}</td>
