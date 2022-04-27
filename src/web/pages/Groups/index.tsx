@@ -11,6 +11,7 @@ import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
 import { truncate } from '../../../lib/utils/Service';
 import { Formik } from 'formik';
+import _, { toUpper } from 'lodash';
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
@@ -296,7 +297,7 @@ const Groups: React.FC = (): JSX.Element => {
                           <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
                           </td>
-                          <td>{val?.restriction_mode.charAt(0).toUpperCase() + val?.restriction_mode.slice(1) }</td>
+                          <td>{_.upperFirst(val?.restriction_mode||"open") }</td>
                           <td> <i title='Lock for posting' className="bi bi-lock-fill" onClick={() => openLockedPostingModal(val?._id, val?.restriction_mode)}></i></td>
                         </tr>
                       ))

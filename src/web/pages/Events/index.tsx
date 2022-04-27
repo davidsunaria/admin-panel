@@ -10,6 +10,7 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import DEFAULT_EVENT_IMG from "react-app-images/default_event.png";
 import env from "../../../config";
 import { truncate } from "../../../lib/utils/Service";
+import _, { toUpper } from 'lodash';
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const SearchUser = React.lazy(() => import("../../components/SearchUser"));
@@ -253,7 +254,7 @@ const Events: React.FC = (): JSX.Element => {
                             </div>
                           </td>
                           <td>{val?.capacity || "-"}</td>
-                          <td>{val?.capacity_type.charAt(0).toUpperCase() + val?.capacity_type.slice(1) || "-"}</td>
+                          <td>{_.upperFirst(val?.capacity_type||"-") }</td>
                           <td
                             className={"onHover"}
                             onClick={() =>
