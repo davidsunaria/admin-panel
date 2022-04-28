@@ -101,9 +101,8 @@ const user: UserModel = {
   }),
 
   getExportedExcelData: thunk<UserModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    if ((getState().response?.data === undefined && payload?.payload?.page === 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
       getStoreActions().common.setLoading(true);
-    }
+    
     //console.log("payload",payload)
    // getStoreActions().common.setLoading(true);
     let response = await getApi(payload);
