@@ -8,7 +8,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
-import { truncate } from '../../../lib/utils/Service';
+import { truncate ,toUpperCase} from '../../../lib/utils/Service';
 import CustomSuspense from '../../components/CustomSuspense';
 import moment from "moment"
 
@@ -174,17 +174,17 @@ const ReportedGroups: React.FC = (): JSX.Element => {
                               width={60} />
                             }
                           </td>
-                          <td>{val?.reported_groups?.name || '-'}</td>
-                          <td><div title={val?.group_creator?.first_name + " " + val?.group_creator?.last_name}>{truncate(val?.group_creator?.first_name + " " + val?.group_creator?.last_name) || '-'}</div></td>
+                          <td>{toUpperCase(val?.reported_groups?.name)}</td>
+                          <td><div title={val?.group_creator?.first_name + " " + val?.group_creator?.last_name}>{truncate(toUpperCase(val?.group_creator?.first_name) + " " + val?.group_creator?.last_name) || '-'}</div></td>
 
-                          <td>{val?.reported_groups?.category || '-'}</td>
-                          <td><div title={val?.reported_groups?.address}>{truncate(val?.reported_groups?.address) || '-'}</div></td>
+                          <td>{toUpperCase(val?.reported_groups?.category)}</td>
+                          <td><div title={val?.reported_groups?.address}>{truncate(toUpperCase(val?.reported_groups?.address))}</div></td>
                           <td>{moment(val?.created_at).format('MMMM Do YYYY, h:mm:ss a') || '-'}</td>
                           <td>
                             {val?.resource_reporter.map((value: any, i: number, row: Array<object>) => {
                               return (
                                 <span key={i} title={value?.first_name + " " + value?.last_name}>{
-                                  truncate(i + 1 !== row.length ? value?.first_name + " " + value?.last_name + ", " : value?.first_name + " " + value?.last_name) || '-'}
+                                  truncate(i + 1 !== row.length ?toUpperCase( value?.first_name) + " " + value?.last_name + ", " : toUpperCase(value?.first_name) + " " + value?.last_name) || '-'}
                                 </span>)
                             })}
                           </td>
