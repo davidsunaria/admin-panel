@@ -33,18 +33,19 @@ export const ExportToExcel: React.FC<{
         return {
           FirstName: item?.first_name || "-",
           LastName: item?.last_name || "-",
-          Username: item?.username || "-",
           Email: item?.email || "-",
+          Username: item?.username || "-",
           Status: item?.active === 1 ? "Active" : "Inactive",
-          BlockByAdmin: item?.is_blocked_by_admin === 1 ? "Yes" : "No",
           Premium: item?.is_premium === 1 ? "Yes" : "No",
+          BlockByAdmin: item?.is_blocked_by_admin === 1 ? "Yes" : "No",
+         
         };
       case "events":
         return {
           Name: item?.name || "-",
           Owner: `${item?.creator_of_event?.first_name} ${item?.creator_of_event?.last_name}`,
-          Address: item?.address || "-",
           "Associated group": item?.event_group?.name || "-",
+          Address: item?.address || "-",
           Capacity: item?.capacity || "-",
           "Capacity Type": item?.capacity_type || "-",
           Status: item?.status === 1 ? "Active" : "Inactive",
@@ -56,6 +57,7 @@ export const ExportToExcel: React.FC<{
           Owner: `${item?.creator_of_group?.first_name} ${item?.creator_of_group?.last_name}`,
           Purpose: item?.category || "-",
           Address: item?.address || "-",
+          "Restricted Mode": item?.restriction_mode || "-",
           Status: item?.status === 1 ? "Active" : "Inactive",
           BlockByAdmin: item?.is_blocked_by_admin === 1 ? "Yes" : "No",
         };

@@ -28,9 +28,9 @@ const Groups: React.FC = (): JSX.Element => {
       { key: 'creator', value: 'Owner' },
       { key: 'category', value: 'Purpose' },
       { key: 'address', value: 'Address' },
+      { key: 'restrictedMode', value: 'Restricted Mode' },
       { key: 'status', value: 'Status' },
       { key: 'is_blocked_by_admin', value: 'Blocked by admin' },
-      { key: 'restrictedMode', value: 'Restricted Mode' },
       { key: 'action', value: 'Action' },
     ]
   }, []);
@@ -327,12 +327,12 @@ const Groups: React.FC = (): JSX.Element => {
 
                           <td>{val?.category || '-'}</td>
                           <td><div title={val?.address}>{truncate(val?.address) || '-'}</div></td>
+                          <td>{_.upperFirst(val?.restriction_mode||"Open") }</td>
                           <td className={"onHover"} onClick={() => enableDisableGroup(val?._id, val?.status)}>
                             <div className={(val?.status === 1 || val?.status === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.status === 1 || val?.status === true) ? 'Active' : 'Inactive'}</div></td>
                           <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
                           </td>
-                          <td>{_.upperFirst(val?.restriction_mode||"open") }</td>
                           <td> <i title='Lock for posting' className="bi bi-lock-fill" onClick={() => openLockedPostingModal(val?._id, val?.restriction_mode)}></i></td>
                         </tr>
                       ))
