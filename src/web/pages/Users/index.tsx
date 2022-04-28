@@ -259,7 +259,6 @@ const Users: React.FC = (): JSX.Element => {
     async function changeData() {
       //console.log("change data",isPremium)
       let localStateData = [...data];
-
       let index = localStateData.findIndex((item) => item._id === userId);
       localStateData[index].is_premium = parseInt(isPremium);
       localStateData[index].membership = memberShipData;
