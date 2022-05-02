@@ -198,11 +198,20 @@ const Users: React.FC = (): JSX.Element => {
     await enableDisable({ url: "common/enable-disable", payload });
   }, []);
 
+  const demo = useCallback(async (id: string, status: string | number) => {
+    setCurrentUserId(id);
+    console.log("hi",id)
+  }, []);
+
   const enableDisableUser = useCallback((id, status) => {
     let text: string;
     if (status === 1) {
       text = "You want to inactivate user?";
-    } else {
+    } 
+    else if (status==="delete"){
+      text = "You want to delete user?";
+    }
+    else {
       text = "You want to activate user?";
     }
     confirmAlert({
@@ -210,7 +219,7 @@ const Users: React.FC = (): JSX.Element => {
         return (
           <ConfirmAlert
             onClose={onClose}
-            onYes={() => onYes(id, status)}
+            onYes={status!=="delete"?() => onYes(id, status):() => demo(id, status)}
             heading="Are you sure?"
             subHeading={text}
             onCloseText="No"
@@ -476,22 +485,35 @@ const Users: React.FC = (): JSX.Element => {
                           <td>{val?.email || "-"}</td>
                           <td>{val?.username || "-"}</td>
                           <td
-                            className={"onHover"}
-                            onClick={() =>
-                              enableDisableUser(val?._id, val?.active)
-                            }
+                            className={"onHover d-flex"}
                           >
                             <div
+                             onClick={() =>
+                              enableDisableUser(val?._id, val?.active)
+                            }
                               className={
                                 val?.active === 1 || val?.active === true
-                                  ? "manageStatus active"
-                                  : "manageStatus inactive"
+                                  ? "manageStatus active me-1"
+                                  : "manageStatus inactive me-1"
                               }
                             >
                               {" "}
                               {val?.active === 1 || val?.active === true
                                 ? "Active"
                                 : "Inactive"}
+                            </div>
+                            <div
+                            onClick={() =>
+                              enableDisableUser(val?._id, "delete")}
+                              className={
+                                val?.active === 1 || val?.active === true
+                                  ? "manageStatus active"
+                                  : "manageStatus inactive"
+                              }
+                              
+                            >
+                              {" "}
+                              { "Delete user"}
                             </div>
                           </td>
                           <td>
