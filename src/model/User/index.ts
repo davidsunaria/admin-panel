@@ -15,12 +15,14 @@ const initialState = {
 
   isInvitationSend: false,
   isEnabledDisabled: false,
-  premiumStatus:false
+  premiumStatus:false,
+  deleteStatus:false
 }
 export interface UserModel {
   isInvitationSend: boolean;
   isEnabledDisabled:boolean;
   premiumStatus:boolean;
+  deleteStatus:boolean;
   response: string | object | any;
   exportedExcelData: string | object | any;
   memberShipData:string | object | any;
@@ -74,6 +76,7 @@ const user: UserModel = {
     state.isEnabledDisabled = false;
     state.premiumStatus = false;
     state.exportedExcelData = [];
+    state.deleteStatus = false;
   }),
   setEnabledDisabled: action((state, payload) => {
     state.isEnabledDisabled = payload;
