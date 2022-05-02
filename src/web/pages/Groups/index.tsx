@@ -186,6 +186,7 @@ const Groups: React.FC = (): JSX.Element => {
 
 
   const lockedGroupInititalState = useCallback((): ILockedGroup => {
+    console.log("hi")
     return {
       restriction_mode: currentRestrictedMode ??  "",
       _id: '',

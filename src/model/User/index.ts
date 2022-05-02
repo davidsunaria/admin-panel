@@ -45,6 +45,7 @@ export interface UserModel {
   enableDisable: Thunk<UserModel, object>;
   inviteUser: Thunk<UserModel, object>;
   markAsPremium: Thunk<UserModel, object>;
+  deleteUser:Thunk<UserModel, object>;
   //**************Thunk Actions************///
 }
 
@@ -198,6 +199,27 @@ const user: UserModel = {
       toast.success(response.message);
       getStoreActions().common.setLoading(false);
       actions.setPremiumStatus(true);
+    }
+    else {
+      getStoreActions().common.setLoading(false);
+      return true;
+    }
+  }),
+
+  deleteUser: thunk<UserModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
+   // actions.setPremiumStatus(false);
+    getStoreActions().common.setLoading(true);
+    console.log("payload",payload)
+    let response = await postApi(payload);
+    console.log("response",response)
+    if (response && response.status !== 200) {
+      toast.error(response.message);
+      getStoreActions().common.setLoading(false);
+    } else if (response && response.status === 200) {
+      actions.setMemberShipData(response.data.membership);
+      toast.success(response.message);
+      getStoreActions().common.setLoading(false);
+     // actions.setPremiumStatus(true);
     }
     else {
       getStoreActions().common.setLoading(false);

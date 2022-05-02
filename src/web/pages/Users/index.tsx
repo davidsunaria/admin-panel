@@ -102,6 +102,9 @@ const Users: React.FC = (): JSX.Element => {
   const markAsPremium = useStoreActions(
     (actions) => actions.user.markAsPremium
   );
+  const deleteUser = useStoreActions(
+    (actions) => actions.user.deleteUser
+  );
   const flushData = useStoreActions((actions) => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
 
@@ -200,7 +203,7 @@ const Users: React.FC = (): JSX.Element => {
 
   const demo = useCallback(async (id: string, status: string | number) => {
     setCurrentUserId(id);
-    console.log("hi",id)
+    await deleteUser({ url: "", id });
   }, []);
 
   const enableDisableUser = useCallback((id, status) => {
