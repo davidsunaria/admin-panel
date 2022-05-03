@@ -792,3 +792,59 @@ nav ul.subNav{
   width: 243px;
   max-width: 100%;
 }
+
+
+.detailOuer{
+  vertical-align: top;
+  font-size: 14px;
+  margin-right: 10px;
+  position: relative;
+  display:flex;
+  margin-bottom: 10px;
+  border-bottom:1px dashed #dddddd;
+  margin:0px;
+  padding:8px 10px;
+
+  > label{
+    color:#777777;
+  }
+  > span{
+    flex:1;
+    font-size: 13px;
+    font-weight: 600;
+    text-align:right;
+  }
+}
+.dashboardBoxes .search-box{
+  font-size: 14px;
+  
+}
+.dashboardBoxes .customScroll{
+  height:230px;
+}
+.customScroll{
+  scrollbar-color: rgba(0,0,0,0.1) transparent;
+  scrollbar-width: thin;
+  overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background:none;
+  }
+  &::-webkit-scrollbar-thumb {
+    background:rgba(0,0,0,0.1);
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background:rgba(0,0,0,0.1);
+  }
+}
+
+.dashboardSubtitleOuter, .dashAppointFilterOuter{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.dashboardSubTitle{
+  font-size:20px;
+}
