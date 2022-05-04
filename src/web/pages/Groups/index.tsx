@@ -379,7 +379,7 @@ const Groups: React.FC = (): JSX.Element => {
                           <div className="d-flex">
                           <i title='Lock for posting' className=" bi bi-lock" onClick={() => openLockedPostingModal(val?._id, val?.restriction_mode)}></i>
                           <i
-                              title="Delete Group"
+                              title="Delete group"
                               className="bi  bi-trash"
                               onClick={() =>
                                 manageAction(val?._id, "delete")

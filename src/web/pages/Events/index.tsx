@@ -327,8 +327,8 @@ const Events: React.FC = (): JSX.Element => {
                               <i
                                 title={
                                   val?.status === 1 || val?.status === true
-                                    ? "Inactive Event"
-                                    : "Active Event"
+                                    ? "Inactivate event"
+                                    : "Activate event"
                                 }
                                 className={`bi  ${
                                   val?.status === 1 || val?.status === true
@@ -340,7 +340,7 @@ const Events: React.FC = (): JSX.Element => {
                                 }
                               ></i>
                               <i
-                                title="Delete Event"
+                                title="Delete event"
                                 className="bi  bi-trash"
                                 onClick={() =>
                                   manageAction(val?._id, "delete")

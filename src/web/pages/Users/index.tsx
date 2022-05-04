@@ -615,7 +615,7 @@ const Users: React.FC = (): JSX.Element => {
                             />
 
                             <i
-                              title="Delete User"
+                              title="Delete user"
                               className="bi  bi-trash"
                               onClick={() =>
                                 manageAction(val?._id, "delete")
