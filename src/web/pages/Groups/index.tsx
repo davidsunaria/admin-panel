@@ -48,6 +48,8 @@ const Groups: React.FC = (): JSX.Element => {
  // const [exportedData, setExportedData] = useState<Array<any>>([]);
   const [currentUserId, setCurrentUserId] = useState<String>("");
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
+  const [CurrentGroupId, setCurrentGroupId] = useState<String>("");
+  const [currentGroupStatus, setCurrentGroupStatus] = useState<String | number>("");
   const [restrictedMode, setRestrictedMode] = useState<any>("");
   const [currentRestrictedMode, setCurrentRestrictedMode] = useState<any>("");
   const [isOpen, setIsOpen] = useState(false);
@@ -58,6 +60,7 @@ const Groups: React.FC = (): JSX.Element => {
  // const exportedGroups = useStoreState(state => state.group.exportedGroups);
   const isEnabledDisabled = useStoreState(state => state.group.isEnabledDisabled);
   const isLockedUnlocked = useStoreState(state => state.group.isLockedUnlocked);
+  const deleteStatus = useStoreState((state) => state.group.deleteStatus);
   //Actions
   //Actions
   const flushData = useStoreActions(actions => actions.group.flushData);
@@ -65,6 +68,7 @@ const Groups: React.FC = (): JSX.Element => {
  // const getExportedGroups = useStoreActions(actions => actions.group.getExportedGroups);
   const enableDisable = useStoreActions(actions => actions.group.enableDisable);
   const lockedUnlocked = useStoreActions(actions => actions.group.lockedUnlocked);
+  const deleteGroup = useStoreActions(actions => actions.group.deleteGroup);
   
   const toggle = () => setIsOpen(!isOpen);
 
@@ -156,13 +160,25 @@ const Groups: React.FC = (): JSX.Element => {
     await enableDisable({ url: 'common/enable-disable', payload });
   }, []);
 
+  const groupDelete = useCallback(async (id: string, status: string | number) => {
+    setCurrentGroupId(id);
+    setCurrentGroupStatus(status);
+    const payload: IEnableDisable = {
+      _id: id
+    }
+    await deleteGroup({ url: 'group/delete-group', payload });
+  }, []);
 
 
 
-  const enableDisableGroup = useCallback((id, status) => {
+
+  const manageAction = useCallback((id, status) => {
     let text: string;
     if (status === 1) {
       text = 'You want to inactivate group?';
+    }
+    else if (status === "delete") {
+      text = "You want to delete group?";
     }
     else {
       text = 'You want to activate group?';
@@ -170,7 +186,11 @@ const Groups: React.FC = (): JSX.Element => {
     confirmAlert({
       customUI: ({ onClose }) => {
         return (
-          <ConfirmAlert onClose={onClose} onYes={() => onYes(id, status)} heading="Are you sure?" subHeading={text} onCloseText="No" onSubmitText="Yes" />
+          <ConfirmAlert onClose={onClose}  onYes={
+            status !== "delete"
+              ? () => onYes(id, status)
+              : () => groupDelete(id, status)
+          } heading="Are you sure?" subHeading={text} onCloseText="No" onSubmitText="Yes" />
         );
       }
     });
@@ -251,6 +271,27 @@ const Groups: React.FC = (): JSX.Element => {
   }, [isEnabledDisabled]);
 
   useEffect(() => {
+    async function changeData() {
+      //console.log("change data",isPremium)
+      let localStateData = [...data];
+      let index = localStateData.findIndex(
+        (item) => item._id === CurrentGroupId
+      );
+
+      localStateData[index].status =
+      currentGroupStatus === "delete" ? 0 : 1;
+      localStateData.splice(index, 1);
+      setData(localStateData);
+      await flushData();
+    }
+    if (deleteStatus && deleteStatus === true) {
+      changeData();
+      setCurrentGroupId("");
+      setCurrentGroupStatus("");
+    }
+  }, [deleteStatus]);
+
+  useEffect(() => {
     
     async function changeData() {
       let localStateData = [...data];
@@ -329,12 +370,23 @@ const Groups: React.FC = (): JSX.Element => {
                           <td>{val?.category || '-'}</td>
                           <td><div title={val?.address}>{truncate(val?.address) || '-'}</div></td>
                           <td>{_.upperFirst(val?.restriction_mode||"Open") }</td>
-                          <td className={"onHover"} onClick={() => enableDisableGroup(val?._id, val?.status)}>
-                            <div className={(val?.status === 1 || val?.status === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.status === 1 || val?.status === true) ? 'Active' : 'Inactive'}</div></td>
+                          <td className={"onHover"} >
+                            <div onClick={() => manageAction(val?._id, val?.status)} className={(val?.status === 1 || val?.status === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.status === 1 || val?.status === true) ? 'Active' : 'Inactive'}</div></td>
                           <td>
                             <div className={val?.is_blocked_by_admin === 1 ? "manageStatus inactive" : "manageStatus active"}>{val?.is_blocked_by_admin === 1 ? 'Yes' : 'No'}</div>
                           </td>
-                          <td> <i title='Lock for posting' className="bi bi-lock-fill" onClick={() => openLockedPostingModal(val?._id, val?.restriction_mode)}></i></td>
+                          <td className='tdAction'> 
+                          <div className="d-flex">
+                          <i title='Lock for posting' className=" bi bi-lock" onClick={() => openLockedPostingModal(val?._id, val?.restriction_mode)}></i>
+                          <i
+                              title="Delete Group"
+                              className="bi  bi-trash"
+                              onClick={() =>
+                                manageAction(val?._id, "delete")
+                              }
+                            />
+                            </div>
+                          </td>
                         </tr>
                       ))
                     ) : (

@@ -38,10 +38,11 @@ const Users: React.FC = (): JSX.Element => {
       { key: "last_name", value: "Last Name" },
       { key: "email", value: "Email" },
       { key: "username", value: "Username" },
-      { key: "status", value: "Status" },
       { key: "is_premium", value: "Premium" },
-      { key: "action", value: "Action" },
       { key: "is_blocked_by_admin", value: "Blocked by admin" },
+      { key: "status", value: "Status" },
+      { key: "action", value: "Action" },
+    
     ];
   }, []);
   const userInititalState = useMemo(() => {
@@ -71,6 +72,10 @@ const Users: React.FC = (): JSX.Element => {
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>(
     ""
   );
+  const [currentUserDeleteStatus, setCurrentUserDeleteStatus] = useState<
+    String | number
+  >("");
+
   const [formData, setFormData] = useState<IUsers>(userInititalState);
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -84,6 +89,7 @@ const Users: React.FC = (): JSX.Element => {
   const isLoading = useStoreState((state) => state.common.isLoading);
   const response = useStoreState((state) => state.user.response);
   const memberShipData = useStoreState((state) => state.user.memberShipData);
+  const deleteStatus = useStoreState((state) => state.user.deleteStatus);
   const isInvitationSend = useStoreState(
     (state) => state.user.isInvitationSend
   );
@@ -102,9 +108,7 @@ const Users: React.FC = (): JSX.Element => {
   const markAsPremium = useStoreActions(
     (actions) => actions.user.markAsPremium
   );
-  const deleteUser = useStoreActions(
-    (actions) => actions.user.deleteUser
-  );
+  const deleteUser = useStoreActions((actions) => actions.user.deleteUser);
   const flushData = useStoreActions((actions) => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
 
@@ -113,20 +117,19 @@ const Users: React.FC = (): JSX.Element => {
     is_premium: any,
     expiredDate: any
   ) => {
-
     togglePremium();
     setUserId(id);
-    if(expiredDate===false){
+    if (expiredDate === false) {
       setPremium("1");
     }
-    if(expiredDate===true){
+    if (expiredDate === true) {
       setPremium("0");
     }
-    if(typeof expiredDate==="undefined"){
+    if (typeof expiredDate === "undefined") {
       setPremium(is_premium === 0 ? "1" : "0");
     }
-    
-    if (is_premium === 1 && expiredDate===true) {
+
+    if (is_premium === 1 && expiredDate === true) {
       let payload = {
         user_id: id,
         is_premium: "0",
@@ -141,7 +144,6 @@ const Users: React.FC = (): JSX.Element => {
   };
 
   const getUserData = useCallback(async (payload: IUsers) => {
-    console.log(4, payload);
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
   useEffect(() => {
@@ -201,20 +203,24 @@ const Users: React.FC = (): JSX.Element => {
     await enableDisable({ url: "common/enable-disable", payload });
   }, []);
 
-  const demo = useCallback(async (id: string, status: string | number) => {
-    setCurrentUserId(id);
-    await deleteUser({ url: "", id });
-  }, []);
-
-  const enableDisableUser = useCallback((id, status) => {
+  const deleteMember = useCallback(
+    async (id: string, status: string | number) => {
+      setCurrentUserId(id);
+      setCurrentUserDeleteStatus(status);
+      const payload: IUsers = {
+        user_id: id,
+      };
+      await deleteUser({ url: "user/delete-user", payload });
+    },
+    []
+  );
+  const manageAction = useCallback((id, status) => {
     let text: string;
     if (status === 1) {
       text = "You want to inactivate user?";
-    } 
-    else if (status==="delete"){
+    } else if (status === "delete") {
       text = "You want to delete user?";
-    }
-    else {
+    } else {
       text = "You want to activate user?";
     }
     confirmAlert({
@@ -222,7 +228,11 @@ const Users: React.FC = (): JSX.Element => {
         return (
           <ConfirmAlert
             onClose={onClose}
-            onYes={status!=="delete"?() => onYes(id, status):() => demo(id, status)}
+            onYes={
+              status !== "delete"
+                ? () => onYes(id, status)
+                : () => deleteMember(id, status)
+            }
             heading="Are you sure?"
             subHeading={text}
             onCloseText="No"
@@ -272,10 +282,31 @@ const Users: React.FC = (): JSX.Element => {
     }
     if (premiumStatus && premiumStatus === true) {
       changeData();
-       setUserId("");
+      setUserId("");
       setPremium("");
     }
   }, [premiumStatus]);
+
+  useEffect(() => {
+    async function changeData() {
+      //console.log("change data",isPremium)
+      let localStateData = [...data];
+      let index = localStateData.findIndex(
+        (item) => item._id === currentUserId
+      );
+
+      localStateData[index].active =
+        currentUserDeleteStatus === "delete" ? 0 : 1;
+      localStateData.splice(index, 1);
+      setData(localStateData);
+      await flushData();
+    }
+    if (deleteStatus && deleteStatus === true) {
+      changeData();
+      setUserId("");
+      setCurrentUserDeleteStatus("");
+    }
+  }, [deleteStatus]);
   useEffect(() => {
     async function flush() {
       toggle();
@@ -480,45 +511,12 @@ const Users: React.FC = (): JSX.Element => {
                                 width={60}
                               />
                             }
-                          
-                            
                           </td>
                           <td>{val?.first_name || "-"}</td>
                           <td>{val?.last_name || "-"}</td>
                           <td>{val?.email || "-"}</td>
                           <td>{val?.username || "-"}</td>
-                          <td
-                            className={"onHover d-flex"}
-                          >
-                            <div
-                             onClick={() =>
-                              enableDisableUser(val?._id, val?.active)
-                            }
-                              className={
-                                val?.active === 1 || val?.active === true
-                                  ? "manageStatus active me-1"
-                                  : "manageStatus inactive me-1"
-                              }
-                            >
-                              {" "}
-                              {val?.active === 1 || val?.active === true
-                                ? "Active"
-                                : "Inactive"}
-                            </div>
-                            <div
-                            onClick={() =>
-                              enableDisableUser(val?._id, "delete")}
-                              className={
-                                val?.active === 1 || val?.active === true
-                                  ? "manageStatus active"
-                                  : "manageStatus inactive"
-                              }
-                              
-                            >
-                              {" "}
-                              { "Delete user"}
-                            </div>
-                          </td>
+                         
                           <td>
                             <div
                               className={
@@ -541,10 +539,39 @@ const Users: React.FC = (): JSX.Element => {
                                 "No(expired)"}
                             </div>
                           </td>
+                          <td>
+                            <div
+                              className={
+                                val?.is_blocked_by_admin === 1
+                                  ? "manageStatus inactive"
+                                  : "manageStatus active"
+                              }
+                            >
+                              {val?.is_blocked_by_admin === 1 ? "Yes" : "No"}
+                            </div>
+                          </td>
 
                           <td className={"onHover"}>
-                            {/* {JSON.stringify(compareDate(val?.membership?.expire_at))} */}
                             <div
+                              onClick={() =>
+                                manageAction(val?._id, val?.active)
+                              }
+                              className={
+                                val?.active === 1 || val?.active === true
+                                  ? "manageStatus active me-1"
+                                  : "manageStatus inactive me-1"
+                              }
+                            >
+                              {" "}
+                              {val?.active === 1 || val?.active === true
+                                ? "Active"
+                                : "Inactive"}
+                            </div>
+                          </td>
+
+                          <td className={"tdAction"}>
+                            {/* {JSON.stringify(compareDate(val?.membership?.expire_at))} */}
+                            {/* <div
                               className={
                                 val?.is_premium === 1 &&
                                 compareDate(val?.membership?.expire_at)
@@ -563,17 +590,37 @@ const Users: React.FC = (): JSX.Element => {
                               compareDate(val?.membership?.expire_at)
                                 ? "Unmark Premium"
                                 : "Mark Premium"}
-                            </div>
-                          </td>
-                          <td>
-                            <div
-                              className={
-                                val?.is_blocked_by_admin === 1
-                                  ? "manageStatus inactive"
-                                  : "manageStatus active"
+                            </div> */}
+                             <div className="d-flex">
+                            <i
+                              title={
+                                val?.is_premium === 1 &&
+                                compareDate(val?.membership?.expire_at)
+                                  ? "Unmark Premium"
+                                  : "Mark Premium"
                               }
-                            >
-                              {val?.is_blocked_by_admin === 1 ? "Yes" : "No"}
+                              className={`bi bi-star-fill ${
+                                val?.is_premium === 1 &&
+                                compareDate(val?.membership?.expire_at)
+                                  ? "success"
+                                  : "danger"
+                              }`}
+                              onClick={() =>
+                                openPremiumModal(
+                                  val?._id,
+                                  val?.is_premium,
+                                  compareDate(val?.membership?.expire_at)
+                                )
+                              }
+                            />
+
+                            <i
+                              title="Delete User"
+                              className="bi  bi-trash"
+                              onClick={() =>
+                                manageAction(val?._id, "delete")
+                              }
+                            />
                             </div>
                           </td>
                         </tr>

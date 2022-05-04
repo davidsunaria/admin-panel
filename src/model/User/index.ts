@@ -36,6 +36,7 @@ export interface UserModel {
   setMemberShipData: Action<UserModel, object | any>;
 
   setPremiumStatus:Action<UserModel, boolean>;
+  setDeleteStatus:Action<UserModel, boolean>;
   flushExcelData: Action<UserModel>;
   
   //**************State  Actions************///
@@ -62,6 +63,9 @@ const user: UserModel = {
   }),
   setPremiumStatus: action((state, payload) => {
     state.premiumStatus = payload;
+  }),
+  setDeleteStatus: action((state, payload) => {
+    state.deleteStatus = payload;
   }),
   setMemberShipData: action((state, payload) => {
     state.memberShipData = payload;
@@ -210,7 +214,7 @@ const user: UserModel = {
   }),
 
   deleteUser: thunk<UserModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
-   // actions.setPremiumStatus(false);
+    actions.setDeleteStatus(false);
     getStoreActions().common.setLoading(true);
     console.log("payload",payload)
     let response = await postApi(payload);
@@ -219,10 +223,9 @@ const user: UserModel = {
       toast.error(response.message);
       getStoreActions().common.setLoading(false);
     } else if (response && response.status === 200) {
-      actions.setMemberShipData(response.data.membership);
       toast.success(response.message);
       getStoreActions().common.setLoading(false);
-     // actions.setPremiumStatus(true);
+      actions.setDeleteStatus(true);
     }
     else {
       getStoreActions().common.setLoading(false);

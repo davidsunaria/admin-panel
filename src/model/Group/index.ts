@@ -10,7 +10,8 @@ const initialState = {
   response: {},
   exportedGroups: [],
   isEnabledDisabled: false,
-  isLockedUnlocked:false
+  isLockedUnlocked:false,
+  deleteStatus:false
 }
 
 export interface GroupModel {
@@ -18,12 +19,15 @@ export interface GroupModel {
   exportedGroups: string | object | any;
   isEnabledDisabled: boolean;
   isLockedUnlocked: boolean;
+  deleteStatus:boolean;
+
   //**************State Actions************///
   flushData: Action<GroupModel>;
   setEnabledDisabled: Action<GroupModel, boolean>;
   setLockedUnlocked: Action<GroupModel, boolean>;
   reset: Action<GroupModel>;
   setResponse: Action<GroupModel, object | any>;
+  setDeleteStatus:Action<GroupModel, object | any>;
   setExportedGroups:Action<GroupModel, object | any>;
   //**************State  Actions************///
 
@@ -32,6 +36,7 @@ export interface GroupModel {
   getExportedGroups:Thunk<GroupModel, object>;
   enableDisable: Thunk<GroupModel, object>;
   lockedUnlocked:Thunk<GroupModel, object>;
+  deleteGroup:Thunk<GroupModel, object>;
   //**************Thunk Actions************///
 }
 
@@ -47,12 +52,16 @@ const group: GroupModel = {
   flushData: action((state, payload) => {
     state.isEnabledDisabled = false;
     state.isLockedUnlocked = false;
+    state.deleteStatus = false;
   }),
   setEnabledDisabled: action((state, payload) => {
     state.isEnabledDisabled = payload;
   }),
   setLockedUnlocked: action((state, payload) => {
     state.isLockedUnlocked = payload;
+  }),
+  setDeleteStatus: action((state, payload) => {
+    state.deleteStatus = payload;
   }),
   getGroups: thunk<GroupModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
     if ((getState().response?.data ==undefined && payload?.payload?.page == 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
@@ -127,6 +136,23 @@ console.log("apyload",payload)
       toast.success(response.message);
       getStoreActions().common.setLoading(false);
       actions.setLockedUnlocked(true);
+    }
+    else {
+      getStoreActions().common.setLoading(false);
+      return true;
+    }
+  }),
+  deleteGroup: thunk<GroupModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
+    getStoreActions().common.setLoading(true);
+    actions.setDeleteStatus(false);
+    let response = await postApi(payload);
+    if (response && response.status !== 200) {
+      toast.error(response.message);
+      getStoreActions().common.setLoading(false);
+    } else if (response && response.status === 200) {
+      toast.success(response.message);
+      getStoreActions().common.setLoading(false);
+      actions.setDeleteStatus(true);
     }
     else {
       getStoreActions().common.setLoading(false);
