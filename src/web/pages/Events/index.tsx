@@ -9,8 +9,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import DEFAULT_EVENT_IMG from "react-app-images/default_event.png";
 import env from "../../../config";
-import { truncate } from "../../../lib/utils/Service";
-import _, { toUpper } from 'lodash';
+import { truncate,toUpperCase } from "../../../lib/utils/Service";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const SearchUser = React.lazy(() => import("../../components/SearchUser"));
@@ -227,7 +226,7 @@ const Events: React.FC = (): JSX.Element => {
                               />
                             }
                           </td>
-                          <td>{val?.name || "-"}</td>
+                          <td>{toUpperCase(val?.name)}</td>
                           <td>
                             <div
                               title={
@@ -237,7 +236,7 @@ const Events: React.FC = (): JSX.Element => {
                               }
                             >
                               {truncate(
-                                val?.creator_of_event?.first_name +
+                                toUpperCase(val?.creator_of_event?.first_name) +
                                   " " +
                                   val?.creator_of_event?.last_name
                               ) || "-"}
@@ -245,16 +244,16 @@ const Events: React.FC = (): JSX.Element => {
                           </td>
                           <td>
                             <div title={val?.event_group?.name}>
-                              {truncate(val?.event_group?.name) || "-"}
+                              {truncate(toUpperCase(val?.event_group?.name))}
                             </div>
                           </td>
                           <td>
                             <div title={val?.address}>
-                              {truncate(val?.address) || "-"}
+                              {truncate(toUpperCase(val?.address))}
                             </div>
                           </td>
                           <td>{val?.capacity || "-"}</td>
-                          <td>{_.upperFirst(val?.capacity_type||"-") }</td>
+                          <td>{toUpperCase(val?.capacity_type) }</td>
                           <td
                             className={"onHover"}
                             onClick={() =>
