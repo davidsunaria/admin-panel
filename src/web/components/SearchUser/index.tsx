@@ -38,7 +38,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
 
   const reportedResourceInititalState = useCallback((): IUsers => {
     return {
-      q: '', is_blocked_by_admin: ''
+      q: '', is_blocked_by_admin: 'all'
     }
   }, []);
   const groups = useStoreState(state => state.event.groups);

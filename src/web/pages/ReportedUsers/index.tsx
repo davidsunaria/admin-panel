@@ -142,7 +142,7 @@ const ReportedUsers: React.FC = (): JSX.Element => {
     <>
       <div className="Content">
         <CustomSuspense >
-          <Navbar text={"Reported Users"} />
+          <Navbar text={"Reported members"} />
         </CustomSuspense>
         <div className="cardBox">
           <CustomSuspense >
@@ -158,7 +158,7 @@ const ReportedUsers: React.FC = (): JSX.Element => {
                 scrollThreshold={0.8}
               >
 
-                <table className="table mb-0">
+                <table className="table customTable mb-0">
                   <CustomSuspense >
                     <TableHeader fields={tableHeader} />
                   </CustomSuspense>
