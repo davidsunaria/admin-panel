@@ -8,25 +8,25 @@ import NavigationService from 'src/routes/NavigationService';
 import store from 'react-app-store';
 
 const initialState = {
-  membersDetail:{},
-  groupsDetail:{},
+  subscribersCount:{},
+  membersCount:{},
 }
 export interface DashboardModel {
-  membersDetail: string | object | any;
-  groupsDetail: string | object | any;
+  subscribersCount: string | object | any;
+  membersCount: string | object | any;
   
   //**************State Actions************///
  
-  setMembersDetail:Action<DashboardModel, object | any>;
-  setGroupsDetail:Action<DashboardModel, object | any>;
+  setSubscribersCount:Action<DashboardModel, object | any>;
+  setMembersCount:Action<DashboardModel, object | any>;
   reset: Action<DashboardModel>;
  
   
   //**************State  Actions************///
 
   //**************Thunk Actions************///
-  getMembersDetail:Thunk<DashboardModel, object>;
-  getGroupsDetail:Thunk<DashboardModel, object>;
+  getSubscribersCount:Thunk<DashboardModel, object>;
+  getMembersCount:Thunk<DashboardModel, object>;
  
  
   //**************Thunk Actions************///
@@ -36,11 +36,11 @@ const dashboard: DashboardModel = {
 
   ...initialState,
  
-  setMembersDetail: action((state, payload) => {
-    state.membersDetail = payload;
+  setSubscribersCount: action((state, payload) => {
+    state.subscribersCount = payload;
   }),
-  setGroupsDetail: action((state, payload) => {
-    state.groupsDetail = payload;
+  setMembersCount: action((state, payload) => {
+    state.membersCount = payload;
   }),
  
   
@@ -48,7 +48,7 @@ const dashboard: DashboardModel = {
 
   reset: action(state => state = initialState),
   
-  getMembersDetail: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
+  getSubscribersCount: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
    console.log("pyaload",payload)
    // getStoreActions().common.setLoading(true);
     let response = await getApi(payload);
@@ -56,7 +56,7 @@ const dashboard: DashboardModel = {
       toast.error(response.message);
       getStoreActions().common.setLoading(false);
     } else if (response && response.status === 200) {
-      actions.setMembersDetail(response.data);
+      actions.setSubscribersCount(response.data);
       getStoreActions().common.setLoading(false);
     }
     else {
@@ -65,7 +65,7 @@ const dashboard: DashboardModel = {
     }
   }),
 
-  getGroupsDetail: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
+  getMembersCount: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
     
    // getStoreActions().common.setLoading(true);
     let response = await getApi(payload);
@@ -73,7 +73,7 @@ const dashboard: DashboardModel = {
       toast.error(response.message);
       getStoreActions().common.setLoading(false);
     } else if (response && response.status === 200) {
-      actions.setMembersDetail(response.data);
+      actions.setMembersCount(response.data);
       getStoreActions().common.setLoading(false);
     }
     else {

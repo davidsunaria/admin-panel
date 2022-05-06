@@ -16,37 +16,43 @@ const Dashboard: React.FC = (): JSX.Element => {
 
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
-  const membersDetail = useStoreState((state) => state.dashboard.membersDetail);
+  const subscribersCount = useStoreState((state) => state.dashboard.subscribersCount);
+  const membersCount = useStoreState((state) => state.dashboard.membersCount);
+
 
   //Actions
-  const getMembersDetail = useStoreActions(
-    (actions) => actions.dashboard.getMembersDetail
+  const getSubscribersCount = useStoreActions(
+    (actions) => actions.dashboard.getSubscribersCount
   );
 
-  const memberInititalState = useMemo(() => {
-    return {
-      q: "",
-      page: env.REACT_APP_FIRST_PAGE,
-      limit: env.REACT_APP_PER_PAGE,
-      status: "",
-      is_premium: "",
-    };
-  }, []);
+  const getMembersCount = useStoreActions(
+    (actions) => actions.dashboard.getMembersCount
+  );
 
-  const [formData, setFormData] = useState<IUsers>(memberInititalState);
+ 
 
-  const getMembersData = useCallback(async (payload: IUsers) => {
-    console.log(4, payload);
-    await getMembersDetail({ url: "user/get-all-users", payload });
+  const [subscriberCount, setSubscriberCount] = useState<string>("");
+  const [memberCount, setMemberCount] = useState<string>("");
+  //const [formData, setFormData] = useState<IUsers>(memberInititalState);
+
+  const getData = useCallback(async () => {
+    await getSubscribersCount({ url: "dashboard/get-subscribers-count" });
+    await getMembersCount({ url: "dashboard/get-members-count" });
   }, []);
 
   useEffect(() => {
-    if (formData) {
-      getMembersData(formData);
-    }
-  }, [formData]);
+    getData()
+  }, []);
 
-  console.log("memeberdeatail", membersDetail);
+  useEffect(() => {
+    setSubscriberCount(subscribersCount.total_subscribers)
+}, [subscribersCount]);
+
+useEffect(() => {
+  setMemberCount(membersCount.total_members)
+}, [membersCount]);
+
+
  
 
   return (
@@ -73,11 +79,11 @@ const Dashboard: React.FC = (): JSX.Element => {
               <div className="customScroll">
                 <div className="detailOuer">
                   <label>No. of members</label>
-                  <span>100</span>
+                  <span>{memberCount}</span>
                 </div>
                 <div className="detailOuer">
                   <label>No. of subscriber</label>
-                  <span>200</span>
+                  <span>{subscriberCount}</span>
                 </div>
               </div>
             </div>
