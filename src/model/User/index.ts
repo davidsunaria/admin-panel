@@ -1,5 +1,5 @@
 import { StoreModel } from 'react-app-model';
-import { Action, action, Thunk, thunk, debug } from "easy-peasy";
+import { Action, action, Thunk, thunk} from "easy-peasy";
 import { toast } from "react-toastify";
 
 import { getApi, postApi } from 'react-app-api';
@@ -82,7 +82,7 @@ const user: UserModel = {
     state.exportedExcelData = [];
   }),
   getUsers: thunk<UserModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    if ((getState().response?.data ==undefined && payload?.payload?.page == 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
+    if ((getState().response?.data ===undefined && payload?.payload?.page === 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
       getStoreActions().common.setLoading(true);
     }
    // getStoreActions().common.setLoading(true);

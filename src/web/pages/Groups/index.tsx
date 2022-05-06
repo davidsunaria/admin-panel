@@ -13,6 +13,7 @@ import { truncate,toUpperCase } from '../../../lib/utils/Service';
 import { Formik } from 'formik';
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
+const NoRecord = React.lazy(() => import("../../components/NoRecord"));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
 const Navbar = React.lazy(() => import('../../components/Navbar'));
 const MyModal = React.lazy(() => import('../../components/MyModal'));
@@ -35,7 +36,7 @@ const Groups: React.FC = (): JSX.Element => {
   }, []);
   const userInititalState = useMemo(() => {
     return {
-      q: '', page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE, status: ''
+      q: '', page: env?.REACT_APP_FIRST_PAGE, limit: env?.REACT_APP_PER_PAGE, status: ''
     }
   }, []);
 
@@ -92,7 +93,7 @@ const Groups: React.FC = (): JSX.Element => {
   }, [response]);
 
   const onSearch = useCallback((payload: IUsers) => {
-    setFormData(_ => ({ ..._, ...payload, page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE }));
+    setFormData(_ => ({ ..._, ...payload, page: env?.REACT_APP_FIRST_PAGE, limit: env?.REACT_APP_PER_PAGE }));
   }, []);
 
   const onReset = useCallback(() => {
@@ -103,7 +104,6 @@ const Groups: React.FC = (): JSX.Element => {
   useEffect(() => {
     if (formData) {
       getGroupData(formData);
-    //  getExportedData(formData)
     }
   }, [formData]);
 
@@ -194,7 +194,7 @@ const Groups: React.FC = (): JSX.Element => {
 
 
   const getImageUrl = (url: string, options: any) => {
-    return `${env.REACT_APP_MEDIA_URL}` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
+    return `${env?.REACT_APP_MEDIA_URL}` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
   }
 
   useEffect(() => {
@@ -287,7 +287,8 @@ const Groups: React.FC = (): JSX.Element => {
                             }
                           </td>
                           <td>{toUpperCase(val?.name)}</td>
-                          <td><div title={val?.creator_of_group?.first_name + " " + val?.creator_of_group?.last_name}>{truncate(toUpperCase(val?.creator_of_group?.first_name) + " " + val?.creator_of_group?.last_name) || '-'}</div></td>
+                          
+                          <td><div title={` ${val?.creator_of_group?.first_name } ${val?.creator_of_group?.last_name}`}>{truncate(toUpperCase(`${val?.creator_of_group?.first_name } ${val?.creator_of_group?.last_name}`))}</div></td>
 
                           <td>{toUpperCase(val?.category)}</td>
                           <td><div title={val?.address}>{truncate(toUpperCase(val?.address))}</div></td>
@@ -301,9 +302,7 @@ const Groups: React.FC = (): JSX.Element => {
                         </tr>
                       ))
                     ) : (
-                        <tr>
-                          <td colSpan={9} className="text-center">No record found</td>
-                        </tr>
+                      <NoRecord colspan={9}/>
                       )}
 
 

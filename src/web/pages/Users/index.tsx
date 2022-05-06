@@ -19,11 +19,11 @@ import env from "../../../config";
 import DEFAULT_USER_IMG from "react-app-images/default_user.png";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment"
-import { truncate } from "../../../lib/utils/Service";
 import { toUpperCase } from '../../../lib/utils/Service';
 
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
+const NoRecord = React.lazy(() => import("../../components/NoRecord"));
 const SearchUser = React.lazy(() => import("../../components/SearchUser"));
 const MyModal = React.lazy(() => import("../../components/MyModal"));
 const Input = React.lazy(() => import("../../components/Input"));
@@ -53,8 +53,8 @@ const Users: React.FC = (): JSX.Element => {
   const userInititalState = useMemo(() => {
     return {
       q: "",
-      page: env.REACT_APP_FIRST_PAGE,
-      limit: env.REACT_APP_PER_PAGE,
+      page: env?.REACT_APP_FIRST_PAGE,
+      limit: env?.REACT_APP_PER_PAGE,
       status: "",
       is_premium: "",
     };
@@ -81,9 +81,7 @@ const Users: React.FC = (): JSX.Element => {
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
-  const [exportedData, setExportedData] = useState<Array<any>>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isSearch, setIsSearch] = useState<boolean>(false);
   const [isPremiumModalOpen, setPremiumOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [isPremium, setPremium] = useState<any>("");
@@ -171,8 +169,8 @@ const Users: React.FC = (): JSX.Element => {
     setFormData((_) => ({
       ..._,
       ...payload,
-      page: env.REACT_APP_FIRST_PAGE,
-      limit: env.REACT_APP_PER_PAGE,
+      page: env?.REACT_APP_FIRST_PAGE,
+      limit: env?.REACT_APP_PER_PAGE,
     }));
   }, []);
   
@@ -232,7 +230,7 @@ const Users: React.FC = (): JSX.Element => {
 
   const getImageUrl = (url: string, options: any) => {
     return (
-      `${env.REACT_APP_MEDIA_URL}` +
+      `${env?.REACT_APP_MEDIA_URL}` +
       options?.type +
       "/" +
       url +
@@ -488,7 +486,7 @@ const Users: React.FC = (): JSX.Element => {
                           <td>{val?.email || "-"}</td>
                           <td>{val?.username || "-"}</td>
                           <td>{ moment(val?.created_at).format("YYYY-MM-DD") || "-"}</td>
-                          <td>{ moment(val?.last_seen).format(env.REACT_APP_TIME_FORMAT) || "-"}</td>
+                          <td>{ moment(val?.last_seen).format(env?.REACT_APP_TIME_FORMAT) || "-"}</td>
                           <td>{ getLanguage(val?.language)}</td>
                           <td
                             className={"onHover"}
@@ -571,11 +569,7 @@ const Users: React.FC = (): JSX.Element => {
                         </tr>
                       ))
                     ) : (
-                      <tr>
-                        <td colSpan={9} className="text-center">
-                          No record found
-                        </td>
-                      </tr>
+                      <NoRecord colspan={12}/>
                     )}
                   </tbody>
                 </table>

@@ -5,6 +5,7 @@ import { IUsers, IUsersProps, IEventGroups } from 'react-app-interfaces';
 import { useStoreActions, useStoreState } from 'react-app-store';
 import { ExportToExcel } from '../../components/ExportToExcel'
 import * as _ from "lodash";
+const Input = React.lazy(() => import('../../components/Input'));
 const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
   
   const [statusData] = useState([
@@ -94,7 +95,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
             <div className="d-xl-flex mb-3">
               <div className="search-box"> <i className="bi bi-search"></i>
 
-                <input
+                <Input
                   id="q"
                   name="q"
                   type="text"

@@ -69,6 +69,6 @@ export const truncate = (text: any) => {
 }
 
 export const toUpperCase = (text: any) => {
-  return text? _.upperFirst(text):"-";
+  return text? _.upperFirst(text):" -";
 }
 
