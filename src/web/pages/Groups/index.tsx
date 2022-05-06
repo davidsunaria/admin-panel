@@ -9,9 +9,8 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
-import { truncate } from '../../../lib/utils/Service';
+import { truncate,toUpperCase } from '../../../lib/utils/Service';
 import { Formik } from 'formik';
-import _, { toUpper } from 'lodash';
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
@@ -287,12 +286,12 @@ const Groups: React.FC = (): JSX.Element => {
                               width={60} />
                             }
                           </td>
-                          <td>{val?.name || '-'}</td>
-                          <td><div title={val?.creator_of_group?.first_name + " " + val?.creator_of_group?.last_name}>{truncate(val?.creator_of_group?.first_name + " " + val?.creator_of_group?.last_name) || '-'}</div></td>
+                          <td>{toUpperCase(val?.name)}</td>
+                          <td><div title={val?.creator_of_group?.first_name + " " + val?.creator_of_group?.last_name}>{truncate(toUpperCase(val?.creator_of_group?.first_name) + " " + val?.creator_of_group?.last_name) || '-'}</div></td>
 
-                          <td>{val?.category || '-'}</td>
-                          <td><div title={val?.address}>{truncate(val?.address) || '-'}</div></td>
-                          <td>{_.upperFirst(val?.restriction_mode||"Open") }</td>
+                          <td>{toUpperCase(val?.category)}</td>
+                          <td><div title={val?.address}>{truncate(toUpperCase(val?.address))}</div></td>
+                          <td>{toUpperCase(val?.restriction_mode)}</td>
                           <td className={"onHover"} onClick={() => enableDisableGroup(val?._id, val?.status)}>
                             <div className={(val?.status === 1 || val?.status === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.status === 1 || val?.status === true) ? 'Active' : 'Inactive'}</div></td>
                           <td>
