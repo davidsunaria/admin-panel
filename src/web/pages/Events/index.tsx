@@ -12,6 +12,7 @@ import env from "../../../config";
 import { truncate,toUpperCase } from "../../../lib/utils/Service";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
+const NoRecord = React.lazy(() => import("../../components/NoRecord"));
 const SearchUser = React.lazy(() => import("../../components/SearchUser"));
 const Navbar = React.lazy(() => import("../../components/Navbar"));
 
@@ -32,8 +33,8 @@ const Events: React.FC = (): JSX.Element => {
   const userInititalState = useMemo(() => {
     return {
       q: "",
-      page: env.REACT_APP_FIRST_PAGE,
-      limit: env.REACT_APP_PER_PAGE,
+      page: env?.REACT_APP_FIRST_PAGE,
+      limit: env?.REACT_APP_PER_PAGE,
       status: "",
     };
   }, []);
@@ -85,8 +86,8 @@ const Events: React.FC = (): JSX.Element => {
     setFormData((_) => ({
       ..._,
       ...payload,
-      page: env.REACT_APP_FIRST_PAGE,
-      limit: env.REACT_APP_PER_PAGE,
+      page: env?.REACT_APP_FIRST_PAGE,
+      limit: env?.REACT_APP_PER_PAGE,
     }));
   }, []);
 
@@ -144,7 +145,7 @@ const Events: React.FC = (): JSX.Element => {
 
   const getImageUrl = (url: string, options: any) => {
     return (
-      `${env.REACT_APP_MEDIA_URL}` +
+      `${env?.REACT_APP_MEDIA_URL}` +
       options?.type +
       "/" +
       url +
@@ -230,16 +231,11 @@ const Events: React.FC = (): JSX.Element => {
                           <td>
                             <div
                               title={
-                                val?.creator_of_event?.first_name +
-                                " " +
-                                val?.creator_of_event?.last_name
+                                ` ${val?.creator_of_event?.first_name } ${val?.creator_of_event?.last_name}`
                               }
                             >
                               {truncate(
-                                toUpperCase(val?.creator_of_event?.first_name) +
-                                  " " +
-                                  val?.creator_of_event?.last_name
-                              ) || "-"}
+                                toUpperCase(` ${val?.creator_of_event?.first_name } ${val?.creator_of_event?.last_name}`))}
                             </div>
                           </td>
                           <td>
@@ -287,11 +283,7 @@ const Events: React.FC = (): JSX.Element => {
                         </tr>
                       ))
                     ) : (
-                      <tr>
-                        <td colSpan={9} className="text-center">
-                          No record found
-                        </td>
-                      </tr>
+                      <NoRecord colspan={10}/>
                     )}
                   </tbody>
                 </table>
