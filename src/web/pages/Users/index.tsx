@@ -490,7 +490,7 @@ const Users: React.FC = (): JSX.Element => {
                           <td>{val?.email || "-"}</td>
                           <td>{val?.username || "-"}</td>
                           <td>{ moment(val?.created_at).format("YYYY-MM-DD") || "-"}</td>
-                          <td>{val?.last_seen || "-"}</td>
+                          <td>{ moment(val?.last_seen).format(env.REACT_APP_TIME_FORMAT) || "-"}</td>
                           <td>{ getLanguage(val?.language)}</td>
                           <td
                             className={"onHover"}
