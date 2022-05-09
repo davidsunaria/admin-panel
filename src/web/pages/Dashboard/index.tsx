@@ -1,24 +1,25 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useState} from "react";
 import { useStoreActions, useStoreState } from "react-app-store";
-import env from "../../../config";
-import { IUsers, IEnableDisable, IPagination } from "react-app-interfaces";
+
+const Navbar = React.lazy(() => import("../../components/Navbar"));
+const CustomSuspense = React.lazy(
+  () => import("../../components/CustomSuspense")
+);
+const GooglePlaceAutoComplete = React.lazy(
+  () => import("../../components/GooglePlaceAutoComplete")
+);
 
 
 
 const Dashboard: React.FC = (): JSX.Element => {
-  const Navbar = React.lazy(() => import("../../components/Navbar"));
-  const CustomSuspense = React.lazy(
-    () => import("../../components/CustomSuspense")
-  );
-  const GooglePlaceAutoComplete = React.lazy(
-    () => import("../../components/GooglePlaceAutoComplete")
-  );
+
+  const [subscriberCount, setSubscriberCount] = useState<string | number >(0);
+  const [memberCount, setMemberCount] = useState<string | number>(0);
+ 
 
   //State
-  const isLoading = useStoreState((state) => state.common.isLoading);
   const subscribersCount = useStoreState((state) => state.dashboard.subscribersCount);
   const membersCount = useStoreState((state) => state.dashboard.membersCount);
-
 
   //Actions
   const getSubscribersCount = useStoreActions(
@@ -31,9 +32,7 @@ const Dashboard: React.FC = (): JSX.Element => {
 
  
 
-  const [subscriberCount, setSubscriberCount] = useState<string>("");
-  const [memberCount, setMemberCount] = useState<string>("");
-  //const [formData, setFormData] = useState<IUsers>(memberInititalState);
+ 
 
   const getData = useCallback(async () => {
     await getSubscribersCount({ url: "dashboard/get-subscribers-count" });
@@ -45,11 +44,11 @@ const Dashboard: React.FC = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    setSubscriberCount(subscribersCount.total_subscribers)
+    setSubscriberCount(subscribersCount)
 }, [subscribersCount]);
 
 useEffect(() => {
-  setMemberCount(membersCount.total_members)
+  setMemberCount(membersCount)
 }, [membersCount]);
 
 
@@ -79,11 +78,11 @@ useEffect(() => {
               <div className="customScroll">
                 <div className="detailOuer">
                   <label>No. of members</label>
-                  <span>{memberCount}</span>
+                  <span>{memberCount || 0}</span>
                 </div>
                 <div className="detailOuer">
                   <label>No. of subscriber</label>
-                  <span>{subscriberCount}</span>
+                  <span>{subscriberCount || 0}</span>
                 </div>
               </div>
             </div>
