@@ -9,15 +9,18 @@ import { IPayload } from 'react-app-interfaces';
 const initialState = {
   subscribersCount:0,
   membersCount:0,
+  groupDetail:{}
 }
 export interface DashboardModel {
   subscribersCount: string | number;
   membersCount: string | number;
+  groupDetail: object | any;
   
   //**************State Actions************///
  
   setSubscribersCount:Action<DashboardModel, object | any>;
   setMembersCount:Action<DashboardModel, object | any>;
+  setGroupDetail:Action<DashboardModel, object | any>;
   reset: Action<DashboardModel>;
  
   
@@ -26,6 +29,7 @@ export interface DashboardModel {
   //**************Thunk Actions************///
   getSubscribersCount:Thunk<DashboardModel, object>;
   getMembersCount:Thunk<DashboardModel, object>;
+  getGroupDetail:Thunk<DashboardModel, object>;
  
  
   //**************Thunk Actions************///
@@ -41,6 +45,10 @@ const dashboard: DashboardModel = {
   setMembersCount: action((state, payload) => {
     state.membersCount = payload;
   }),
+
+  setGroupDetail: action((state, payload) => {
+    state.groupDetail = payload;
+  }),
  
   
   
@@ -48,9 +56,9 @@ const dashboard: DashboardModel = {
   reset: action(state => state = initialState),
   
   getSubscribersCount: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    if ((getState()?.subscribersCount ===0)) {
-      getStoreActions()?.common?.setLoading(true);
-    }
+    // if ((getState()?.subscribersCount ===0)) {
+    //   getStoreActions()?.common?.setLoading(true);
+    // }
     let response = await getApi(payload);
     if (response && response?.status !== 200) {
       toast.error(response?.message);
@@ -74,6 +82,22 @@ const dashboard: DashboardModel = {
       getStoreActions()?.common?.setLoading(false);
     } else if (response && response?.status === 200) {
       actions.setMembersCount(response?.data?.total_members);
+      getStoreActions()?.common?.setLoading(false);
+    }
+    else {
+      getStoreActions()?.common?.setLoading(false);
+      return true;
+    }
+  }),
+
+  getGroupDetail: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
+     getStoreActions().common.setLoading(true);
+    let response = await getApi(payload);
+    if (response && response?.status !== 200) {
+      toast.error(response?.message);
+      getStoreActions()?.common?.setLoading(false);
+    } else if (response && response?.status === 200) {
+      actions.setGroupDetail(response?.data);
       getStoreActions()?.common?.setLoading(false);
     }
     else {

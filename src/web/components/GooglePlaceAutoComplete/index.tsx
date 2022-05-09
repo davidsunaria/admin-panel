@@ -25,7 +25,6 @@ const GooglePlaceAutoComplete= () => {
     setAddress(value);
     setCoordinate(lat);
   }, []);
-  console.log("coordinate", coordinate);
   return (
     <PlacesAutocomplete
       value={address}
