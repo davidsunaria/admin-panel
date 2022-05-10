@@ -6,17 +6,16 @@ import env from '../../../config';
 import CustomSuspense from '../../components/CustomSuspense';
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
-const ResourceMembersPerEvent = React.lazy(() => import("../ResourceMembersPerEvent"));
-const ResourceMembersPerGroup = React.lazy(() => import("../ResourceMembersPerGroup"));
 
-const ResourceMembers: React.FC = (): JSX.Element => {
+
+const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
   
 
    
   
    const inititalState = useMemo(() => {
     return {
-       page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE, resource_type: "group"
+       page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE, resource_type: "event"
     }
   }, []);
   
@@ -28,27 +27,17 @@ const ResourceMembers: React.FC = (): JSX.Element => {
   const [resourceType, setResourceType] = useState<any>("group");
  
 
-//   const tableHeader = useMemo(() => {
-
-//     if(resourceType==="group"){
-//         return [
-//             { key: "Groupname", value: "Group name" },
-//             { key: "membercount", value: "No. of members" }
-//         ]
-//     }
-//     else{
-//         return [
-//             { key: "Eventname", value: "Event name" },
-//             { key: "membercount", value: "No. of members" },
-//             { key: "capacity", value: "capacity" }
-//         ]
-//     }
-   
-//     },
-//    [resourceType]);
+  const tableHeader = useMemo(() => {
+        return [
+          { key: "Eventname", value: "Event name" },
+          { key: "membercount", value: "No. of members" },
+          { key: "capacity", value: "capacity" }
+        ]
+    }, []);
+  
 
 
-  const numberOfMemberPerGroup = useStoreState((state) => state.dashboard.numberOfMemberPerGroup);
+  const numberOfMemberPerEvent = useStoreState((state) => state.dashboard.numberOfMemberPerEvent);
   const getMembersCountPerResource = useStoreActions(
     (actions) => actions.dashboard.getMembersCountPerResource
   );
@@ -61,12 +50,12 @@ const ResourceMembers: React.FC = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (numberOfMemberPerGroup?.data) {
-        console.log(numberOfMemberPerGroup?.data)
+    if (numberOfMemberPerEvent?.data) {
+        console.log(numberOfMemberPerEvent?.data)
       const {
         data,
         pagination: [paginationObject],
-      } = numberOfMemberPerGroup;
+      } = numberOfMemberPerEvent;
       setPagination(paginationObject);
       setCurrentPage(paginationObject?.currentPage);
 
@@ -76,7 +65,7 @@ const ResourceMembers: React.FC = (): JSX.Element => {
         setMemberCountPerResource((_: any) => [..._, ...data]);
       }
     }
-  }, [numberOfMemberPerGroup]);
+  }, [numberOfMemberPerEvent]);
 
   useEffect(() => {
     getNumberOfMembersPerResource(inititalState);
@@ -102,47 +91,33 @@ const ResourceMembers: React.FC = (): JSX.Element => {
     }
   };
 
-  const changeResourceType = useCallback(async (event) => {
-    setResourcePayload((_) => ({
-        ..._,
-        page: env.REACT_APP_FIRST_PAGE,
-        resource_type: event.target.value,
-      }));
-    setResourceType(event.target.value)
-  }, []);
+//   const changeResourceType = useCallback(async (event) => {
+//     setResourcePayload((_) => ({
+//         ..._,
+//         page: env.REACT_APP_FIRST_PAGE,
+//         resource_type: event.target.value,
+//       }));
+//     setResourceType(event.target.value)
+//   }, []);
 
 //console.log("memberCountPerResource",memberCountPerResource)
   
   return (
     <>
-       <div className="cardBox dashboardBoxes">
-              <div className="dashAppointFilterOuter">
-                <div className="dashboardSubTitle">#Members</div>
-                <div className="filter">
-                  <select
-                    className="form-select me-2"
-                    aria-label="Default select example"
-                    onChange={changeResourceType}
-                  >
-                    <option value={"group"}>Groups</option>
-                    <option value={"event"}>Events</option>
-                  </select>
-                </div>
-              </div>
-              {resourceType==="group"? <ResourceMembersPerGroup/>: <ResourceMembersPerEvent/>}
-              {/* <div className="table-responsive">
+              
+              <div className="table-responsive">
                 <table className="table customTable stickyHeader">
                   <CustomSuspense>
-                    <TableHeader fields={tableHeader} headerWidth={resourceType==="event" ?"w-33":"w-50"} />
+                    <TableHeader fields={tableHeader} headerWidth={"w-33"} />
                   </CustomSuspense>
                   <tbody onScroll={onScroll} ref={listInnerRef}>
                   {memberCountPerResource && memberCountPerResource.length > 0 ? (
                       memberCountPerResource.map((val: any, index: number) => {
                         return (
                           <tr key={index}>
-                            <td className={resourceType==="event" ?"w-33":"w-50"}>{val?.name || 0}</td>
-                            <td className={resourceType==="event" ?"w-33":"w-50"}>{val?.resource_members || 0} </td>
-                            {resourceType==="event" ? <td className="w-33">{val?.capacity || 0} </td>:null }
+                            <td className={"w-33"}>{val?.name || 0}</td>
+                            <td className={"w-33"}>{val?.resource_members || 0} </td>
+                              <td className="w-33">{val?.capacity || 0} </td> 
                           </tr>
                         );
                       })
@@ -153,9 +128,8 @@ const ResourceMembers: React.FC = (): JSX.Element => {
                     )}
                   </tbody>
                 </table>
-              </div> */}
-            </div>
+              </div>
     </>
   )
 }
-export default ResourceMembers;
+export default ResourceMembersPerEvent;

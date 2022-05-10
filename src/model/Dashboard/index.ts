@@ -125,18 +125,19 @@ const dashboard: DashboardModel = {
 
   getMembersCountPerResource: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
     //  getStoreActions().common.setLoading(true);
+   // console.log("payload",payload.payload.resource_type)
     let response = await getApi(payload);
    
     if (response && response?.status !== 200) {
       toast.error(response?.message);
       getStoreActions()?.common?.setLoading(false);
     } else if (response && response?.status === 200) {
-      //if(payload.payload.resource_type==="group"){
+      if(payload.payload.resource_type==="group"){
         actions.setNumberOfMemberPerGroup(response?.data);
-     // }
-      // if(payload.payload.resource_type==="event"){
-      //   actions.setNumberOfMembersPerEvent(response?.data);
-      // }
+      }
+      if(payload.payload.resource_type==="event"){
+        actions.setNumberOfMembersPerEvent(response?.data);
+      }
     
      // getStoreActions()?.common?.setLoading(false);
     }

@@ -29,8 +29,8 @@ const Dashboard: React.FC = (): JSX.Element => {
 
   const tableHeader = useMemo(() => {
     return [
-      { key: "Groupname", value: "Group name" },
-      { key: "eventcount", value: "No. of event" },
+      { key: "group_name", value: "Group name" },
+      { key: "event_count", value: "No. of event" },
     ];
   }, []);
   
