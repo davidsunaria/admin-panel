@@ -1,7 +1,12 @@
-import React, { useCallback, useEffect, useState, useMemo ,useRef} from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+} from "react";
 import { useStoreActions, useStoreState } from "react-app-store";
 import { IPagination, IUsers } from "react-app-interfaces";
-import InfiniteScroll from "react-infinite-scroll-component";
 import env from "../../../config";
 
 const Navbar = React.lazy(() => import("../../components/Navbar"));
@@ -12,6 +17,7 @@ const GooglePlaceAutoComplete = React.lazy(
   () => import("../../components/GooglePlaceAutoComplete")
 );
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
+const ResourceMembers = React.lazy(() => import("../ResourceMembers"));
 
 const Dashboard: React.FC = (): JSX.Element => {
   const groupInititalState = useMemo(() => {
@@ -27,10 +33,11 @@ const Dashboard: React.FC = (): JSX.Element => {
       { key: "eventcount", value: "No. of event" },
     ];
   }, []);
+  
 
   const [subscriberCount, setSubscriberCount] = useState<string | number>(0);
   const [memberCount, setMemberCount] = useState<string | number>(0);
-  const [groupData, setGroupData] = useState<any[]>([]);
+  const [EventsPerGroup, setEventsPerGroup] = useState<any[]>([]);
   const [groupPayload, setGroupPayload] = useState<IUsers>(groupInititalState);
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -40,7 +47,9 @@ const Dashboard: React.FC = (): JSX.Element => {
     (state) => state.dashboard.subscribersCount
   );
   const membersCount = useStoreState((state) => state.dashboard.membersCount);
-  const groupDetail = useStoreState((state) => state.dashboard.groupDetail);
+  const numberOfEventPerGroup = useStoreState(
+    (state) => state.dashboard.numberOfEventPerGroup
+  );
   const isLoading = useStoreState((state) => state.common.isLoading);
 
   //Actions
@@ -51,8 +60,8 @@ const Dashboard: React.FC = (): JSX.Element => {
   const getMembersCount = useStoreActions(
     (actions) => actions.dashboard.getMembersCount
   );
-  const getGroupDetail = useStoreActions(
-    (actions) => actions.dashboard.getGroupDetail
+  const getEventCountPerGroup = useStoreActions(
+    (actions) => actions.dashboard.getEventCountPerGroup
   );
 
   const getData = useCallback(async () => {
@@ -60,8 +69,8 @@ const Dashboard: React.FC = (): JSX.Element => {
     await getMembersCount({ url: "dashboard/get-members-count" });
   }, []);
 
-  const getGroupData = useCallback(async (payload) => {
-    await getGroupDetail({
+  const getNumberOfEventsPerGroup = useCallback(async (payload) => {
+    await getEventCountPerGroup({
       url: "dashboard/get-no-of-events-per-group",
       payload,
     });
@@ -72,7 +81,7 @@ const Dashboard: React.FC = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    getGroupData(groupInititalState);
+    getNumberOfEventsPerGroup(groupInititalState);
   }, []);
 
   useEffect(() => {
@@ -84,34 +93,31 @@ const Dashboard: React.FC = (): JSX.Element => {
   }, [membersCount]);
 
   useEffect(() => {
-    if (groupDetail?.data) {
+    if (numberOfEventPerGroup?.data) {
       const {
         data,
         pagination: [paginationObject],
-      } = groupDetail;
+      } = numberOfEventPerGroup;
       setPagination(paginationObject);
       setCurrentPage(paginationObject?.currentPage);
 
       if (paginationObject?.currentPage === 1 || !paginationObject) {
-        setGroupData(data);
+        setEventsPerGroup(data);
       } else {
-        setGroupData((_: any) => [..._, ...data]);
+        setEventsPerGroup((_: any) => [..._, ...data]);
       }
     }
-  }, [groupDetail]);
+  }, [numberOfEventPerGroup]);
 
   useEffect(() => {
     if (groupPayload) {
-      getGroupData(groupPayload);
+      getNumberOfEventsPerGroup(groupPayload);
     }
   }, [groupPayload]);
-
-
 
   const listInnerRef = useRef(null);
   const onScroll = () => {
     if (listInnerRef.current) {
-      
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
         setGroupPayload((_) => ({
@@ -133,7 +139,9 @@ const Dashboard: React.FC = (): JSX.Element => {
           <div className="col-lg-6">
             <div className="cardBox dashboardBoxes">
               <div className="dashAppointFilterOuter">
-                <div className="dashboardSubTitle">No. of members, subscribers</div>
+                <div className="dashboardSubTitle">
+                  No. of members, subscribers
+                </div>
                 {/* <div className="filter">
                   <select
                     className="form-select me-2"
@@ -163,23 +171,18 @@ const Dashboard: React.FC = (): JSX.Element => {
 
                 {/* <GooglePlaceAutoComplete /> */}
               </div>
-              <div
-                className="table-responsive customScroll"
-                onScroll={onScroll}
-                ref={listInnerRef}
-              >
-              
-                <table className="table customTable">
+              <div className="table-responsive">
+                <table className="table customTable stickyHeader">
                   <CustomSuspense>
                     <TableHeader fields={tableHeader} />
                   </CustomSuspense>
-                  <tbody>
-                    {groupData && groupData.length > 0 ? (
-                      groupData.map((val: any, index: number) => {
+                  <tbody onScroll={onScroll} ref={listInnerRef}>
+                    {EventsPerGroup && EventsPerGroup.length > 0 ? (
+                      EventsPerGroup.map((val: any, index: number) => {
                         return (
                           <tr key={index}>
-                            <td>{val?.name}</td>
-                            <td>{val?.events} </td>
+                            <td className="w-50">{val?.name || 0}</td>
+                            <td className="w-50">{val?.events || 0} </td>
                           </tr>
                         );
                       })
@@ -194,57 +197,7 @@ const Dashboard: React.FC = (): JSX.Element => {
             </div>
           </div>
           <div className="col-lg-6">
-            <div className="cardBox dashboardBoxes">
-              <div className="dashAppointFilterOuter">
-                <div className="dashboardSubTitle">Upcoming Appointments</div>
-                <div className="filter">
-                  <select
-                    className="form-select me-2"
-                    aria-label="Default select example"
-                  >
-                    <option>All Employers</option>
-                  </select>
-                </div>
-              </div>
-              <div className="table-responsive customScroll">
-                <table className="table customTable">
-                  <thead>
-                    <tr>
-                      <th scope="col">Groups</th>
-                      <th scope="col">Members</th>
-                      <th scope="col">Likes</th>
-                      <th scope="col">Events</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>10 </td>
-                      <td>150</td>
-                      <td>5 </td>
-                    </tr>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>10 </td>
-                      <td>150</td>
-                      <td>5 </td>
-                    </tr>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>10 </td>
-                      <td>150</td>
-                      <td>5 </td>
-                    </tr>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>10 </td>
-                      <td>150</td>
-                      <td>5 </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <ResourceMembers/>
           </div>
           <div className="col-lg-6">
             <div className="cardBox dashboardBoxes">
@@ -258,50 +211,22 @@ const Dashboard: React.FC = (): JSX.Element => {
                   </div>
                 </div>
               </div>
-              <div className="table-responsive customScroll">
-                <table className="table customTable">
+              <div className="table-responsive">
+                <table className="table customTable stickyHeader">
                   <thead>
                     <tr>
-                      <th scope="col">Patient11</th>
-                      <th scope="col">Appointment time</th>
+                      <th className="w-50" scope="col">
+                        Patient11
+                      </th>
+                      <th className="w-50" scope="col">
+                        Appointment time
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>test complaint</td>
-                      <td>12:00 pm </td>
-                    </tr>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>12:00 pm </td>
-                    </tr>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>12:00 pm </td>
-                    </tr>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>12:00 pm </td>
-                    </tr>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>12:00 pm </td>
-                    </tr>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>12:00 pm </td>
-                    </tr>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>12:00 pm </td>
-                    </tr>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>12:00 pm </td>
-                    </tr>
-                    <tr>
-                      <td>test complaint</td>
-                      <td>12:00 pm </td>
+                      <td className="w-50">test complaint</td>
+                      <td className="w-50">12:00 pm </td>
                     </tr>
                   </tbody>
                 </table>

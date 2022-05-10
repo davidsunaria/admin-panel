@@ -9,28 +9,32 @@ import { IPayload } from 'react-app-interfaces';
 const initialState = {
   subscribersCount:0,
   membersCount:0,
-  groupDetail:{}
+  numberOfEventPerGroup:{},
+  numberOfMemberPerGroup:{},
+  numberOfMemberPerEvent:{}
 }
 export interface DashboardModel {
   subscribersCount: string | number;
   membersCount: string | number;
-  groupDetail: object | any;
-  
+  numberOfEventPerGroup: object | any;
+  numberOfMemberPerGroup: object | any;
+  numberOfMemberPerEvent: object | any;
   //**************State Actions************///
  
   setSubscribersCount:Action<DashboardModel, object | any>;
   setMembersCount:Action<DashboardModel, object | any>;
-  setGroupDetail:Action<DashboardModel, object | any>;
+  setNumberOfEventPerGroup:Action<DashboardModel, object | any>;
   reset: Action<DashboardModel>;
- 
-  
+  setNumberOfMemberPerGroup:Action<DashboardModel>;
+  flushData :Action<DashboardModel>;
+  setNumberOfMembersPerEvent:Action<DashboardModel>;
   //**************State  Actions************///
 
   //**************Thunk Actions************///
   getSubscribersCount:Thunk<DashboardModel, object>;
   getMembersCount:Thunk<DashboardModel, object>;
-  getGroupDetail:Thunk<DashboardModel, object>;
- 
+  getEventCountPerGroup:Thunk<DashboardModel, object>;
+  getMembersCountPerResource:Thunk<DashboardModel, object>;
  
   //**************Thunk Actions************///
 }
@@ -46,8 +50,20 @@ const dashboard: DashboardModel = {
     state.membersCount = payload;
   }),
 
-  setGroupDetail: action((state, payload) => {
-    state.groupDetail = payload;
+  setNumberOfEventPerGroup: action((state, payload) => {
+    state.numberOfEventPerGroup = payload;
+  }),
+
+  setNumberOfMemberPerGroup: action((state, payload) => {
+    state.numberOfMemberPerGroup = payload;
+  }),
+
+  setNumberOfMembersPerEvent: action((state, payload) => {
+    state.numberOfMemberPerEvent = payload;
+  }),
+
+  flushData: action((state, payload) => {
+    state.numberOfMemberPerGroup = {};
   }),
  
   
@@ -59,6 +75,7 @@ const dashboard: DashboardModel = {
     // if ((getState()?.subscribersCount ===0)) {
     //   getStoreActions()?.common?.setLoading(true);
     // }
+    getStoreActions().common.setLoading(true);
     let response = await getApi(payload);
     if (response && response?.status !== 200) {
       toast.error(response?.message);
@@ -90,21 +107,45 @@ const dashboard: DashboardModel = {
     }
   }),
 
-  getGroupDetail: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-     getStoreActions().common.setLoading(true);
+  getEventCountPerGroup: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
+    //  getStoreActions().common.setLoading(true);
     let response = await getApi(payload);
     if (response && response?.status !== 200) {
       toast.error(response?.message);
       getStoreActions()?.common?.setLoading(false);
     } else if (response && response?.status === 200) {
-      actions.setGroupDetail(response?.data);
-      getStoreActions()?.common?.setLoading(false);
+      actions.setNumberOfEventPerGroup(response?.data);
+     // getStoreActions()?.common?.setLoading(false);
     }
     else {
-      getStoreActions()?.common?.setLoading(false);
+    //  getStoreActions()?.common?.setLoading(false);
       return true;
     }
   }),
+
+  getMembersCountPerResource: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
+    //  getStoreActions().common.setLoading(true);
+    let response = await getApi(payload);
+   
+    if (response && response?.status !== 200) {
+      toast.error(response?.message);
+      getStoreActions()?.common?.setLoading(false);
+    } else if (response && response?.status === 200) {
+      //if(payload.payload.resource_type==="group"){
+        actions.setNumberOfMemberPerGroup(response?.data);
+     // }
+      // if(payload.payload.resource_type==="event"){
+      //   actions.setNumberOfMembersPerEvent(response?.data);
+      // }
+    
+     // getStoreActions()?.common?.setLoading(false);
+    }
+    else {
+    //  getStoreActions()?.common?.setLoading(false);
+      return true;
+    }
+  }),
+
 };
 
 export default dashboard;
