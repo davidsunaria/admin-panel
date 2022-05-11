@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo,useRef } from 'react';
+import React, { useCallback, useEffect, useState, useMemo,useRef,memo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
 import { IUsers,  IPagination } from 'react-app-interfaces';
 import 'react-lazy-load-image-component/src/effects/blur.css';
@@ -118,4 +118,4 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
     </>
   )
 }
-export default ResourceMembersPerGroup;
+export default memo(ResourceMembersPerGroup) ;

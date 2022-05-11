@@ -90,11 +90,11 @@ const Dashboard: React.FC = (): JSX.Element => {
   //console.log("postPerMember",postPerMember)
 
   const computeResourceCount = useCallback((index,value) => {
-      console.log('aa', index);
       
     let response = { group: 0, event: 0 };
     value?.length > 0 &&
-      value?.map((value: any, index: number) => {
+      value?.map((value: any, index: number) => 
+      {
         if (value?._id === "group") {
           response = { ...response, group: value?.total };
         }

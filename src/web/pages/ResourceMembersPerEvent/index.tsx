@@ -4,6 +4,7 @@ import React, {
   useState,
   useMemo,
   useRef,
+  memo
 } from "react";
 import { useStoreActions, useStoreState } from "react-app-store";
 import { IUsers, IPagination } from "react-app-interfaces";
@@ -91,7 +92,7 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
     }
   };
 
-  
+  console.log("hi")
   return (
     <>
       <div className="table-responsive">
@@ -122,4 +123,4 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
     </>
   );
 };
-export default ResourceMembersPerEvent;
+export default memo(ResourceMembersPerEvent);

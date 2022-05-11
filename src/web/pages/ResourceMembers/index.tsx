@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState,memo } from 'react';
 import LoadingOverlay from "react-loading-overlay-ts";
 import { useStoreState } from "react-app-store";
 const ResourceMembersPerEvent = React.lazy(() => import("../ResourceMembersPerEvent"));
@@ -45,4 +45,4 @@ const ResourceMembers: React.FC = (): JSX.Element => {
     </>
   )
 }
-export default ResourceMembers;
+export default memo(ResourceMembers) 
