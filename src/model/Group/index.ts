@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 
 import { getApi, postApi } from 'react-app-api';
 import { IPayload } from 'react-app-interfaces';
-import { compact } from 'lodash';
 
 const initialState = {
   response: {},

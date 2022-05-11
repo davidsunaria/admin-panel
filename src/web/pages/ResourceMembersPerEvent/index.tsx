@@ -1,43 +1,46 @@
-import React, { useCallback, useEffect, useState, useMemo,useRef } from 'react';
-import { useStoreActions, useStoreState } from 'react-app-store';
-import { IUsers,  IPagination } from 'react-app-interfaces';
-import 'react-lazy-load-image-component/src/effects/blur.css';
-import env from '../../../config';
-import CustomSuspense from '../../components/CustomSuspense';
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+} from "react";
+import { useStoreActions, useStoreState } from "react-app-store";
+import { IUsers, IPagination } from "react-app-interfaces";
+import "react-lazy-load-image-component/src/effects/blur.css";
+import env from "../../../config";
+import CustomSuspense from "../../components/CustomSuspense";
 
-const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 
+const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 
 const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
-  
-
-   
-  
-   const inititalState = useMemo(() => {
+  const inititalState = useMemo(() => {
     return {
-       page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE, resource_type: "event"
-    }
+      page: env.REACT_APP_FIRST_PAGE,
+      limit: env.REACT_APP_PER_PAGE,
+      resource_type: "event",
+    };
   }, []);
-  
 
-  const [memberCountPerResource, setMemberCountPerResource] = useState<any[]>([]);
+  const [memberCountPerResource, setMemberCountPerResource] = useState<any[]>(
+    []
+  );
   const [resourcePayload, setResourcePayload] = useState<IUsers>(inititalState);
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [resourceType, setResourceType] = useState<any>("group");
- 
 
   const tableHeader = useMemo(() => {
-        return [
-          { key: "Eventname", value: "Event name" },
-          { key: "membercount", value: "No. of members" },
-          { key: "capacity", value: "capacity" }
-        ]
-    }, []);
-  
+    return [
+      { key: "Eventname", value: "Event name" },
+      { key: "membercount", value: "No. of members" },
+      { key: "capacity", value: "capacity" },
+    ];
+  }, []);
 
-
-  const numberOfMemberPerEvent = useStoreState((state) => state.dashboard.numberOfMemberPerEvent);
+  const numberOfMemberPerEvent = useStoreState(
+    (state) => state.dashboard.numberOfMemberPerEvent
+  );
   const getMembersCountPerResource = useStoreActions(
     (actions) => actions.dashboard.getMembersCountPerResource
   );
@@ -51,7 +54,7 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
 
   useEffect(() => {
     if (numberOfMemberPerEvent?.data) {
-        console.log(numberOfMemberPerEvent?.data)
+      console.log(numberOfMemberPerEvent?.data);
       const {
         data,
         pagination: [paginationObject],
@@ -67,14 +70,11 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
     }
   }, [numberOfMemberPerEvent]);
 
-  useEffect(() => {
-    getNumberOfMembersPerResource(inititalState);
-  }, []);
-
+ 
 
   useEffect(() => {
     if (resourcePayload) {
-        getNumberOfMembersPerResource(resourcePayload);
+      getNumberOfMembersPerResource(resourcePayload);
     }
   }, [resourcePayload]);
 
@@ -91,45 +91,35 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
     }
   };
 
-//   const changeResourceType = useCallback(async (event) => {
-//     setResourcePayload((_) => ({
-//         ..._,
-//         page: env.REACT_APP_FIRST_PAGE,
-//         resource_type: event.target.value,
-//       }));
-//     setResourceType(event.target.value)
-//   }, []);
-
-//console.log("memberCountPerResource",memberCountPerResource)
   
   return (
     <>
-              
-              <div className="table-responsive">
-                <table className="table customTable stickyHeader">
-                  <CustomSuspense>
-                    <TableHeader fields={tableHeader} headerWidth={"w-33"} />
-                  </CustomSuspense>
-                  <tbody onScroll={onScroll} ref={listInnerRef}>
-                  {memberCountPerResource && memberCountPerResource.length > 0 ? (
-                      memberCountPerResource.map((val: any, index: number) => {
-                        return (
-                          <tr key={index}>
-                            <td className={"w-33"}>{val?.name || 0}</td>
-                            <td className={"w-33"}>{val?.resource_members || 0} </td>
-                              <td className="w-33">{val?.capacity || 0} </td> 
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan={2}>No data</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+      <div className="table-responsive">
+        
+        <table className="table customTable stickyHeader">
+          <CustomSuspense>
+            <TableHeader fields={tableHeader} headerWidth={"w-33"} />
+          </CustomSuspense>
+          <tbody onScroll={onScroll} ref={listInnerRef}>
+            {memberCountPerResource && memberCountPerResource.length > 0 ? (
+              memberCountPerResource.map((val: any, index: number) => {
+                return (
+                  <tr key={index}>
+                    <td className={"w-33"}>{val?.name || 0}</td>
+                    <td className={"w-33"}>{val?.resource_members || 0} </td>
+                    <td className="w-33">{val?.capacity || 0} </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan={2}>No data</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </>
-  )
-}
+  );
+};
 export default ResourceMembersPerEvent;

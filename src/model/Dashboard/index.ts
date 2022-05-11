@@ -11,7 +11,12 @@ const initialState = {
   membersCount:0,
   numberOfEventPerGroup:{},
   numberOfMemberPerGroup:{},
-  numberOfMemberPerEvent:{}
+  numberOfMemberPerEvent:{},
+  isSubscriberLoading:false,
+  isMembersPerResourceLoading: false,
+  isEventPerGroupLoading: false,
+  isPostPerMemberLoading:false,
+  postPerMember:{},
 }
 export interface DashboardModel {
   subscribersCount: string | number;
@@ -19,6 +24,11 @@ export interface DashboardModel {
   numberOfEventPerGroup: object | any;
   numberOfMemberPerGroup: object | any;
   numberOfMemberPerEvent: object | any;
+  postPerMember: object | any;
+  isMembersPerResourceLoading: boolean,
+  isEventPerGroupLoading:boolean,
+  isSubscriberLoading:boolean,
+  isPostPerMemberLoading:boolean
   //**************State Actions************///
  
   setSubscribersCount:Action<DashboardModel, object | any>;
@@ -28,6 +38,11 @@ export interface DashboardModel {
   setNumberOfMemberPerGroup:Action<DashboardModel>;
   flushData :Action<DashboardModel>;
   setNumberOfMembersPerEvent:Action<DashboardModel>;
+  setPostPerMember:Action<DashboardModel>;
+  setMembersPerResourceLoading: Action<DashboardModel, object | any>,
+  setEventPerGroupLoading:Action<DashboardModel, object | any>,
+  setSubscriberLoading:Action<DashboardModel, object | any>,
+  setPostPerMemberLoading:Action<DashboardModel, object | any>,
   //**************State  Actions************///
 
   //**************Thunk Actions************///
@@ -35,6 +50,7 @@ export interface DashboardModel {
   getMembersCount:Thunk<DashboardModel, object>;
   getEventCountPerGroup:Thunk<DashboardModel, object>;
   getMembersCountPerResource:Thunk<DashboardModel, object>;
+  getPostPerMember:Thunk<DashboardModel, object>;
  
   //**************Thunk Actions************///
 }
@@ -62,6 +78,26 @@ const dashboard: DashboardModel = {
     state.numberOfMemberPerEvent = payload;
   }),
 
+  setMembersPerResourceLoading: action((state, payload) => {
+    state.isMembersPerResourceLoading = payload;
+  }),
+
+  setEventPerGroupLoading: action((state, payload) => {
+    state.isEventPerGroupLoading = payload;
+  }),
+
+  setSubscriberLoading: action((state, payload) => {
+    state.isSubscriberLoading = payload;
+  }),
+
+  setPostPerMember: action((state, payload) => {
+    state.postPerMember = payload;
+  }),
+
+  setPostPerMemberLoading: action((state, payload) => {
+    state.isPostPerMemberLoading = payload;
+  }),
+
   flushData: action((state, payload) => {
     state.numberOfMemberPerGroup = {};
   }),
@@ -75,62 +111,62 @@ const dashboard: DashboardModel = {
     // if ((getState()?.subscribersCount ===0)) {
     //   getStoreActions()?.common?.setLoading(true);
     // }
-    getStoreActions().common.setLoading(true);
+    actions.setSubscriberLoading(true);
     let response = await getApi(payload);
     if (response && response?.status !== 200) {
       toast.error(response?.message);
-      getStoreActions()?.common?.setLoading(false);
+     // actions.setSubscriberLoading(false)
     } else if (response && response?.status === 200) {
       actions.setSubscribersCount(response?.data?.total_subscribers);
-      getStoreActions()?.common?.setLoading(false);
+     actions.setSubscriberLoading(false)
     }
     else {
-      getStoreActions()?.common?.setLoading(false);
+      actions.setSubscriberLoading(false)
       return true;
     }
   }),
 
   getMembersCount: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
     
-    //getStoreActions().common.setLoading(true);
+    actions.setEventPerGroupLoading(true)
     let response = await getApi(payload);
     if (response && response?.status !== 200) {
       toast.error(response?.message);
-      getStoreActions()?.common?.setLoading(false);
+     // actions.setLoadingAction(false)
     } else if (response && response?.status === 200) {
       actions.setMembersCount(response?.data?.total_members);
-      getStoreActions()?.common?.setLoading(false);
+     // actions.setLoadingAction(false)
     }
     else {
-      getStoreActions()?.common?.setLoading(false);
+     // actions.setLoadingAction(false)
       return true;
     }
   }),
 
   getEventCountPerGroup: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    //  getStoreActions().common.setLoading(true);
+    actions.setEventPerGroupLoading(true)
     let response = await getApi(payload);
     if (response && response?.status !== 200) {
       toast.error(response?.message);
-      getStoreActions()?.common?.setLoading(false);
+      actions.setEventPerGroupLoading(false)
     } else if (response && response?.status === 200) {
       actions.setNumberOfEventPerGroup(response?.data);
-     // getStoreActions()?.common?.setLoading(false);
+      actions.setEventPerGroupLoading(false)
     }
     else {
-    //  getStoreActions()?.common?.setLoading(false);
+      actions.setEventPerGroupLoading(false)
       return true;
     }
   }),
 
   getMembersCountPerResource: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    //  getStoreActions().common.setLoading(true);
+    actions.setMembersPerResourceLoading(true)
    // console.log("payload",payload.payload.resource_type)
     let response = await getApi(payload);
    
     if (response && response?.status !== 200) {
       toast.error(response?.message);
-      getStoreActions()?.common?.setLoading(false);
+      actions.setMembersPerResourceLoading(false)
     } else if (response && response?.status === 200) {
       if(payload.payload.resource_type==="group"){
         actions.setNumberOfMemberPerGroup(response?.data);
@@ -138,11 +174,27 @@ const dashboard: DashboardModel = {
       if(payload.payload.resource_type==="event"){
         actions.setNumberOfMembersPerEvent(response?.data);
       }
-    
-     // getStoreActions()?.common?.setLoading(false);
+     
+      actions.setMembersPerResourceLoading(false)
     }
     else {
-    //  getStoreActions()?.common?.setLoading(false);
+      actions.setMembersPerResourceLoading(false)
+      return true;
+    }
+  }),
+
+  getPostPerMember: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
+   actions.setPostPerMemberLoading(true)
+    let response = await getApi(payload);
+    if (response && response?.status !== 200) {
+      toast.error(response?.message);
+     actions.setPostPerMemberLoading(false)
+    } else if (response && response?.status === 200) {
+      actions.setPostPerMember(response?.data);
+     actions.setPostPerMemberLoading(false)
+    }
+    else {
+     actions.setPostPerMemberLoading(false)
       return true;
     }
   }),

@@ -956,7 +956,17 @@ nav ul.subNav {
     text-align: right;
   }
 }
-
+.dashboardBoxes{
+  position: relative;
+  ._loading_overlay_wrapper{
+    position: absolute!important;
+  }
+  ._loading_overlay_overlay{
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+  }
+}
 .dashboardBoxes .search-box {
   font-size: 14px;
   height: 34px;

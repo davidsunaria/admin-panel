@@ -50,7 +50,6 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
 
   useEffect(() => {
     if (numberOfMemberPerGroup?.data) {
-        console.log(numberOfMemberPerGroup?.data)
       const {
         data,
         pagination: [paginationObject],
@@ -66,9 +65,7 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
     }
   }, [numberOfMemberPerGroup]);
 
-  useEffect(() => {
-    getNumberOfMembersPerResource(inititalState);
-  }, []);
+  
 
 
   useEffect(() => {
@@ -90,16 +87,6 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
     }
   };
 
-//   const changeResourceType = useCallback(async (event) => {
-//     setResourcePayload((_) => ({
-//         ..._,
-//         page: env.REACT_APP_FIRST_PAGE,
-//         resource_type: event.target.value,
-//       }));
-//     setResourceType(event.target.value)
-//   }, []);
-
-//console.log("memberCountPerResource",memberCountPerResource)
   
   return (
     <>
