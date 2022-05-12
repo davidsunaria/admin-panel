@@ -102,7 +102,7 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
             <TableHeader fields={tableHeader} headerWidth={"w-33"} />
           </CustomSuspense>
           <tbody onScroll={onScroll} ref={listInnerRef}>
-            {memberCountPerResource && memberCountPerResource.length > 0 ? (
+            {memberCountPerResource && memberCountPerResource?.length > 0 ? (
               memberCountPerResource.map((val: any, index: number) => {
                 return (
                   <tr key={index}>

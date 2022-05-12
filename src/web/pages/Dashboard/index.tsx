@@ -13,6 +13,7 @@ const SubscriberMemberCount = React.lazy(
   () => import("../SubscriberMemberCount")
 );
 const PostPerMember = React.lazy(() => import("../PostPerMember"));
+const PaypalVsCash = React.lazy(() => import("../PaypalVsCash"));
 
 const Dashboard: React.FC = (): JSX.Element => {
   return (
@@ -27,6 +28,7 @@ const Dashboard: React.FC = (): JSX.Element => {
           <EventPerGroup />
           <ResourceMembers /> 
           <PostPerMember />
+          <PaypalVsCash/>
         </div>
       </div>
     </>

@@ -56,7 +56,7 @@ const event: EventModel = {
   
   getEvents: thunk<EventModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
    // getStoreActions().common.setLoading(true);
-   if ((getState().response?.data ==undefined && payload?.payload?.page == 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
+   if ((getState().response?.data ===undefined && payload?.payload?.page === 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
     getStoreActions().common.setLoading(true);
   }
     let response = await getApi(payload);
@@ -75,7 +75,7 @@ const event: EventModel = {
 
   getExportedEvents: thunk<EventModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
     // getStoreActions().common.setLoading(true);
-    if ((getState().response?.data ==undefined && payload?.payload?.page == 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
+    if ((getState().response?.data ===undefined && payload?.payload?.page === 1) ||(getState().response?.data?.length >0 && payload?.payload?.page > 1)  ) {
      getStoreActions().common.setLoading(true);
    }
      let response = await getApi(payload);
@@ -112,7 +112,7 @@ const event: EventModel = {
   }),
   getGroups: thunk<EventModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
    // getStoreActions().common.setLoading(true);
-    if (getState().response?.data?.length  ==undefined) {
+    if (getState().response?.data?.length  ===undefined) {
       getStoreActions().common.setLoading(true);
     }
     let response = await getApi(payload);

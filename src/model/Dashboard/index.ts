@@ -16,7 +16,9 @@ const initialState = {
   isMembersPerResourceLoading: false,
   isEventPerGroupLoading: false,
   isPostPerMemberLoading:false,
+  isPaypalVsCashLoading:false,
   postPerMember:{},
+  paypalVsCash:{}
 }
 export interface DashboardModel {
   subscribersCount: string | number;
@@ -28,7 +30,9 @@ export interface DashboardModel {
   isMembersPerResourceLoading: boolean,
   isEventPerGroupLoading:boolean,
   isSubscriberLoading:boolean,
-  isPostPerMemberLoading:boolean
+  isPostPerMemberLoading:boolean,
+  paypalVsCash:object | any;
+  isPaypalVsCashLoading:boolean,
   //**************State Actions************///
  
   setSubscribersCount:Action<DashboardModel, object | any>;
@@ -43,6 +47,8 @@ export interface DashboardModel {
   setEventPerGroupLoading:Action<DashboardModel, object | any>,
   setSubscriberLoading:Action<DashboardModel, object | any>,
   setPostPerMemberLoading:Action<DashboardModel, object | any>,
+  setPaypalVsCash:Action<DashboardModel, object | any>,
+  setPaypalVsCashLoading:Action<DashboardModel, object | any>,
   //**************State  Actions************///
 
   //**************Thunk Actions************///
@@ -51,6 +57,7 @@ export interface DashboardModel {
   getEventCountPerGroup:Thunk<DashboardModel, object>;
   getMembersCountPerResource:Thunk<DashboardModel, object>;
   getPostPerMember:Thunk<DashboardModel, object>;
+  getPaypalVsCash:Thunk<DashboardModel, object>;
  
   //**************Thunk Actions************///
 }
@@ -98,6 +105,16 @@ const dashboard: DashboardModel = {
     state.isPostPerMemberLoading = payload;
   }),
 
+  setPaypalVsCash: action((state, payload) => {
+    state.paypalVsCash = payload;
+  }),
+
+  setPaypalVsCashLoading: action((state, payload) => {
+    state.isPaypalVsCashLoading = payload;
+  }),
+
+
+
   flushData: action((state, payload) => {
     state.numberOfMemberPerGroup = {};
   }),
@@ -108,10 +125,10 @@ const dashboard: DashboardModel = {
   reset: action(state => state = initialState),
   
   getSubscribersCount: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    // if ((getState()?.subscribersCount ===0)) {
-    //   getStoreActions()?.common?.setLoading(true);
-    // }
-    actions.setSubscriberLoading(true);
+    if ((getState()?.subscribersCount ===undefined)) {
+      actions.setSubscriberLoading(true);
+    }
+    
     let response = await getApi(payload);
     if (response && response?.status !== 200) {
       toast.error(response?.message);
@@ -127,15 +144,11 @@ const dashboard: DashboardModel = {
   }),
 
   getMembersCount: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    
-    actions.setEventPerGroupLoading(true)
     let response = await getApi(payload);
     if (response && response?.status !== 200) {
       toast.error(response?.message);
-     // actions.setLoadingAction(false)
     } else if (response && response?.status === 200) {
       actions.setMembersCount(response?.data?.total_members);
-     // actions.setLoadingAction(false)
     }
     else {
      // actions.setLoadingAction(false)
@@ -144,7 +157,9 @@ const dashboard: DashboardModel = {
   }),
 
   getEventCountPerGroup: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    actions.setEventPerGroupLoading(true)
+    if ((getState().numberOfEventPerGroup?.data ===undefined && payload?.payload?.page === 1) ||(getState().numberOfEventPerGroup?.data?.length >0 && payload?.payload?.page > 1)  ) {
+      actions.setEventPerGroupLoading(true);
+    }
     let response = await getApi(payload);
     if (response && response?.status !== 200) {
       toast.error(response?.message);
@@ -160,7 +175,12 @@ const dashboard: DashboardModel = {
   }),
 
   getMembersCountPerResource: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    actions.setMembersPerResourceLoading(true)
+    if ((getState().numberOfMemberPerGroup?.data ===undefined && payload?.payload?.page === 1) ||(getState().numberOfMemberPerGroup?.data?.length >0 && payload?.payload?.page > 1) 
+   || (getState().numberOfMemberPerEvent?.data ===undefined && payload?.payload?.page === 1) ||(getState().numberOfMemberPerEvent?.data?.length >0 && payload?.payload?.page > 1)
+    ) {
+      actions.setMembersPerResourceLoading(true);
+    }
+    
    // console.log("payload",payload.payload.resource_type)
     let response = await getApi(payload);
    
@@ -184,7 +204,9 @@ const dashboard: DashboardModel = {
   }),
 
   getPostPerMember: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-   actions.setPostPerMemberLoading(true)
+    if ((getState().postPerMember?.data ===undefined && payload?.payload?.page === 1) ||(getState().postPerMember?.data?.length >0 && payload?.payload?.page > 1)  ) {
+      actions.setPostPerMemberLoading(true);
+    }
     let response = await getApi(payload);
     if (response && response?.status !== 200) {
       toast.error(response?.message);
@@ -198,6 +220,24 @@ const dashboard: DashboardModel = {
       return true;
     }
   }),
+
+  getPaypalVsCash: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
+    if ((getState().paypalVsCash?.data ===undefined && payload?.payload?.page === 1) ||(getState().paypalVsCash?.data?.length >0 && payload?.payload?.page > 1)  ) {
+      actions.setPaypalVsCashLoading(true)
+    }
+     let response = await getApi(payload);
+     if (response && response?.status !== 200) {
+       toast.error(response?.message);
+      actions.setPaypalVsCashLoading(false)
+     } else if (response && response?.status === 200) {
+       actions.setPaypalVsCash(response?.data);
+      actions.setPaypalVsCashLoading(false)
+     }
+     else {
+      actions.setPaypalVsCashLoading(false)
+       return true;
+     }
+   }),
 
 };
 

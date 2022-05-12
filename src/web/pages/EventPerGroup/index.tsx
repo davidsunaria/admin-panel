@@ -110,7 +110,7 @@ const EventPerGroup: React.FC = (): JSX.Element => {
               <TableHeader fields={tableHeader} />
             </CustomSuspense>
             <tbody onScroll={onScroll} ref={listInnerRef}>
-              {EventsPerGroup && EventsPerGroup.length > 0 ? (
+              {EventsPerGroup && EventsPerGroup?.length > 0 ? (
                 EventsPerGroup.map((val: any, index: number) => {
                   return (
                     <tr key={index}>

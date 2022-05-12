@@ -22,9 +22,7 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
 
   const [memberCountPerResource, setMemberCountPerResource] = useState<any[]>([]);
   const [resourcePayload, setResourcePayload] = useState<IUsers>(inititalState);
-  const [pagination, setPagination] = useState<IPagination>();
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [resourceType, setResourceType] = useState<any>("group");
+ 
  
 
   const tableHeader = useMemo(() => {
@@ -54,8 +52,7 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
         data,
         pagination: [paginationObject],
       } = numberOfMemberPerGroup;
-    //   setPagination(paginationObject);
-    //   setCurrentPage(paginationObject?.currentPage);
+    
 
       if (paginationObject?.currentPage === 1 || !paginationObject) {
         setMemberCountPerResource(data);
@@ -97,7 +94,7 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
                     <TableHeader fields={tableHeader} headerWidth={"w-50"} />
                   </CustomSuspense>
                   <tbody onScroll={onScroll} ref={listInnerRef}>
-                  {memberCountPerResource && memberCountPerResource.length > 0 ? (
+                  {memberCountPerResource && memberCountPerResource?.length > 0 ? (
                       memberCountPerResource.map((val: any, index: number) => {
                         return (
                           <tr key={index}>
