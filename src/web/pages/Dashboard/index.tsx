@@ -4,9 +4,7 @@ const Navbar = React.lazy(() => import("../../components/Navbar"));
 const CustomSuspense = React.lazy(
   () => import("../../components/CustomSuspense")
 );
-const GooglePlaceAutoComplete = React.lazy(
-  () => import("../../components/GooglePlaceAutoComplete")
-);
+
 const ResourceMembers = React.lazy(() => import("../ResourceMembers"));
 const EventPerGroup = React.lazy(() => import("../EventPerGroup"));
 const SubscriberMemberCount = React.lazy(
@@ -14,6 +12,7 @@ const SubscriberMemberCount = React.lazy(
 );
 const PostPerMember = React.lazy(() => import("../PostPerMember"));
 const PaypalVsCash = React.lazy(() => import("../PaypalVsCash"));
+const GroupEventByLocation = React.lazy(() => import("../GroupEventByLocation"));
 
 const Dashboard: React.FC = (): JSX.Element => {
   return (
@@ -29,6 +28,7 @@ const Dashboard: React.FC = (): JSX.Element => {
           <ResourceMembers /> 
           <PostPerMember />
           <PaypalVsCash/>
+          <GroupEventByLocation/>
         </div>
       </div>
     </>

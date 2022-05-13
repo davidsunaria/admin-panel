@@ -18,7 +18,8 @@ const initialState = {
   isPostPerMemberLoading:false,
   isPaypalVsCashLoading:false,
   postPerMember:{},
-  paypalVsCash:{}
+  paypalVsCash:{},
+  groupEventByLocation:{},
 }
 export interface DashboardModel {
   subscribersCount: string | number;
@@ -32,6 +33,7 @@ export interface DashboardModel {
   isSubscriberLoading:boolean,
   isPostPerMemberLoading:boolean,
   paypalVsCash:object | any;
+  groupEventByLocation:object | any;
   isPaypalVsCashLoading:boolean,
   //**************State Actions************///
  
@@ -49,6 +51,7 @@ export interface DashboardModel {
   setPostPerMemberLoading:Action<DashboardModel, object | any>,
   setPaypalVsCash:Action<DashboardModel, object | any>,
   setPaypalVsCashLoading:Action<DashboardModel, object | any>,
+  setGroupEventByLocation:Action<DashboardModel, object | any>,
   //**************State  Actions************///
 
   //**************Thunk Actions************///
@@ -58,6 +61,7 @@ export interface DashboardModel {
   getMembersCountPerResource:Thunk<DashboardModel, object>;
   getPostPerMember:Thunk<DashboardModel, object>;
   getPaypalVsCash:Thunk<DashboardModel, object>;
+  getGroupEventByLocation:Thunk<DashboardModel, object>;
  
   //**************Thunk Actions************///
 }
@@ -107,6 +111,10 @@ const dashboard: DashboardModel = {
 
   setPaypalVsCash: action((state, payload) => {
     state.paypalVsCash = payload;
+  }),
+
+  setGroupEventByLocation: action((state, payload) => {
+    state.groupEventByLocation = payload;
   }),
 
   setPaypalVsCashLoading: action((state, payload) => {
@@ -235,6 +243,24 @@ const dashboard: DashboardModel = {
      }
      else {
       actions.setPaypalVsCashLoading(false)
+       return true;
+     }
+   }),
+
+   getGroupEventByLocation: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
+    // if ((getState().paypalVsCash?.data ===undefined && payload?.payload?.page === 1) ||(getState().paypalVsCash?.data?.length >0 && payload?.payload?.page > 1)  ) {
+    //   actions.setPaypalVsCashLoading(true)
+    // }
+     let response = await getApi(payload);
+     if (response && response?.status !== 200) {
+       toast.error(response?.message);
+     // actions.setPaypalVsCashLoading(false)
+     } else if (response && response?.status === 200) {
+       actions.setGroupEventByLocation(response?.data);
+      //actions.setPaypalVsCashLoading(false)
+     }
+     else {
+     // actions.setPaypalVsCashLoading(false)
        return true;
      }
    }),
