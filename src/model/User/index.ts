@@ -145,6 +145,7 @@ const user: UserModel = {
       getStoreActions().common.setLoading(false);
       getStoreActions().group.reset();
       getStoreActions().event.reset();
+      getStoreActions().dashboard.reset();
       getStoreActions().reportedResource.reset();
       actions.reset();
       NavigationService.navigate("/login");

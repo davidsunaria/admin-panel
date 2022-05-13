@@ -14,6 +14,7 @@ const Users = React.lazy(() => import('../web/pages/Users'));
 const Login = React.lazy(() => import('../web/pages/Login'));
  const Groups = React.lazy(() => import('../web/pages/Groups'));
 const Events = React.lazy(() => import('../web/pages/Events'));
+const Dashboard = React.lazy(() => import('../web/pages/Dashboard'));
 const ReportedGroups = React.lazy(() => import('../web/pages/ReportedGroups'));
 const ReportedUsers = React.lazy(() => import('../web/pages/ReportedUsers'));
 const ReportedEvents = React.lazy(() => import('../web/pages/ReportedEvents'));
@@ -61,8 +62,11 @@ const AppRouter: React.FC = (): JSX.Element => {
           <Route path="/verify-otp" element={<PublicRoute restricted={true}>
           <CustomSuspense><VerifyOtp /></CustomSuspense>
           </PublicRoute>}></Route>
+          <Route path="/dashboard" element={<PrivateRoute>
+            <CustomSuspense><Dashboard /></CustomSuspense>
+          </PrivateRoute>} />
 
-          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          {/* <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} /> */}
           <Route path="/users" element={<PrivateRoute>
             <CustomSuspense><Users /></CustomSuspense>
           </PrivateRoute>} />
@@ -92,7 +96,5 @@ const AppRouter: React.FC = (): JSX.Element => {
   );
 }
 
-export const Dashboard = () => {
-  return <div>This is a Dashboard page</div>
-}
+
 export default AppRouter;

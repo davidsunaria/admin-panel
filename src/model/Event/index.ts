@@ -77,7 +77,6 @@ const event: EventModel = {
 
 
 
-
   enableDisable: thunk<EventModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
     getStoreActions().common.setLoading(true);
     actions.setEnabledDisabled(false);

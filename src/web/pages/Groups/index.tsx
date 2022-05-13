@@ -11,6 +11,7 @@ import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
 import { truncate,toUpperCase } from '../../../lib/utils/Service';
 import { Formik } from 'formik';
+import _ from 'lodash';
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
 const NoRecord = React.lazy(() => import("../../components/NoRecord"));
@@ -79,7 +80,6 @@ const Groups: React.FC = (): JSX.Element => {
       await getGroups({ url: "group/get-all-groups", payload });
   }, []);
 
-  
   useEffect(() => {
     //console.log('Response', response);
     if (response?.data) {

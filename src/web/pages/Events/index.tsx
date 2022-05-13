@@ -10,6 +10,7 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import DEFAULT_EVENT_IMG from "react-app-images/default_event.png";
 import env from "../../../config";
 import { truncate,toUpperCase } from "../../../lib/utils/Service";
+import _  from 'lodash';
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const NoRecord = React.lazy(() => import("../../components/NoRecord"));

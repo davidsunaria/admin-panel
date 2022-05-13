@@ -40,14 +40,31 @@
     }
 	
 }
-@media(min-width:991px){
-	
+
+@media(min-width:1250px){
+	.dashboardBoxes .search-box{width: 300px;}
 }
-@media(min-width:1200px){
-	
+@media(min-width:1500px){
+	.dashboardBoxes .search-box{width: 350px;}
 }
 @media(max-width:1050px){
-	
+	.dashAppointFilterOuter{
+		flex-direction: column;
+		.dashboardSubTitle{
+			margin-bottom: 10px;
+		}
+		.filter select{
+			margin-bottom: 10px;
+			width: 200px;
+		}
+	}
+	.profileMain{
+		flex-direction:column;
+	}
+	.profileLeft{
+		width: 100%;
+	}
+	.dashboardBoxes .search-box{width:100%;}
 }
 
 @media(max-width:991px){
