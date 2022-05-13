@@ -1,5 +1,5 @@
 import { StoreModel } from 'react-app-model';
-import { Action, action, Thunk, thunk, debug } from "easy-peasy";
+import { Action, action, Thunk, thunk} from "easy-peasy";
 import { toast } from "react-toastify";
 
 import { getApi, postApi } from 'react-app-api';

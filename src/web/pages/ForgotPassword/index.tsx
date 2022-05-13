@@ -1,8 +1,8 @@
-import React, { useEffect, useCallback } from 'react';
-import { Link, useNavigate } from "react-router-dom";
-import { useStoreActions, useStoreState } from 'react-app-store';
+import React, {  useCallback } from 'react';
+import { Link } from "react-router-dom";
+import { useStoreActions } from 'react-app-store';
 import { IForgotPassword } from 'react-app-interfaces';
-import { Formik, ErrorMessage } from 'formik';
+import { Formik } from 'formik';
 import { useAuthValidation } from '../../../lib/validations/AuthSchema';
 import LOGO from 'react-app-images/logo.png';
 import CustomSuspense from '../../components/CustomSuspense';
@@ -44,7 +44,7 @@ const ForgotPassword: React.FC = (): JSX.Element => {
           <form onSubmit={handleSubmit}>
             <div className="loginMain">
               <div className="loginHeader">
-                <img src={LOGO} />
+                <img src={LOGO} alt="error" />
               </div>
               <div className="card loginOuter">
                 <article className="card-body">

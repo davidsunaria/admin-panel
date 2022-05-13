@@ -9,11 +9,12 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
-import { truncate } from '../../../lib/utils/Service';
+import { truncate,toUpperCase } from '../../../lib/utils/Service';
 import { Formik } from 'formik';
 import _ from 'lodash';
 
 const TableHeader = React.lazy(() => import('../../components/TableHeader'));
+const NoRecord = React.lazy(() => import("../../components/NoRecord"));
 const SearchUser = React.lazy(() => import('../../components/SearchUser'));
 const Navbar = React.lazy(() => import('../../components/Navbar'));
 const MyModal = React.lazy(() => import('../../components/MyModal'));
@@ -36,7 +37,7 @@ const Groups: React.FC = (): JSX.Element => {
   }, []);
   const userInititalState = useMemo(() => {
     return {
-      q: '', page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE, status: ''
+      q: '', page: env?.REACT_APP_FIRST_PAGE, limit: env?.REACT_APP_PER_PAGE, status: ''
     }
   }, []);
 
@@ -75,7 +76,6 @@ const Groups: React.FC = (): JSX.Element => {
       await getGroups({ url: "group/get-all-groups", payload });
   }, []);
 
-
   useEffect(() => {
     //console.log('Response', response);
     if (response?.data) {
@@ -93,7 +93,7 @@ const Groups: React.FC = (): JSX.Element => {
   }, [response]);
 
   const onSearch = useCallback((payload: IUsers) => {
-    setFormData(_ => ({ ..._, ...payload, page: env.REACT_APP_FIRST_PAGE, limit: env.REACT_APP_PER_PAGE }));
+    setFormData(_ => ({ ..._, ...payload, page: env?.REACT_APP_FIRST_PAGE, limit: env?.REACT_APP_PER_PAGE }));
   }, []);
 
   const onReset = useCallback(() => {
@@ -104,7 +104,6 @@ const Groups: React.FC = (): JSX.Element => {
   useEffect(() => {
     if (formData) {
       getGroupData(formData);
-    //  getExportedData(formData)
     }
   }, [formData]);
 
@@ -195,7 +194,7 @@ const Groups: React.FC = (): JSX.Element => {
 
 
   const getImageUrl = (url: string, options: any) => {
-    return `${env.REACT_APP_MEDIA_URL}` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
+    return `${env?.REACT_APP_MEDIA_URL}` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
   }
 
   useEffect(() => {
@@ -266,7 +265,7 @@ const Groups: React.FC = (): JSX.Element => {
                 scrollThreshold={0.8}
               >
 
-                <table className="table mb-0">
+                <table className="table customTable mb-0">
                   <CustomSuspense>
                     <TableHeader fields={tableHeader} />
                   </CustomSuspense>
@@ -287,12 +286,13 @@ const Groups: React.FC = (): JSX.Element => {
                               width={60} />
                             }
                           </td>
-                          <td>{val?.name || '-'}</td>
-                          <td><div title={val?.creator_of_group?.first_name + " " + val?.creator_of_group?.last_name}>{truncate(val?.creator_of_group?.first_name + " " + val?.creator_of_group?.last_name) || '-'}</div></td>
+                          <td>{toUpperCase(val?.name)}</td>
+                          
+                          <td><div title={` ${val?.creator_of_group?.first_name } ${val?.creator_of_group?.last_name}`}>{truncate(toUpperCase(`${val?.creator_of_group?.first_name } ${val?.creator_of_group?.last_name}`))}</div></td>
 
-                          <td>{val?.category || '-'}</td>
-                          <td><div title={val?.address}>{truncate(val?.address) || '-'}</div></td>
-                          <td>{_.upperFirst(val?.restriction_mode||"Open") }</td>
+                          <td>{toUpperCase(val?.category)}</td>
+                          <td><div title={val?.address}>{truncate(toUpperCase(val?.address))}</div></td>
+                          <td>{toUpperCase(val?.restriction_mode)}</td>
                           <td className={"onHover"} onClick={() => enableDisableGroup(val?._id, val?.status)}>
                             <div className={(val?.status === 1 || val?.status === true) ? "manageStatus active" : "manageStatus inactive"}> {(val?.status === 1 || val?.status === true) ? 'Active' : 'Inactive'}</div></td>
                           <td>
@@ -302,9 +302,7 @@ const Groups: React.FC = (): JSX.Element => {
                         </tr>
                       ))
                     ) : (
-                        <tr>
-                          <td colSpan={9} className="text-center">No record found</td>
-                        </tr>
+                      <NoRecord colspan={9}/>
                       )}
 
 

@@ -9,10 +9,11 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import DEFAULT_EVENT_IMG from "react-app-images/default_event.png";
 import env from "../../../config";
-import { truncate } from "../../../lib/utils/Service";
+import { truncate,toUpperCase } from "../../../lib/utils/Service";
 import _  from 'lodash';
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
+const NoRecord = React.lazy(() => import("../../components/NoRecord"));
 const SearchUser = React.lazy(() => import("../../components/SearchUser"));
 const Navbar = React.lazy(() => import("../../components/Navbar"));
 
@@ -33,8 +34,8 @@ const Events: React.FC = (): JSX.Element => {
   const userInititalState = useMemo(() => {
     return {
       q: "",
-      page: env.REACT_APP_FIRST_PAGE,
-      limit: env.REACT_APP_PER_PAGE,
+      page: env?.REACT_APP_FIRST_PAGE,
+      limit: env?.REACT_APP_PER_PAGE,
       status: "",
     };
   }, []);
@@ -86,8 +87,8 @@ const Events: React.FC = (): JSX.Element => {
     setFormData((_) => ({
       ..._,
       ...payload,
-      page: env.REACT_APP_FIRST_PAGE,
-      limit: env.REACT_APP_PER_PAGE,
+      page: env?.REACT_APP_FIRST_PAGE,
+      limit: env?.REACT_APP_PER_PAGE,
     }));
   }, []);
 
@@ -145,7 +146,7 @@ const Events: React.FC = (): JSX.Element => {
 
   const getImageUrl = (url: string, options: any) => {
     return (
-      `${env.REACT_APP_MEDIA_URL}` +
+      `${env?.REACT_APP_MEDIA_URL}` +
       options?.type +
       "/" +
       url +
@@ -199,7 +200,7 @@ const Events: React.FC = (): JSX.Element => {
                 }
                 scrollThreshold={0.8}
               >
-                <table className="table mb-0">
+                <table className="table customTable mb-0">
                   <CustomSuspense>
                     <TableHeader fields={tableHeader} />
                   </CustomSuspense>
@@ -227,34 +228,29 @@ const Events: React.FC = (): JSX.Element => {
                               />
                             }
                           </td>
-                          <td>{val?.name || "-"}</td>
+                          <td>{toUpperCase(val?.name)}</td>
                           <td>
                             <div
                               title={
-                                val?.creator_of_event?.first_name +
-                                " " +
-                                val?.creator_of_event?.last_name
+                                ` ${val?.creator_of_event?.first_name } ${val?.creator_of_event?.last_name}`
                               }
                             >
                               {truncate(
-                                val?.creator_of_event?.first_name +
-                                  " " +
-                                  val?.creator_of_event?.last_name
-                              ) || "-"}
+                                toUpperCase(` ${val?.creator_of_event?.first_name } ${val?.creator_of_event?.last_name}`))}
                             </div>
                           </td>
                           <td>
                             <div title={val?.event_group?.name}>
-                              {truncate(val?.event_group?.name) || "-"}
+                              {truncate(toUpperCase(val?.event_group?.name))}
                             </div>
                           </td>
                           <td>
                             <div title={val?.address}>
-                              {truncate(val?.address) || "-"}
+                              {truncate(toUpperCase(val?.address))}
                             </div>
                           </td>
                           <td>{val?.capacity || "-"}</td>
-                          <td>{_.upperFirst(val?.capacity_type||"-") }</td>
+                          <td>{toUpperCase(val?.capacity_type) }</td>
                           <td
                             className={"onHover"}
                             onClick={() =>
@@ -288,11 +284,7 @@ const Events: React.FC = (): JSX.Element => {
                         </tr>
                       ))
                     ) : (
-                      <tr>
-                        <td colSpan={9} className="text-center">
-                          No record found
-                        </td>
-                      </tr>
+                      <NoRecord colspan={10}/>
                     )}
                   </tbody>
                 </table>

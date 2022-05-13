@@ -1,8 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect} from "react";
 //@ts-ignore
 import * as FileSaver from "file-saver";
 import { useStoreActions, useStoreState } from "react-app-store";
 import * as XLSX from "xlsx";
+import { toUpperCase} from '../../../lib/utils/Service';
+import moment from "moment"
+import env from "../../../config";
 
 export const ExportToExcel: React.FC<{
   payload: any;
@@ -27,37 +30,50 @@ export const ExportToExcel: React.FC<{
 
   //console.log("exportuser",exportedUsers)
 
+  const getLanguage = useCallback((lang) => {
+    switch (lang) {
+        case 'es':
+            return "Spanish"
+        default:
+            return "English"
+    }
+}, [])
+
   const inititalState = useCallback((type, item) => {
     switch (type) {
       case "users":
         return {
-          FirstName: item?.first_name || "-",
-          LastName: item?.last_name || "-",
+          FirstName: toUpperCase(item?.first_name),
+          LastName: toUpperCase(item?.last_name),
           Email: item?.email || "-",
           Username: item?.username || "-",
+          JoinedDate:moment(item?.created_at).format("YYYY-MM-DD") || "-",
+          LastLoggedIn:moment(item?.last_seen).format(env?.REACT_APP_TIME_FORMAT) || "-",
+          Language: getLanguage(item?.language),
           Status: item?.active === 1 ? "Active" : "Inactive",
           Premium: item?.is_premium === 1 ? "Yes" : "No",
           BlockByAdmin: item?.is_blocked_by_admin === 1 ? "Yes" : "No",
+          
          
         };
       case "events":
         return {
-          Name: item?.name || "-",
-          Owner: `${item?.creator_of_event?.first_name} ${item?.creator_of_event?.last_name}`,
-          "Associated group": item?.event_group?.name || "-",
-          Address: item?.address || "-",
+          Name: toUpperCase(item?.name),
+          Owner: `${toUpperCase(item?.creator_of_event?.first_name)} ${item?.creator_of_event?.last_name}`,
+          "AssociatedGroup": toUpperCase(item?.event_group?.name),
+          Address: toUpperCase(item?.address),
           Capacity: item?.capacity || "-",
-          "Capacity Type": item?.capacity_type || "-",
+          "CapacityType": toUpperCase(item?.capacity_type),
           Status: item?.status === 1 ? "Active" : "Inactive",
           BlockByAdmin: item?.is_blocked_by_admin === 1 ? "Yes" : "No",
         };
       case "groups":
         return {
-          Name: item?.name || "-",
-          Owner: `${item?.creator_of_group?.first_name} ${item?.creator_of_group?.last_name}`,
-          Purpose: item?.category || "-",
-          Address: item?.address || "-",
-          "Restricted Mode": item?.restriction_mode || "-",
+          Name: toUpperCase(item?.name),
+          Owner: `${toUpperCase(item?.creator_of_group?.first_name)} ${item?.creator_of_group?.last_name}`,
+          Purpose: toUpperCase(item?.category),
+          Address: toUpperCase(item?.address),
+          "RestrictedMode": toUpperCase(item?.restriction_mode),
           Status: item?.status === 1 ? "Active" : "Inactive",
           BlockByAdmin: item?.is_blocked_by_admin === 1 ? "Yes" : "No",
         };
