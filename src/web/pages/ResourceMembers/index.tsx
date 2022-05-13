@@ -27,7 +27,7 @@ const ResourceMembers: React.FC = (): JSX.Element => {
           ></LoadingOverlay>
         )}
               <div className="dashAppointFilterOuter">
-                <div className="dashboardSubTitle">#Members</div>
+                <div className="dashboardSubTitle">{resourceType==="group"?"No. of members per group":"No. of members per event"}</div>
                 <div className="filter">
                   <select
                     className="form-select me-2"

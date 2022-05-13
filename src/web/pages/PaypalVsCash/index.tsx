@@ -54,7 +54,7 @@ const getPercentage = useCallback((perValue:any) => {
             ></LoadingOverlay>
           )}
           <div className="dashAppointFilterOuter">
-            <div className="dashboardSubTitle">Paypal vs cash</div>
+            <div className="dashboardSubTitle">Paypal vs Cash</div>
           </div>
           <div className="customScroll">
              {paypalCash && paypalCash?.length > 0

@@ -20,6 +20,7 @@ const initialState = {
   postPerMember:{},
   paypalVsCash:{},
   groupEventByLocation:{},
+  isGroupEventByLocationLoading:false
 }
 export interface DashboardModel {
   subscribersCount: string | number;
@@ -35,6 +36,7 @@ export interface DashboardModel {
   paypalVsCash:object | any;
   groupEventByLocation:object | any;
   isPaypalVsCashLoading:boolean,
+  isGroupEventByLocationLoading:object | any;
   //**************State Actions************///
  
   setSubscribersCount:Action<DashboardModel, object | any>;
@@ -52,6 +54,7 @@ export interface DashboardModel {
   setPaypalVsCash:Action<DashboardModel, object | any>,
   setPaypalVsCashLoading:Action<DashboardModel, object | any>,
   setGroupEventByLocation:Action<DashboardModel, object | any>,
+  setGroupEventByLocationLoading:Action<DashboardModel, object | any>,
   //**************State  Actions************///
 
   //**************Thunk Actions************///
@@ -121,6 +124,9 @@ const dashboard: DashboardModel = {
     state.isPaypalVsCashLoading = payload;
   }),
 
+  setGroupEventByLocationLoading: action((state, payload) => {
+    state.isGroupEventByLocationLoading = payload;
+  }),
 
 
   flushData: action((state, payload) => {
@@ -215,6 +221,8 @@ const dashboard: DashboardModel = {
     if ((getState().postPerMember?.data ===undefined && payload?.payload?.page === 1) ||(getState().postPerMember?.data?.length >0 && payload?.payload?.page > 1)  ) {
       actions.setPostPerMemberLoading(true);
     }
+    console.log("payload",payload)
+   
     let response = await getApi(payload);
     if (response && response?.status !== 200) {
       toast.error(response?.message);
@@ -230,6 +238,7 @@ const dashboard: DashboardModel = {
   }),
 
   getPaypalVsCash: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
+  
     if ((getState().paypalVsCash?.data ===undefined && payload?.payload?.page === 1) ||(getState().paypalVsCash?.data?.length >0 && payload?.payload?.page > 1)  ) {
       actions.setPaypalVsCashLoading(true)
     }
@@ -248,19 +257,19 @@ const dashboard: DashboardModel = {
    }),
 
    getGroupEventByLocation: thunk<DashboardModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions, getState }) => {
-    // if ((getState().paypalVsCash?.data ===undefined && payload?.payload?.page === 1) ||(getState().paypalVsCash?.data?.length >0 && payload?.payload?.page > 1)  ) {
-    //   actions.setPaypalVsCashLoading(true)
-    // }
+     if ((getState().groupEventByLocation?.data ===undefined && payload?.payload?.page === 1) ||(getState().groupEventByLocation?.data?.length >0 && payload?.payload?.page > 1)  ) {
+       actions.setGroupEventByLocationLoading(true)
+     }
      let response = await getApi(payload);
      if (response && response?.status !== 200) {
        toast.error(response?.message);
-     // actions.setPaypalVsCashLoading(false)
+      actions.setGroupEventByLocationLoading(false)
      } else if (response && response?.status === 200) {
        actions.setGroupEventByLocation(response?.data);
-      //actions.setPaypalVsCashLoading(false)
+      actions.setGroupEventByLocationLoading(false)
      }
      else {
-     // actions.setPaypalVsCashLoading(false)
+      actions.setGroupEventByLocationLoading(false)
        return true;
      }
    }),

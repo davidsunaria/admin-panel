@@ -23,7 +23,8 @@ const Dashboard: React.FC = (): JSX.Element => {
   }, []);
   const tableHeader = useMemo(() => {
     return [
-      { key: "name", value: "Name" },
+      { key: "first_name", value: "First name" },
+      { key: "last_name", value: "Last name" },
       { key: "group", value: "No. of Group" },
       { key: "event", value: "No. of Event" },
     ];
@@ -119,7 +120,7 @@ const Dashboard: React.FC = (): JSX.Element => {
             ></LoadingOverlay>
           )}
           <div className="dashAppointFilterOuter">
-            <div className="dashboardSubTitle">Post Per Member</div>
+            <div className="dashboardSubTitle">Group, events per member</div>
             {/* <div className="filter">
                   <div className="search-box mb-3 mb-md-0 me-2">
                     {" "}
@@ -142,8 +143,11 @@ const Dashboard: React.FC = (): JSX.Element => {
                     return (
                       <tr key={index}>
                         <td className={"w-33"}>
-                          {truncate(val?.first_name + " " + val?.last_name) ||
-                            "-"}
+                          {truncate(val?.first_name) || "-"}
+                        </td>
+
+                        <td className={"w-33"}>
+                          {truncate(val?.last_name) ||"-"}
                         </td>
 
                         <td className={"w-33"}>

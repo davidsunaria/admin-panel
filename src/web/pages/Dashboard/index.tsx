@@ -24,10 +24,11 @@ const Dashboard: React.FC = (): JSX.Element => {
 
         <div className="row">
         <SubscriberMemberCount />
+        <PaypalVsCash/>
           <EventPerGroup />
           <ResourceMembers /> 
           <PostPerMember />
-          <PaypalVsCash/>
+         
           <GroupEventByLocation/>
         </div>
       </div>
