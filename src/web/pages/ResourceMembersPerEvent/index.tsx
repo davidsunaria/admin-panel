@@ -28,8 +28,7 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
     []
   );
   const [resourcePayload, setResourcePayload] = useState<IUsers>(inititalState);
-  const [pagination, setPagination] = useState<IPagination>();
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [nextPage, setNextPage] = useState<number>(1);
 
   const tableHeader = useMemo(() => {
     return [
@@ -60,8 +59,7 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
         data,
         pagination: [paginationObject],
       } = numberOfMemberPerEvent;
-      setPagination(paginationObject);
-      setCurrentPage(paginationObject?.currentPage);
+      setNextPage(paginationObject?.nextPage);
 
       if (paginationObject?.currentPage === 1 || !paginationObject) {
         setMemberCountPerResource(data);
@@ -83,7 +81,7 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight) {
+      if (scrollTop + clientHeight === scrollHeight && nextPage !==null) {
         setResourcePayload((_) => ({
           ..._,
           page: parseInt((_.page ?? 1)?.toString()) + 1,

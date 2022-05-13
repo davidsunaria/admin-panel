@@ -34,8 +34,8 @@ const Dashboard: React.FC = (): JSX.Element => {
     any[]
   >([]);
   const [resourcePayload, setResourcePayload] = useState<IUsers>(inititalState);
-  const [pagination, setPagination] = useState<IPagination>();
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [nextPage, setNextPage] = useState<number>(1);
+
 
   const postPerMember = useStoreState((state) => state.dashboard.postPerMember);
   const isPostPerMemberLoading = useStoreState(
@@ -58,8 +58,7 @@ const Dashboard: React.FC = (): JSX.Element => {
         data,
         pagination: [paginationObject],
       } = postPerMember;
-      setPagination(paginationObject);
-      setCurrentPage(paginationObject?.currentPage);
+      setNextPage(paginationObject?.nextPage);
 
       if (paginationObject?.currentPage === 1 || !paginationObject) {
         setNumberOfResourcePerMember(data);
@@ -79,7 +78,7 @@ const Dashboard: React.FC = (): JSX.Element => {
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight) {
+      if (scrollTop + clientHeight === scrollHeight && nextPage !==null) {
         setResourcePayload((_) => ({
           ..._,
           page: parseInt((_.page ?? 1)?.toString()) + 1,

@@ -3,7 +3,7 @@ import { useStoreActions, useStoreState } from "react-app-store";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import LoadingOverlay from "react-loading-overlay-ts";
 import env from "../../../config";
-import { IUsers} from "react-app-interfaces";
+import { IUsers,IPagination} from "react-app-interfaces";
 import CustomSuspense from "../../components/CustomSuspense";
 const GooglePlaceAutoComplete = React.lazy(
   () => import("../../components/GooglePlaceAutoComplete")
@@ -29,6 +29,7 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
   }, []);
   const [params, setParams] = useState<IUsers>(inititalState);
   const [data, setData] = useState<any[]>([]);
+  const [nextPage, setNextPage] = useState<number>(1);
 
   //State
   const groupEventByLocation = useStoreState(
@@ -73,6 +74,7 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
         data,
         pagination: [paginationObject],
       } = groupEventByLocation;
+      setNextPage(paginationObject?.nextPage);
      
 
       if (paginationObject?.currentPage === 1 || !paginationObject) {
@@ -85,15 +87,12 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
   }, [groupEventByLocation]);
 
 
-  // useEffect(() => {
-  //   setData(groupEventByLocation?.data);
-  // }, [groupEventByLocation]);
-
+  
   const listInnerRef = useRef(null);
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight) {
+      if (scrollTop + clientHeight === scrollHeight && nextPage !==null) {
         setParams((_) => ({
           ..._,
           page: parseInt((_.page ?? 1)?.toString()) + 1,

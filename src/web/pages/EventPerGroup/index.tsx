@@ -31,8 +31,7 @@ const EventPerGroup: React.FC = (): JSX.Element => {
 
   const [EventsPerGroup, setEventsPerGroup] = useState<any[]>([]);
   const [groupPayload, setGroupPayload] = useState<IUsers>(inititalState);
-  const [pagination, setPagination] = useState<IPagination>();
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [nextPage, setNextPage] = useState<number>(1);
 
   const numberOfEventPerGroup = useStoreState(
     (state) => state.dashboard.numberOfEventPerGroup
@@ -56,8 +55,7 @@ const EventPerGroup: React.FC = (): JSX.Element => {
         data,
         pagination: [paginationObject],
       } = numberOfEventPerGroup;
-      setPagination(paginationObject);
-      setCurrentPage(paginationObject?.currentPage);
+      setNextPage(paginationObject?.nextPage);
 
       if (paginationObject?.currentPage === 1 || !paginationObject) {
         setEventsPerGroup(data);
@@ -79,7 +77,7 @@ const EventPerGroup: React.FC = (): JSX.Element => {
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight) {
+      if (scrollTop + clientHeight === scrollHeight && nextPage !==null) {
         setGroupPayload((_) => ({
           ..._,
           page: parseInt((_.page ?? 1)?.toString()) + 1,

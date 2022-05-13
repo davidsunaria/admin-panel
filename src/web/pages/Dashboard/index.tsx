@@ -12,7 +12,9 @@ const SubscriberMemberCount = React.lazy(
 );
 const PostPerMember = React.lazy(() => import("../PostPerMember"));
 const PaypalVsCash = React.lazy(() => import("../PaypalVsCash"));
-const GroupEventByLocation = React.lazy(() => import("../GroupEventByLocation"));
+const GroupEventByLocation = React.lazy(
+  () => import("../GroupEventByLocation")
+);
 
 const Dashboard: React.FC = (): JSX.Element => {
   return (
@@ -23,13 +25,13 @@ const Dashboard: React.FC = (): JSX.Element => {
         </CustomSuspense>
 
         <div className="row">
-        <SubscriberMemberCount />
-        <PaypalVsCash/>
+          <SubscriberMemberCount />
+          <PaypalVsCash />
           <EventPerGroup />
-          <ResourceMembers /> 
+          <ResourceMembers />
           <PostPerMember />
-         
-          <GroupEventByLocation/>
+
+          <GroupEventByLocation />
         </div>
       </div>
     </>

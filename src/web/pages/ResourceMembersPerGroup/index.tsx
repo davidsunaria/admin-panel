@@ -22,6 +22,7 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
 
   const [memberCountPerResource, setMemberCountPerResource] = useState<any[]>([]);
   const [resourcePayload, setResourcePayload] = useState<IUsers>(inititalState);
+  const [nextPage, setNextPage] = useState<number>(1);
  
  
 
@@ -52,7 +53,7 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
         data,
         pagination: [paginationObject],
       } = numberOfMemberPerGroup;
-    
+      setNextPage(paginationObject?.nextPage);
 
       if (paginationObject?.currentPage === 1 || !paginationObject) {
         setMemberCountPerResource(data);
@@ -75,7 +76,7 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight) {
+      if (scrollTop + clientHeight === scrollHeight && nextPage !==null) {
         setResourcePayload((_) => ({
           ..._,
           page: parseInt((_.page ?? 1)?.toString()) + 1,
