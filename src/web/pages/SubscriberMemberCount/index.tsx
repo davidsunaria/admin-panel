@@ -58,11 +58,11 @@ const SubscriberMemberCount: React.FC = (): JSX.Element => {
         </div>
         <div className="customScroll">
           <div className="detailOuer">
-            <label>Members</label>
+            <label className="text-dark">Members</label>
             <span>{memberCount || 0}</span>
           </div>
           <div className="detailOuer">
-            <label>Subscribers</label>
+            <label className="text-dark">Subscribers</label>
             <span>{subscriberCount || 0}</span>
           </div>
         </div>

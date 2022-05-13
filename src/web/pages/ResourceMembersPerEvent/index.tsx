@@ -7,10 +7,11 @@ import React, {
   memo
 } from "react";
 import { useStoreActions, useStoreState } from "react-app-store";
-import { IUsers, IPagination } from "react-app-interfaces";
+import { IUsers } from "react-app-interfaces";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import env from "../../../config";
 import CustomSuspense from "../../components/CustomSuspense";
+const NoRecord = React.lazy(() => import("../../components/NoRecord"));
 
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
@@ -111,9 +112,7 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
                 );
               })
             ) : (
-              <tr>
-                <td colSpan={2}>No data</td>
-              </tr>
+              <NoRecord colspan={3}/>
             )}
           </tbody>
         </table>

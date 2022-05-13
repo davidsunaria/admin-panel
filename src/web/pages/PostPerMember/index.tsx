@@ -7,12 +7,13 @@ import React, {
 } from "react";
 
 import CustomSuspense from "../../components/CustomSuspense";
-import { IUsers, IPagination } from "react-app-interfaces";
+import { IUsers} from "react-app-interfaces";
 import { useStoreActions, useStoreState } from "react-app-store";
 import LoadingOverlay from "react-loading-overlay-ts";
 import env from "../../../config";
-import { truncate } from "../../../lib/utils/Service";
+import { truncate ,toUpperCase} from "../../../lib/utils/Service";
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
+const NoRecord = React.lazy(() => import("../../components/NoRecord"));
 
 const Dashboard: React.FC = (): JSX.Element => {
   const inititalState = useMemo(() => {
@@ -120,18 +121,11 @@ const Dashboard: React.FC = (): JSX.Element => {
           )}
           <div className="dashAppointFilterOuter">
             <div className="dashboardSubTitle">Group, events per member</div>
-            {/* <div className="filter">
-                  <div className="search-box mb-3 mb-md-0 me-2">
-                    {" "}
-                    <i className="bi bi-search"></i>
-                    <input type="text" placeholder="Search" />
-                  </div>
-                </div>  */}
           </div>
           <div className="table-responsive">
             <table className="table customTable stickyHeader">
               <CustomSuspense>
-                <TableHeader fields={tableHeader} headerWidth={"w-33"} />
+                <TableHeader fields={tableHeader} headerWidth={"w-25"} />
               </CustomSuspense>
               <tbody onScroll={onScroll} ref={listInnerRef}>
                 {numberOfResourcePerMember &&
@@ -141,27 +135,25 @@ const Dashboard: React.FC = (): JSX.Element => {
                     let { group, event } = computeResourceCount(index, val?.resources);
                     return (
                       <tr key={index}>
-                        <td className={"w-33"}>
-                          {truncate(val?.first_name) || "-"}
+                        <td className={"w-25"}>
+                          {truncate(toUpperCase(val?.first_name))}
                         </td>
 
-                        <td className={"w-33"}>
-                          {truncate(val?.last_name) ||"-"}
+                        <td className={"w-25"}>
+                          {truncate(toUpperCase(val?.last_name))}
                         </td>
 
-                        <td className={"w-33"}>
+                        <td className={"w-25"}>
                           {group}
                         </td>
-                        <td className="w-33">
+                        <td className="w-25">
                           {event}
                         </td>
                       </tr>
                     );
                   })
                 ) : (
-                  <tr>
-                    <td colSpan={2}>No data</td>
-                  </tr>
+                  <NoRecord colspan={4}/>
                 )}
               </tbody>
             </table>

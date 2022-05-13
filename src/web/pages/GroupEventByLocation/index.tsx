@@ -3,12 +3,13 @@ import { useStoreActions, useStoreState } from "react-app-store";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import LoadingOverlay from "react-loading-overlay-ts";
 import env from "../../../config";
-import { IUsers,IPagination} from "react-app-interfaces";
+import { IUsers} from "react-app-interfaces";
 import CustomSuspense from "../../components/CustomSuspense";
 const GooglePlaceAutoComplete = React.lazy(
   () => import("../../components/GooglePlaceAutoComplete")
 );
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
+const NoRecord = React.lazy(() => import("../../components/NoRecord"));
 
 
 
@@ -119,7 +120,7 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
           <div className="table-responsive">
           <table className="table customTable stickyHeader">
               <CustomSuspense>
-                <TableHeader fields={tableHeader} headerWidth={"w-50"} />
+                <TableHeader fields={tableHeader} headerWidth={"w-33"} />
               </CustomSuspense>
               <tbody onScroll={onScroll} ref={listInnerRef}>
                 {data &&
@@ -128,22 +129,20 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
                     // console.log("vala",val)
                     return (
                       <tr key={index}>
-                        <td className={"w-50"}>
+                        <td className={"w-33"}>
                           {val?.city}
                         </td>
-                        <td className={"w-50"}>
+                        <td className={"w-33"}>
                           {val?.total_groups}
                         </td>
-                        <td className={"w-50"}>
+                        <td className={"w-33"}>
                           {val?.total_events}
                         </td>
                       </tr>
                     );
                   })
                 ) : (
-                  <tr>
-                    <td colSpan={2}>No data</td>
-                  </tr>
+                  <NoRecord colspan={3}/>
                 )}
               </tbody>
             </table>

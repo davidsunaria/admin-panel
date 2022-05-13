@@ -6,13 +6,14 @@ import React, {
   useRef,
 } from "react";
 import { useStoreActions, useStoreState } from "react-app-store";
-import { IUsers, IPagination } from "react-app-interfaces";
+import { IUsers } from "react-app-interfaces";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import env from "../../../config";
 import CustomSuspense from "../../components/CustomSuspense";
 import LoadingOverlay from "react-loading-overlay-ts";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
+const NoRecord = React.lazy(() => import("../../components/NoRecord"));
 
 const EventPerGroup: React.FC = (): JSX.Element => {
   const inititalState = useMemo(() => {
@@ -118,9 +119,7 @@ const EventPerGroup: React.FC = (): JSX.Element => {
                   );
                 })
               ) : (
-                <tr>
-                  <td colSpan={2}>No data</td>
-                </tr>
+                <NoRecord colspan={2}/>
               )}
             </tbody>
           </table>

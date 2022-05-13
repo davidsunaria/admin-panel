@@ -3,6 +3,7 @@ import { useStoreActions, useStoreState } from "react-app-store";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import LoadingOverlay from "react-loading-overlay-ts";
 import * as _ from "lodash";
+import { toUpperCase} from "../../../lib/utils/Service";
 
 const PaypalVsCash: React.FC = (): JSX.Element => {
   const [paypalCash, setPaypalCash] = useState<[]>([]);
@@ -61,7 +62,7 @@ const getPercentage = useCallback((perValue:any) => {
               ? paypalCash.map((val:any, i:number) => {
                   return (
                     <div key={i} className="detailOuer">
-                      <label>{val?._id}</label>
+                      <label className="text-dark">{toUpperCase(val?._id)}</label>
                      <span>{getPercentage(val?.total)+"%"}</span> 
                     </div>
                   );
