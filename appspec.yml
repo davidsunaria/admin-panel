@@ -2,9 +2,9 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /var/www/html/picnic-admin-ui
+    destination: /var/www/html/dev-admin-ui
 permissions:
-  - object: /var/www/html/picnic-admin-ui
+  - object: /var/www/html/dev-admin-ui
     pattern: "**"
     owner: ubuntu
     group: www-data
