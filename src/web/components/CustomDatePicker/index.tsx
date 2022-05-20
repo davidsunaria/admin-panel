@@ -14,7 +14,7 @@ const CustomDatePicker: React.FC<ICustomDatePicker> = ({  frequency,value, label
 
   const [minDate]=useState(new Date())
   const [monthDate]=useState(moment().add(1, 'M').format('DD-MM-YYYY'))
-  const [yearDate]=useState(moment().add(365, 'days').format('DD-MM-YYYY'))
+  // const [yearDate]=useState(moment().add(365, 'days').format('DD-MM-YYYY'))
   
   const {
     setFieldValue
@@ -25,10 +25,11 @@ const CustomDatePicker: React.FC<ICustomDatePicker> = ({  frequency,value, label
         <div className="PopupDatePicker">
           <DatePicker
             name={name}
+            selected={frequency==="monthly" ?new Date(): new Date(new Date().setFullYear(new Date().getFullYear() + 1))}
              minDate={minDate}
              maxDate={
               frequency==="monthly" ?new Date(new Date(monthDate).toLocaleString(undefined, {timeZone: 'Asia/Kolkata'}))
-               :new Date(new Date(yearDate).toLocaleString(undefined, {timeZone: 'Asia/Kolkata'}))
+               :new Date(new Date().setFullYear(new Date().getFullYear() + 1))
              }
             value={value || ""}
             onChange={date => {

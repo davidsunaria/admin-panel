@@ -103,7 +103,7 @@ const SearchUser: React.FC<IUsers & IUsersProps & IEventGroups> = (props) => {
                   onBlur={handleBlur}
                   autoComplete="off"
                   className="form-control"
-                  placeholder="Search by name"
+                  placeholder="Search by name ,email, username"
                 />
 
               </div>
