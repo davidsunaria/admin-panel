@@ -15,9 +15,9 @@ const ConfirmAlert = (props: IConfirmAlert) => {
       <h1>{props?.heading}</h1>
       <div className="confirmBody">
       <p>{props?.subHeading}</p>
-      <div className="confirmFooter">
+      <div className="confirmFooter btn-right">
       <button
-        className="btn btn-primary btn-block"
+        className="btn btn-primary btn-block "
         onClick={() => {
           props.onYes(props);
           props.onClose();
@@ -25,7 +25,7 @@ const ConfirmAlert = (props: IConfirmAlert) => {
       >
         {props.onSubmitText}
       </button>
-      <button className="btn btn-primary btn-block" onClick={props.onClose}>{props.onCloseText}</button>
+      <button className="btn btn-primary btn-block " onClick={props.onClose}>{props.onCloseText}</button>
       </div>
       </div>
     </div>
