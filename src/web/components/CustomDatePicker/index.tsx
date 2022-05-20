@@ -4,14 +4,17 @@ import DatePicker from "react-datepicker";
 import moment from "moment"
 
 interface ICustomDatePicker {
+  frequency?:any;
    value?: any;
     label?: string | undefined;
     name: string;
     props:any;
 }
-const CustomDatePicker: React.FC<ICustomDatePicker> = ({  value, label, name, props}) => {
+const CustomDatePicker: React.FC<ICustomDatePicker> = ({  frequency,value, label, name, props}) => {
 
   const [minDate]=useState(new Date())
+  const [monthDate]=useState(moment().add(1, 'M').format('DD-MM-YYYY'))
+  const [yearDate]=useState(moment().add(365, 'days').format('DD-MM-YYYY'))
   
   const {
     setFieldValue
@@ -23,6 +26,10 @@ const CustomDatePicker: React.FC<ICustomDatePicker> = ({  value, label, name, pr
           <DatePicker
             name={name}
              minDate={minDate}
+             maxDate={
+              frequency==="monthly" ?new Date(new Date(monthDate).toLocaleString(undefined, {timeZone: 'Asia/Kolkata'}))
+               :new Date(new Date(yearDate).toLocaleString(undefined, {timeZone: 'Asia/Kolkata'}))
+             }
             value={value || ""}
             onChange={date => {
               const formattedDate = moment(date).format("YYYY-MM-DD");

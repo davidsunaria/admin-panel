@@ -85,6 +85,7 @@ const Users: React.FC = (): JSX.Element => {
   const [isPremiumModalOpen, setPremiumOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [isPremium, setPremium] = useState<any>("");
+  const [frequency, setFrequency] = useState<any>("");
 
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
@@ -326,6 +327,11 @@ const Users: React.FC = (): JSX.Element => {
 
 }, [])
 
+const getRadioValue = useCallback((event?: string) => {
+  //console.log("event new" ,event)
+  setFrequency(event)
+}, []);
+
   return (
     <>
       <div className="Content">
@@ -416,6 +422,7 @@ const Users: React.FC = (): JSX.Element => {
                             <InputRadio
                               values={radioParameters}
                               heading="Frequency"
+                              changeHandler={getRadioValue}
                             />
                           </div>
                           <CustomDatePicker
@@ -423,6 +430,7 @@ const Users: React.FC = (): JSX.Element => {
                             label="Expires on"
                             name="expire_at"
                             props={props}
+                            frequency={frequency}
                           />
                         </div>
 
