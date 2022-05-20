@@ -420,7 +420,7 @@ const Users: React.FC = (): JSX.Element => {
                           </div>
                           <CustomDatePicker
                             value={values?.expire_at}
-                            label="Expiry at"
+                            label="Expires on"
                             name="expire_at"
                             props={props}
                           />

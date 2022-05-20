@@ -27,7 +27,7 @@ export const REENTER_PASSWORD = "Please re-enter new password";
 export const OTP_REQUIRED = "Please enter OTP";
 export const EMAIL_REQUIRED = "Please enter email";
 export const RADIO_REQUIRED = "Please select frequency";
-export const DATE_REQUIRED = "Please select expiry at";
+export const DATE_REQUIRED = "Please select expiry on";
 export const PHONE_REQUIRED = "Please enter phone number";
 
 export const FIRST_NAME_REQUIRED = "Please enter first name";
