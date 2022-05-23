@@ -7,7 +7,8 @@ export interface IUsers {
   group_id?: string | number;
   is_blocked_by_admin?: string | number;
   exporteddata?:any;
-  exportButton?:boolean
+  exportButton?:boolean;
+  user_id?:string | number;
 }
 
 export interface IUsersProps extends IUsers{

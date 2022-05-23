@@ -27,8 +27,8 @@ const Events: React.FC = (): JSX.Element => {
       { key: "address", value: "Address" },
       { key: "capacity", value: "Capacity" },
       { key: "capacity_type", value: "Capacity Type" },
-      { key: "status", value: "Status" },
       { key: "is_blocked_by_admin", value: "Blocked by admin" },
+      { key: "action", value: "Action" },
     ];
   }, []);
   const userInititalState = useMemo(() => {
@@ -44,6 +44,8 @@ const Events: React.FC = (): JSX.Element => {
   const [pagination, setPagination] = useState<IPagination>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [data, setData] = useState<Array<any>>([]);
+  const [currentEventId, setCurrentEventId] = useState<String>("");
+  const [currentEventStatus, setCurrentEventStatus] = useState<String>("");
   const [currentUserId, setCurrentUserId] = useState<String>("");
   const [currentUserStatus, setCurrentUserStatus] = useState<String | number>(
     ""
@@ -54,9 +56,11 @@ const Events: React.FC = (): JSX.Element => {
   const isEnabledDisabled = useStoreState(
     (state) => state.group.isEnabledDisabled
   );
+  const deleteStatus = useStoreState((state) => state.event.deleteStatus);
   //Actions
   const flushData = useStoreActions((actions) => actions.group.flushData);
   const getEvents = useStoreActions((actions) => actions.event.getEvents);
+  const deleteEvent = useStoreActions((actions) => actions.event.deleteEvent);
   const enableDisable = useStoreActions(
     (actions) => actions.group.enableDisable
   );
@@ -121,10 +125,25 @@ const Events: React.FC = (): JSX.Element => {
     await enableDisable({ url: "common/enable-disable", payload });
   }, []);
 
-  const enableDisableGroup = useCallback((id, status) => {
+  const eventDelete = useCallback(
+    async (id: string, status: any) => {
+      console.log("event status",status)
+      setCurrentEventId(id);
+       setCurrentEventStatus(status);
+      const payload: IEnableDisable = {
+        _id: id,
+      };
+      await deleteEvent({ url: 'event/delete-event', payload });
+    },
+    []
+  );
+
+  const manageAction = useCallback((id, status) => {
     let text: string;
     if (status === 1) {
       text = "You want to inactivate event?";
+    } else if (status === "delete") {
+      text = "You want to delete event?";
     } else {
       text = "You want to activate event?";
     }
@@ -133,7 +152,11 @@ const Events: React.FC = (): JSX.Element => {
         return (
           <ConfirmAlert
             onClose={onClose}
-            onYes={() => onYes(id, status)}
+            onYes={
+              status !== "delete"
+                ? () => onYes(id, status)
+                : () => eventDelete(id, status)
+            }
             heading="Are you sure?"
             subHeading={text}
             onCloseText="No"
@@ -174,6 +197,26 @@ const Events: React.FC = (): JSX.Element => {
       setCurrentUserStatus("");
     }
   }, [isEnabledDisabled]);
+
+  useEffect(() => {
+    async function changeData() {
+      //console.log("change data",isPremium)
+      let localStateData = [...data];
+      let index = localStateData.findIndex(
+        (item) => item._id === currentEventId
+      );
+      localStateData[index].status =
+      currentEventStatus === "delete" ? 0 : 1;
+      localStateData.splice(index, 1);
+      setData(localStateData);
+      await flushData();
+    }
+    if (deleteStatus && deleteStatus === true) {
+      changeData();
+      setCurrentEventId("");
+      setCurrentEventStatus("");
+    }
+  }, [deleteStatus]);
   return (
     <>
       <div className="Content">
@@ -251,13 +294,19 @@ const Events: React.FC = (): JSX.Element => {
                           </td>
                           <td>{val?.capacity || "-"}</td>
                           <td>{toUpperCase(val?.capacity_type) }</td>
-                          <td
-                            className={"onHover"}
-                            onClick={() =>
-                              enableDisableGroup(val?._id, val?.status)
-                            }
-                          >
+                          <td>
                             <div
+                              className={
+                                val?.is_blocked_by_admin === 1
+                                  ? "manageStatus inactive"
+                                  : "manageStatus active"
+                              }
+                            >
+                              {val?.is_blocked_by_admin === 1 ? "Yes" : "No"}
+                            </div>
+                          </td>
+                          <td className={"tdAction"}>
+                            {/* <div
                               className={
                                 val?.status === 1 || val?.status === true
                                   ? "manageStatus active"
@@ -268,17 +317,31 @@ const Events: React.FC = (): JSX.Element => {
                               {val?.status === 1 || val?.status === true
                                 ? "Active"
                                 : "Inactive"}
-                            </div>
-                          </td>
-                          <td>
-                            <div
-                              className={
-                                val?.is_blocked_by_admin === 1
-                                  ? "manageStatus inactive"
-                                  : "manageStatus active"
-                              }
-                            >
-                              {val?.is_blocked_by_admin === 1 ? "Yes" : "No"}
+                            </div> */}
+
+                            <div className="d-flex">
+                              <i
+                                title={
+                                  val?.status === 1 || val?.status === true
+                                    ? "Inactivate event"
+                                    : "Activate event"
+                                }
+                                className={`bi  ${
+                                  val?.status === 1 || val?.status === true
+                                    ? "text-success bi-check-circle"
+                                    : "text-danger bi-x-circle"
+                                }`}
+                                onClick={() =>
+                                  manageAction(val?._id, val?.status)
+                                }
+                              ></i>
+                              <i
+                                title="Delete event"
+                                className="bi  bi-trash"
+                                onClick={() =>
+                                  manageAction(val?._id, "delete")
+                                }
+                              />
                             </div>
                           </td>
                         </tr>

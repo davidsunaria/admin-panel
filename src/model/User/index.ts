@@ -15,12 +15,14 @@ const initialState = {
 
   isInvitationSend: false,
   isEnabledDisabled: false,
-  premiumStatus:false
+  premiumStatus:false,
+  deleteStatus:false
 }
 export interface UserModel {
   isInvitationSend: boolean;
   isEnabledDisabled:boolean;
   premiumStatus:boolean;
+  deleteStatus:boolean;
   response: string | object | any;
   exportedExcelData: string | object | any;
   memberShipData:string | object | any;
@@ -34,6 +36,7 @@ export interface UserModel {
   setMemberShipData: Action<UserModel, object | any>;
 
   setPremiumStatus:Action<UserModel, boolean>;
+  setDeleteStatus:Action<UserModel, boolean>;
   flushExcelData: Action<UserModel>;
   
   //**************State  Actions************///
@@ -45,6 +48,7 @@ export interface UserModel {
   enableDisable: Thunk<UserModel, object>;
   inviteUser: Thunk<UserModel, object>;
   markAsPremium: Thunk<UserModel, object>;
+  deleteUser:Thunk<UserModel, object>;
   //**************Thunk Actions************///
 }
 
@@ -60,6 +64,9 @@ const user: UserModel = {
   setPremiumStatus: action((state, payload) => {
     state.premiumStatus = payload;
   }),
+  setDeleteStatus: action((state, payload) => {
+    state.deleteStatus = payload;
+  }),
   setMemberShipData: action((state, payload) => {
     state.memberShipData = payload;
   }),
@@ -73,6 +80,7 @@ const user: UserModel = {
     state.isEnabledDisabled = false;
     state.premiumStatus = false;
     state.exportedExcelData = [];
+    state.deleteStatus = false;
   }),
   setEnabledDisabled: action((state, payload) => {
     state.isEnabledDisabled = payload;
@@ -199,6 +207,26 @@ const user: UserModel = {
       toast.success(response.message);
       getStoreActions().common.setLoading(false);
       actions.setPremiumStatus(true);
+    }
+    else {
+      getStoreActions().common.setLoading(false);
+      return true;
+    }
+  }),
+
+  deleteUser: thunk<UserModel, IPayload, any, StoreModel>(async (actions, payload: IPayload, { getStoreActions }) => {
+    actions.setDeleteStatus(false);
+    getStoreActions().common.setLoading(true);
+    console.log("payload",payload)
+    let response = await postApi(payload);
+    console.log("response",response)
+    if (response && response.status !== 200) {
+      toast.error(response.message);
+      getStoreActions().common.setLoading(false);
+    } else if (response && response.status === 200) {
+      toast.success(response.message);
+      getStoreActions().common.setLoading(false);
+      actions.setDeleteStatus(true);
     }
     else {
       getStoreActions().common.setLoading(false);
