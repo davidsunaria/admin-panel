@@ -540,6 +540,9 @@ const getRadioValue = useCallback((event?: string) => {
                           <td>{toUpperCase(val?.last_name)}</td>
                           <td>{val?.email || "-"}</td>
                           <td>{val?.username || "-"}</td>
+                          <td>{ moment(val?.created_at).format("YYYY-MM-DD") || "-"}</td>
+                          <td>{ moment(val?.last_seen).format(env?.REACT_APP_TIME_FORMAT) || "-"}</td>
+                          <td>{ getLanguage(val?.language)}</td>
                           <td>
                             <div
                               className={
