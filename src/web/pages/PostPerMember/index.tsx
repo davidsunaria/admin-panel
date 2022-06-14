@@ -26,8 +26,8 @@ const Dashboard: React.FC = (): JSX.Element => {
     return [
       { key: "first_name", value: "First name" },
       { key: "last_name", value: "Last name" },
-      { key: "group", value: "No. of Group" },
-      { key: "event", value: "No. of Event" },
+      { key: "group", value: "No. of Groups" },
+      { key: "event", value: "No. of Events" },
     ];
   }, []);
 
@@ -120,7 +120,7 @@ const Dashboard: React.FC = (): JSX.Element => {
             ></LoadingOverlay>
           )}
           <div className="dashAppointFilterOuter">
-            <div className="dashboardSubTitle">Group, events per member</div>
+            <div className="dashboardSubTitle">Groups, events per member</div>
           </div>
           <div className="table-responsive">
             <table className="table customTable stickyHeader">

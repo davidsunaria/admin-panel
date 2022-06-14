@@ -24,8 +24,8 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
   const tableHeader = useMemo(() => {
     return [
       { key: "city", value: "City" },
-      { key: "group", value: "No. of Group" },
-      { key: "event", value: "No. of Event" },
+      { key: "group", value: "No. of Groups" },
+      { key: "event", value: "No. of Events" },
     ];
   }, []);
   const [params, setParams] = useState<IUsers>(inititalState);
@@ -114,7 +114,7 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
             ></LoadingOverlay>
           )}
           <div className="dashAppointFilterOuter">
-            <div className="dashboardSubTitle">Groups,events by location</div>
+            <div className="dashboardSubTitle">Groups, events by location</div>
             <GooglePlaceAutoComplete onSearch={getCity} />
           </div>
           <div className="table-responsive">

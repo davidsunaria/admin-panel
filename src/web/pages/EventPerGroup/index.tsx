@@ -26,7 +26,7 @@ const EventPerGroup: React.FC = (): JSX.Element => {
   const tableHeader = useMemo(() => {
     return [
       { key: "group_name", value: "Group name" },
-      { key: "event_count", value: "No. of event" },
+      { key: "event_count", value: "No. of events" },
     ];
   }, []);
 
