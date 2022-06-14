@@ -306,7 +306,7 @@ const Events: React.FC = (): JSX.Element => {
                               {val?.is_blocked_by_admin === 1 ? "Yes" : "No"}
                             </div>
                           </td>
-                          <td className={" tdAction"}>
+                          <td className={"tdAction"}>
                             {/* <div
                               className={
                                 val?.status === 1 || val?.status === true
