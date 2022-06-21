@@ -385,7 +385,7 @@ const getRadioValue = useCallback((event?: string) => {
         <div className="cardBox">
           <CustomSuspense>
             <MyModal
-              heading={"Invite user test"}
+              heading={"Invite user"}
               showSubmitBtn={false}
               isOpen={isOpen}
               toggle={toggle}
