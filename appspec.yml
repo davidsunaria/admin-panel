@@ -9,6 +9,3 @@ permissions:
     owner: ubuntu
     group: www-data
     mode: 775
-AfterInstall:
-  - location: afterInstall.sh
-    runas: root    
