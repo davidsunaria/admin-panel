@@ -10,5 +10,5 @@ permissions:
     group: www-data
     mode: 775
 AfterInstall:
-  - location: scripts/dev/afterInstall.sh
+  - location: afterInstall.sh
     runas: root    
