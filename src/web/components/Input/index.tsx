@@ -16,11 +16,11 @@ interface IInput {
 
 const Input: React.FC<IInput> = ({ type, className, value, label, name, id, placeholder, autoComplete, onChange, onBlur }) => {
   return (
-    <div >
+    <>
       {label && <label html-for={id} className="form-label">{label}</label>}
       <input type={type} name={name} value={value} onChange={onChange} onBlur={onBlur} className={className} id={id} placeholder={placeholder} autoComplete={autoComplete} />
       <ErrorMessage name={name} component="span" className="errorMsg" />
-    </div>
+    </>
   );
 }
 export default Input;

@@ -36,9 +36,9 @@ const GooglePlaceAutoComplete= (Props:any) => {
       onSelect={handleSelect}
     >
       {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-        <div>
+        <div className="search-outer">
           <div className="filter">
-            <div className="search-box mb-3 mb-md-0 me-2">
+            <div className="search-box mb-3 mb-md-0">
               {" "}
               <i className="bi bi-search"></i>
               <input
