@@ -8,7 +8,4 @@ permissions:
     pattern: "**"
     owner: ubuntu
     group: www-data
-    mode: 775
-AfterInstall:
-  - location: /var/www/html/dev-admin-ui/afterInstall.sh
-    runas: root    
+    mode: 775 
