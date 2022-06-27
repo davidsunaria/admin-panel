@@ -18,9 +18,8 @@ import { useAuthValidation } from "../../../lib/validations/AuthSchema";
 import env from "../../../config";
 import DEFAULT_USER_IMG from "react-app-images/default_user.png";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from "moment"
-import { toUpperCase } from '../../../lib/utils/Service';
-
+import moment from "moment";
+import { toUpperCase } from "../../../lib/utils/Service";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const NoRecord = React.lazy(() => import("../../components/NoRecord"));
@@ -48,7 +47,6 @@ const Users: React.FC = (): JSX.Element => {
       { key: "is_blocked_by_admin", value: "Blocked by admin" },
       { key: "status", value: "Status" },
       { key: "action", value: "Action" },
-    
     ];
   }, []);
   const userInititalState = useMemo(() => {
@@ -74,10 +72,10 @@ const Users: React.FC = (): JSX.Element => {
       expire_at: "",
     };
   }, []);
-  const [currentUserId, setCurrentUserId] = useState<String>("");
-  const [currentUserStatus, setCurrentUserStatus] = useState<String | number>(
-    ""
-  );
+ // const [currentUserId, setCurrentUserId] = useState<String>("");
+  // const [currentUserStatus, setCurrentUserStatus] = useState<String | number>(
+  //   ""
+  // );
   const [currentUserDeleteStatus, setCurrentUserDeleteStatus] = useState<
     String | number
   >("");
@@ -95,6 +93,8 @@ const Users: React.FC = (): JSX.Element => {
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
   const response = useStoreState((state) => state.user.response);
+  const paginationObject = useStoreState((state) => state.user.paginationObject);
+
   const memberShipData = useStoreState((state) => state.user.memberShipData);
   const deleteStatus = useStoreState((state) => state.user.deleteStatus);
   const isInvitationSend = useStoreState(
@@ -105,8 +105,13 @@ const Users: React.FC = (): JSX.Element => {
   );
 
   const premiumStatus = useStoreState((state) => state.user.premiumStatus);
+  const currentUserId = useStoreState((state) => state.user.currentUserId);
+  const currentUserStatus = useStoreState((state) => state.user.currentUserStatus);
+  
   //Actions
   const getUsers = useStoreActions((actions) => actions.user.getUsers);
+  const setCurrentUserId = useStoreActions((actions) => actions.user.setCurrentUserId);
+  const setCurrentUserStatus = useStoreActions((actions) => actions.user.setCurrentUserStatus);
 
   const enableDisable = useStoreActions(
     (actions) => actions.user.enableDisable
@@ -116,6 +121,7 @@ const Users: React.FC = (): JSX.Element => {
     (actions) => actions.user.markAsPremium
   );
   const deleteUser = useStoreActions((actions) => actions.user.deleteUser);
+  const setResponse = useStoreActions((actions) => actions.user.setResponse);
   const flushData = useStoreActions((actions) => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
 
@@ -153,7 +159,8 @@ const Users: React.FC = (): JSX.Element => {
   const getUserData = useCallback(async (payload: IUsers) => {
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
-  useEffect(() => {
+  
+  /*useEffect(() => {
     if (response?.data) {
       const {
         data,
@@ -168,7 +175,7 @@ const Users: React.FC = (): JSX.Element => {
         setData((_: any) => [..._, ...data]);
       }
     }
-  }, [response]);
+  }, [response]);*/
 
   const onSearch = useCallback((payload: IUsers) => {
     setFormData((_) => ({
@@ -187,7 +194,6 @@ const Users: React.FC = (): JSX.Element => {
 
   useEffect(() => {
     if (formData) {
-      console.log(3, formData);
       getUserData(formData);
     }
   }, [formData]);
@@ -200,8 +206,8 @@ const Users: React.FC = (): JSX.Element => {
   }, []);
 
   const onYes = useCallback(async (id: string, status: string | number) => {
-    setCurrentUserId(id);
-    setCurrentUserStatus(status);
+     setCurrentUserId(id);
+     setCurrentUserStatus(status);
     const payload: IEnableDisable = {
       _id: id,
       type: "user",
@@ -324,22 +330,22 @@ const Users: React.FC = (): JSX.Element => {
     }
   }, [isInvitationSend]);
 
-  useEffect(() => {
-    async function changeData() {
-      let localStateData = [...data];
-      let index = localStateData.findIndex(
-        (item) => item._id === currentUserId
-      );
-      localStateData[index].active = currentUserStatus === 1 ? 0 : 1;
-      setData(localStateData);
-      await flushData();
-    }
-    if (isEnabledDisabled && isEnabledDisabled === true) {
-      changeData();
-      setCurrentUserId("");
-      setCurrentUserStatus("");
-    }
-  }, [isEnabledDisabled]);
+  // useEffect(() => {
+  //   async function changeData() {
+  //     let localStateData = [...response];
+  //     let index = localStateData.findIndex(
+  //       (item) => item._id === currentUserId
+  //     );
+  //     localStateData[index].active = currentUserStatus === 1 ? 0 : 1;
+  //     setResponse(localStateData);
+  //     await flushData();
+  //   }
+  //   if (isEnabledDisabled && isEnabledDisabled === true) {
+  //     changeData();
+  //     setCurrentUserId("");
+  //     setCurrentUserStatus("");
+  //   }
+  // }, [isEnabledDisabled]);
 
   const radioParameters: any = [
     { value: "monthly", label: "Monthly", name: "type" },
@@ -361,19 +367,17 @@ const Users: React.FC = (): JSX.Element => {
   }, []);
   const getLanguage = useCallback((lang) => {
     switch (lang) {
-        case 'es':
-            return "Spanish"
-        default:
-            return "English"
+      case "es":
+        return "Spanish";
+      default:
+        return "English";
     }
+  }, []);
 
-
-}, [])
-
-const getRadioValue = useCallback((event?: string) => {
-  //console.log("event new" ,event)
-  setFrequency(event)
-}, []);
+  const getRadioValue = useCallback((event?: string) => {
+    //console.log("event new" ,event)
+    setFrequency(event);
+  }, []);
 
   return (
     <>
@@ -499,9 +503,9 @@ const getRadioValue = useCallback((event?: string) => {
           <div className="table-responsive">
             {
               <InfiniteScroll
-                dataLength={currentPage}
+                dataLength={paginationObject?.currentPage}
                 next={loadMore}
-                hasMore={pagination?.nextPage == null ? false : true}
+                hasMore={paginationObject?.nextPage == null ? false : true}
                 loader={
                   isLoading && <h4 className="listingLoader">Loading...</h4>
                 }
@@ -512,8 +516,8 @@ const getRadioValue = useCallback((event?: string) => {
                     <TableHeader fields={tableHeader} />
                   </CustomSuspense>
                   <tbody>
-                    {data && data.length > 0 ? (
-                      data.map((val: any, index: number) => (
+                    {response && response.length > 0 ? (
+                      response.map((val: any, index: number) => (
                         <tr key={index}>
                           {/* {console.log(val)}   */}
                           <td>
@@ -540,9 +544,16 @@ const getRadioValue = useCallback((event?: string) => {
                           <td>{toUpperCase(val?.last_name)}</td>
                           <td>{val?.email || "-"}</td>
                           <td>{val?.username || "-"}</td>
-                          <td>{ moment(val?.created_at).format("YYYY-MM-DD") || "-"}</td>
-                          <td>{ moment(val?.last_seen).format(env?.REACT_APP_TIME_FORMAT) || "-"}</td>
-                          <td>{ getLanguage(val?.language)}</td>
+                          <td>
+                            {moment(val?.created_at).format("YYYY-MM-DD") ||
+                              "-"}
+                          </td>
+                          <td>
+                            {moment(val?.last_seen).format(
+                              env?.REACT_APP_TIME_FORMAT
+                            ) || "-"}
+                          </td>
+                          <td>{getLanguage(val?.language)}</td>
                           <td>
                             <div
                               className={
@@ -565,8 +576,7 @@ const getRadioValue = useCallback((event?: string) => {
                                 "No(expired)"}
                             </div>
                           </td>
-                         
-                        
+
                           <td>
                             <div
                               className={
@@ -619,42 +629,40 @@ const getRadioValue = useCallback((event?: string) => {
                                 ? "Unmark Premium"
                                 : "Mark Premium"}
                             </div> */}
-                             <div className="d-flex">
-                            <i
-                              title={
-                                val?.is_premium === 1 &&
-                                compareDate(val?.membership?.expire_at)
-                                  ? "Unmark Premium"
-                                  : "Mark Premium"
-                              }
-                              className={`bi bi-star-fill ${
-                                val?.is_premium === 1 &&
-                                compareDate(val?.membership?.expire_at)
-                                  ? "success"
-                                  : "danger"
-                              }`}
-                              onClick={() =>
-                                openPremiumModal(
-                                  val?._id,
-                                  val?.is_premium,
+                            <div className="d-flex">
+                              <i
+                                title={
+                                  val?.is_premium === 1 &&
                                   compareDate(val?.membership?.expire_at)
-                                )
-                              }
-                            />
+                                    ? "Unmark Premium"
+                                    : "Mark Premium"
+                                }
+                                className={`bi bi-star-fill ${
+                                  val?.is_premium === 1 &&
+                                  compareDate(val?.membership?.expire_at)
+                                    ? "success"
+                                    : "danger"
+                                }`}
+                                onClick={() =>
+                                  openPremiumModal(
+                                    val?._id,
+                                    val?.is_premium,
+                                    compareDate(val?.membership?.expire_at)
+                                  )
+                                }
+                              />
 
-                            <i
-                              title="Delete user"
-                              className="bi  bi-trash"
-                              onClick={() =>
-                                manageAction(val?._id, "delete")
-                              }
-                            />
+                              <i
+                                title="Delete user"
+                                className="bi  bi-trash"
+                                onClick={() => manageAction(val?._id, "delete")}
+                              />
                             </div>
                           </td>
                         </tr>
                       ))
                     ) : (
-                      <NoRecord colspan={12}/>
+                      <NoRecord colspan={12} />
                     )}
                   </tbody>
                 </table>
