@@ -95,6 +95,7 @@ const Users: React.FC = (): JSX.Element => {
   const isLoading = useStoreState((state) => state.common.isLoading);
   const response = useStoreState((state) => state.user.response);
   const userId = useStoreState((state) => state.user.userId);
+  //const formData = useStoreState((state) => state.user.formData);
   console.log("res", response);
   const paginationObject = useStoreState(
     (state) => state.user.paginationObject
@@ -118,6 +119,7 @@ const Users: React.FC = (): JSX.Element => {
 
   //Actions
   const getUsers = useStoreActions((actions) => actions.user.getUsers);
+  //const setFormData = useStoreActions((actions) => actions.user.setFormData);
   const setCurrentUserId = useStoreActions(
     (actions) => actions.user.setCurrentUserId
   );
@@ -153,10 +155,10 @@ const Users: React.FC = (): JSX.Element => {
       setPremium("0");
     }
     if (typeof expiredDate === "undefined") {
-      setPremium(is_premium === 0 ? "1" : "0");
+      setPremium(is_premium == 0 ? "1" : "0");
     }
 
-    if (is_premium === 1 && expiredDate === true) {
+    if (is_premium == 1 && expiredDate === true) {
       let payload = {
         user_id: id,
         is_premium: "0",
@@ -192,7 +194,7 @@ const Users: React.FC = (): JSX.Element => {
   }, [response]);*/
 
   const onSearch = useCallback((payload: IUsers) => {
-    setFormData((_) => ({
+    setFormData((_:any) => ({
       ..._,
       ...payload,
       page: env?.REACT_APP_FIRST_PAGE,
@@ -213,7 +215,7 @@ const Users: React.FC = (): JSX.Element => {
   }, [formData]);
 
   const loadMore = useCallback(() => {
-    setFormData((_) => ({
+    setFormData((_:any) => ({
       ..._,
       page: parseInt((_.page ?? 1)?.toString()) + 1,
     }));
@@ -314,26 +316,26 @@ const Users: React.FC = (): JSX.Element => {
   //   }
   // }, [premiumStatus]);
 
-  useEffect(() => {
-    async function changeData() {
-      //console.log("change data",isPremium)
-      let localStateData = [...data];
-      let index = localStateData.findIndex(
-        (item) => item._id === currentUserId
-      );
+  // useEffect(() => {
+  //   async function changeData() {
+  //     //console.log("change data",isPremium)
+  //     let localStateData = [...data];
+  //     let index = localStateData.findIndex(
+  //       (item) => item._id === currentUserId
+  //     );
 
-      localStateData[index].active =
-        currentUserDeleteStatus === "delete" ? 0 : 1;
-      localStateData.splice(index, 1);
-      setData(localStateData);
-      await flushData();
-    }
-    if (deleteStatus && deleteStatus === true) {
-      changeData();
-      setUserId("");
-      setCurrentUserDeleteStatus("");
-    }
-  }, [deleteStatus]);
+  //     localStateData[index].active =
+  //       currentUserDeleteStatus === "delete" ? 0 : 1;
+  //     localStateData.splice(index, 1);
+  //     setData(localStateData);
+  //     await flushData();
+  //   }
+  //   if (deleteStatus && deleteStatus === true) {
+  //     changeData();
+  //     setUserId("");
+  //     setCurrentUserDeleteStatus("");
+  //   }
+  // }, [deleteStatus]);
   useEffect(() => {
     async function flush() {
       toggle();

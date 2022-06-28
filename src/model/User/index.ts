@@ -8,9 +8,18 @@ import NavigationService from "src/routes/NavigationService";
 import store from "react-app-store";
 import { logoutCompletely } from "../../lib/utils/Service";
 import { string } from "yup";
+import env from "../../config";
+import { IUsers } from "react-app-interfaces";
 
 const initialState = {
   response: {},
+  formData: {
+    q: "",
+    page: env?.REACT_APP_FIRST_PAGE,
+    limit: env?.REACT_APP_PER_PAGE,
+    status: "",
+    is_premium: "",
+  },
   isPremium: "",
   userId: "",
   exportedExcelData: [],
@@ -44,6 +53,7 @@ export interface UserModel {
   premiumStatus: boolean;
   deleteStatus: boolean;
   currentUserId: string;
+  formData: IUsers;
   isPremium: string | number | any;
   userId: string | number;
   currentUserStatus: string | number;
@@ -62,6 +72,7 @@ export interface UserModel {
   setExportedExcelData: Action<UserModel, object | any>;
   setMemberShipData: Action<UserModel, object | any>;
   setPremium: Action<UserModel, object | any>;
+  setFormData: Action<UserModel, object | any>;
   setCurrentUserId: Action<UserModel, object | any>;
   setPremiumStatus: Action<UserModel, boolean>;
   setDeleteStatus: Action<UserModel, boolean>;
@@ -84,6 +95,9 @@ const user: UserModel = {
   ...initialState,
   setResponse: action((state, payload) => {
     state.response = payload;
+  }),
+  setFormData: action((state, payload) => {
+    state.formData = payload;
   }),
   setExportedExcelData: action((state, payload) => {
     state.exportedExcelData = payload;
@@ -278,8 +292,6 @@ const user: UserModel = {
         getStoreActions().common.setLoading(false);
       } else if (response && response.status === 200) {
         // actions.setMemberShipData(response.data.membership);
-        console.log("val?.user_id", payload);
-        console.log("response.data.membership", response.data.membership);
         let localStateData = [...getState()?.response];
         let updatedData = localStateData.map((val) =>
           val?._id === getState()?.userId
@@ -290,7 +302,6 @@ const user: UserModel = {
               }
             : val
         );
-        console.log("updated data", updatedData);
         actions.setResponse(updatedData);
         actions.setPremium(0);
         toast.success(response.message);
@@ -304,19 +315,23 @@ const user: UserModel = {
   ),
 
   deleteUser: thunk<UserModel, IPayload, any, StoreModel>(
-    async (actions, payload: IPayload, { getStoreActions }) => {
-      actions.setDeleteStatus(false);
+    async (actions, payload: IPayload, { getStoreActions, getState }) => {
+      // actions.setDeleteStatus(false);
       getStoreActions().common.setLoading(true);
-      console.log("payload", payload);
       let response = await postApi(payload);
-      console.log("response", response);
       if (response && response.status !== 200) {
         toast.error(response.message);
         getStoreActions().common.setLoading(false);
       } else if (response && response.status === 200) {
+        const localStateData = [...getState()?.response];
+        const index = localStateData.findIndex(
+          (item) => item._id === payload?.payload?.user_id
+        );
+        localStateData.splice(index, 1);
+        actions.setResponse(localStateData);
         toast.success(response.message);
         getStoreActions().common.setLoading(false);
-        actions.setDeleteStatus(true);
+        // actions.setDeleteStatus(true);
       } else {
         getStoreActions().common.setLoading(false);
         return true;
