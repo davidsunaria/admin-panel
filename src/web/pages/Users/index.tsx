@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { useStoreActions, useStoreState } from "react-app-store";
 import {
   IUsers,
@@ -20,6 +20,7 @@ import DEFAULT_USER_IMG from "react-app-images/default_user.png";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { toUpperCase } from "../../../lib/utils/Service";
+import { action } from "easy-peasy";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const NoRecord = React.lazy(() => import("../../components/NoRecord"));
@@ -72,7 +73,7 @@ const Users: React.FC = (): JSX.Element => {
       expire_at: "",
     };
   }, []);
- // const [currentUserId, setCurrentUserId] = useState<String>("");
+  // const [currentUserId, setCurrentUserId] = useState<String>("");
   // const [currentUserStatus, setCurrentUserStatus] = useState<String | number>(
   //   ""
   // );
@@ -86,15 +87,20 @@ const Users: React.FC = (): JSX.Element => {
   const [data, setData] = useState<Array<any>>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isPremiumModalOpen, setPremiumOpen] = useState(false);
-  const [userId, setUserId] = useState("");
-  const [isPremium, setPremium] = useState<any>("");
+  //const [userId, setUserId] = useState("");
+  // const [isPremium, setPremium] = useState<any>("");
   const [frequency, setFrequency] = useState<any>("");
 
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
   const response = useStoreState((state) => state.user.response);
-  const paginationObject = useStoreState((state) => state.user.paginationObject);
-
+  const userId = useStoreState((state) => state.user.userId);
+  console.log("res", response);
+  const paginationObject = useStoreState(
+    (state) => state.user.paginationObject
+  );
+  const isPremium = useStoreState((state) => state.user.isPremium);
+  console.log("ispremium", isPremium);
   const memberShipData = useStoreState((state) => state.user.memberShipData);
   const deleteStatus = useStoreState((state) => state.user.deleteStatus);
   const isInvitationSend = useStoreState(
@@ -106,12 +112,20 @@ const Users: React.FC = (): JSX.Element => {
 
   const premiumStatus = useStoreState((state) => state.user.premiumStatus);
   const currentUserId = useStoreState((state) => state.user.currentUserId);
-  const currentUserStatus = useStoreState((state) => state.user.currentUserStatus);
-  
+  const currentUserStatus = useStoreState(
+    (state) => state.user.currentUserStatus
+  );
+
   //Actions
   const getUsers = useStoreActions((actions) => actions.user.getUsers);
-  const setCurrentUserId = useStoreActions((actions) => actions.user.setCurrentUserId);
-  const setCurrentUserStatus = useStoreActions((actions) => actions.user.setCurrentUserStatus);
+  const setCurrentUserId = useStoreActions(
+    (actions) => actions.user.setCurrentUserId
+  );
+  const setCurrentUserStatus = useStoreActions(
+    (actions) => actions.user.setCurrentUserStatus
+  );
+  const setPremium = useStoreActions((actions) => actions.user.setPremium);
+  const setUserId = useStoreActions((actions) => actions.user.setUserId);
 
   const enableDisable = useStoreActions(
     (actions) => actions.user.enableDisable
@@ -159,7 +173,7 @@ const Users: React.FC = (): JSX.Element => {
   const getUserData = useCallback(async (payload: IUsers) => {
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
-  
+
   /*useEffect(() => {
     if (response?.data) {
       const {
@@ -206,8 +220,8 @@ const Users: React.FC = (): JSX.Element => {
   }, []);
 
   const onYes = useCallback(async (id: string, status: string | number) => {
-     setCurrentUserId(id);
-     setCurrentUserStatus(status);
+    setCurrentUserId(id);
+    setCurrentUserStatus(status);
     const payload: IEnableDisable = {
       _id: id,
       type: "user",
@@ -283,22 +297,22 @@ const Users: React.FC = (): JSX.Element => {
     await markAsPremium({ url: "user/mark-premium", payload });
   };
 
-  useEffect(() => {
-    async function changeData() {
-      //console.log("change data",isPremium)
-      let localStateData = [...data];
-      let index = localStateData.findIndex((item) => item._id === userId);
-      localStateData[index].is_premium = parseInt(isPremium);
-      localStateData[index].membership = memberShipData;
-      setData(localStateData);
-      await flushData();
-    }
-    if (premiumStatus && premiumStatus === true) {
-      changeData();
-      setUserId("");
-      setPremium("");
-    }
-  }, [premiumStatus]);
+  // useEffect(() => {
+  //   async function changeData() {
+  //     //console.log("change data",isPremium)
+  //     let localStateData = [...data];
+  //     let index = localStateData.findIndex((item) => item._id === userId);
+  //     localStateData[index].is_premium = parseInt(isPremium);
+  //     localStateData[index].membership = memberShipData;
+  //     setData(localStateData);
+  //     await flushData();
+  //   }
+  //   if (premiumStatus && premiumStatus === true) {
+  //     changeData();
+  //     setUserId("");
+  //     setPremium("");
+  //   }
+  // }, [premiumStatus]);
 
   useEffect(() => {
     async function changeData() {
@@ -379,6 +393,11 @@ const Users: React.FC = (): JSX.Element => {
     setFrequency(event);
   }, []);
 
+  const renderCount =useRef(0)
+
+  renderCount.current =renderCount.current+1
+  console.log("render count",renderCount)
+  
   return (
     <>
       <div className="Content">
@@ -557,22 +576,27 @@ const Users: React.FC = (): JSX.Element => {
                           <td>
                             <div
                               className={
-                                val?.is_premium === 1 &&
+                                val?.is_premium == 1 &&
                                 compareDate(val?.membership?.expire_at)
                                   ? "manageStatus manageExpire active"
                                   : "manageStatus  manageExpire inactive"
                               }
                             >
-                              {val?.is_premium === 1 &&
+                              {console.log(
+                                "compareDate",
+                                compareDate(val?.membership?.expire_at),val?.is_premium
+                              )}
+
+                              {val?.is_premium == 1 &&
                                 val?.membership &&
-                                compareDate(val?.membership?.expire_at) &&
+                                compareDate(val?.membership?.expire_at)===true &&
                                 "Yes"}
-                              {val?.is_premium === 0 &&
-                                typeof val?.membership === "undefined" &&
+                              {val?.is_premium == 0 && !val?.membership &&
+                                compareDate(val?.membership?.expire_at)===undefined &&
                                 "No"}
-                              {val?.is_premium === 1 &&
-                                typeof val?.membership !== "undefined" &&
-                                !compareDate(val?.membership?.expire_at) &&
+                              {val?.is_premium == 1 &&
+                                 val?.membership &&
+                                compareDate(val?.membership?.expire_at)===false &&
                                 "No(expired)"}
                             </div>
                           </td>
@@ -632,13 +656,13 @@ const Users: React.FC = (): JSX.Element => {
                             <div className="d-flex">
                               <i
                                 title={
-                                  val?.is_premium === 1 &&
+                                  val?.is_premium == 1 &&
                                   compareDate(val?.membership?.expire_at)
                                     ? "Unmark Premium"
                                     : "Mark Premium"
                                 }
                                 className={`bi bi-star-fill ${
-                                  val?.is_premium === 1 &&
+                                  val?.is_premium == 1 &&
                                   compareDate(val?.membership?.expire_at)
                                     ? "success"
                                     : "danger"

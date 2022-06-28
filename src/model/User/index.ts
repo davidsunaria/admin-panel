@@ -7,9 +7,12 @@ import { IPayload } from "react-app-interfaces";
 import NavigationService from "src/routes/NavigationService";
 import store from "react-app-store";
 import { logoutCompletely } from "../../lib/utils/Service";
+import { string } from "yup";
 
 const initialState = {
   response: {},
+  isPremium: "",
+  userId: "",
   exportedExcelData: [],
   memberShipData: {},
   isInvitationSend: false,
@@ -41,6 +44,8 @@ export interface UserModel {
   premiumStatus: boolean;
   deleteStatus: boolean;
   currentUserId: string;
+  isPremium: string | number | any;
+  userId: string | number;
   currentUserStatus: string | number;
   paginationObject: IPaginate;
   response: string | object | any;
@@ -53,8 +58,10 @@ export interface UserModel {
   setEnabledDisabled: Action<UserModel, boolean>;
   setCurrentUserStatus: Action<UserModel, string | number>;
   setResponse: Action<UserModel, object | any>;
+  setUserId: Action<UserModel, object | any>;
   setExportedExcelData: Action<UserModel, object | any>;
   setMemberShipData: Action<UserModel, object | any>;
+  setPremium: Action<UserModel, object | any>;
   setCurrentUserId: Action<UserModel, object | any>;
   setPremiumStatus: Action<UserModel, boolean>;
   setDeleteStatus: Action<UserModel, boolean>;
@@ -83,6 +90,12 @@ const user: UserModel = {
   }),
   setPremiumStatus: action((state, payload) => {
     state.premiumStatus = payload;
+  }),
+  setPremium: action((state, payload) => {
+    state.isPremium = payload;
+  }),
+  setUserId: action((state, payload) => {
+    state.userId = payload;
   }),
   setDeleteStatus: action((state, payload) => {
     state.deleteStatus = payload;
@@ -218,10 +231,11 @@ const user: UserModel = {
         getStoreActions().common.setLoading(false);
       } else if (response && response.status === 200) {
         let localStateData = [...getState()?.response];
-        let updatedData = localStateData.map(val =>  val?._id === payload?.payload?._id
-            ? { ...val, active: payload?.payload?.status  }
+        let updatedData = localStateData.map((val) =>
+          val?._id === payload?.payload?._id
+            ? { ...val, active: payload?.payload?.status }
             : val
-        )
+        );
         actions.setEnabledDisabled(true);
         actions.setResponse(updatedData);
         actions.flushData();
@@ -255,7 +269,7 @@ const user: UserModel = {
   ),
 
   markAsPremium: thunk<UserModel, IPayload, any, StoreModel>(
-    async (actions, payload: IPayload, { getStoreActions }) => {
+    async (actions, payload: IPayload, { getStoreActions, getState }) => {
       actions.setPremiumStatus(false);
       getStoreActions().common.setLoading(true);
       let response = await postApi(payload);
@@ -263,7 +277,22 @@ const user: UserModel = {
         toast.error(response.message);
         getStoreActions().common.setLoading(false);
       } else if (response && response.status === 200) {
-        actions.setMemberShipData(response.data.membership);
+        // actions.setMemberShipData(response.data.membership);
+        console.log("val?.user_id", payload);
+        console.log("response.data.membership", response.data.membership);
+        let localStateData = [...getState()?.response];
+        let updatedData = localStateData.map((val) =>
+          val?._id === getState()?.userId
+            ? {
+                ...val,
+                is_premium: payload?.payload?.is_premium,
+                membership: response.data.membership,
+              }
+            : val
+        );
+        console.log("updated data", updatedData);
+        actions.setResponse(updatedData);
+        actions.setPremium(0);
         toast.success(response.message);
         getStoreActions().common.setLoading(false);
         actions.setPremiumStatus(true);
