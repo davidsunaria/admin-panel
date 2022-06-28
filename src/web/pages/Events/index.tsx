@@ -53,6 +53,7 @@ const Events: React.FC = (): JSX.Element => {
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
   const response = useStoreState((state) => state.event.response);
+  const paginationObject= useStoreState((state) => state.event.paginationObject);
   const isEnabledDisabled = useStoreState(
     (state) => state.group.isEnabledDisabled
   );
@@ -62,30 +63,30 @@ const Events: React.FC = (): JSX.Element => {
   const getEvents = useStoreActions((actions) => actions.event.getEvents);
   const deleteEvent = useStoreActions((actions) => actions.event.deleteEvent);
   const enableDisable = useStoreActions(
-    (actions) => actions.group.enableDisable
+    (actions) => actions.event.enableDisable
   );
 
   const getGroupData = useCallback(async (payload: IUsers) => {
     await getEvents({ url: "event/get-all-events", payload });
   }, []);
 
-  useEffect(() => {
-    //console.log('Response', response);
-    if (response?.data) {
-      const {
-        data,
-        pagination: [paginationObject],
-      } = response;
-      setPagination(paginationObject);
-      setCurrentPage(paginationObject?.currentPage);
+  // useEffect(() => {
+  //   //console.log('Response', response);
+  //   if (response?.data) {
+  //     const {
+  //       data,
+  //       pagination: [paginationObject],
+  //     } = response;
+  //     setPagination(paginationObject);
+  //     setCurrentPage(paginationObject?.currentPage);
 
-      if (paginationObject?.currentPage === 1 || !paginationObject) {
-        setData(data);
-      } else {
-        setData((_: any) => [..._, ...data]);
-      }
-    }
-  }, [response]);
+  //     if (paginationObject?.currentPage === 1 || !paginationObject) {
+  //       setData(data);
+  //     } else {
+  //       setData((_: any) => [..._, ...data]);
+  //     }
+  //   }
+  // }, [response]);
 
   const onSearch = useCallback((payload: IUsers) => {
     setFormData((_) => ({
@@ -180,43 +181,43 @@ const Events: React.FC = (): JSX.Element => {
     );
   };
 
-  useEffect(() => {
-    async function changeData() {
-      let localStateData = [...data];
-      let index = localStateData.findIndex(
-        (item) => item._id === currentUserId
-      );
-      localStateData[index].status = currentUserStatus === 1 ? 0 : 1;
-      //console.log('localStateData', localStateData);
-      setData(localStateData);
-      await flushData();
-    }
-    if (isEnabledDisabled && isEnabledDisabled === true) {
-      changeData();
-      setCurrentUserId("");
-      setCurrentUserStatus("");
-    }
-  }, [isEnabledDisabled]);
+  // useEffect(() => {
+  //   async function changeData() {
+  //     let localStateData = [...data];
+  //     let index = localStateData.findIndex(
+  //       (item) => item._id === currentUserId
+  //     );
+  //     localStateData[index].status = currentUserStatus === 1 ? 0 : 1;
+  //     //console.log('localStateData', localStateData);
+  //     setData(localStateData);
+  //     await flushData();
+  //   }
+  //   if (isEnabledDisabled && isEnabledDisabled === true) {
+  //     changeData();
+  //     setCurrentUserId("");
+  //     setCurrentUserStatus("");
+  //   }
+  // }, [isEnabledDisabled]);
 
-  useEffect(() => {
-    async function changeData() {
-      //console.log("change data",isPremium)
-      let localStateData = [...data];
-      let index = localStateData.findIndex(
-        (item) => item._id === currentEventId
-      );
-      localStateData[index].status =
-      currentEventStatus === "delete" ? 0 : 1;
-      localStateData.splice(index, 1);
-      setData(localStateData);
-      await flushData();
-    }
-    if (deleteStatus && deleteStatus === true) {
-      changeData();
-      setCurrentEventId("");
-      setCurrentEventStatus("");
-    }
-  }, [deleteStatus]);
+  // useEffect(() => {
+  //   async function changeData() {
+  //     //console.log("change data",isPremium)
+  //     let localStateData = [...data];
+  //     let index = localStateData.findIndex(
+  //       (item) => item._id === currentEventId
+  //     );
+  //     localStateData[index].status =
+  //     currentEventStatus === "delete" ? 0 : 1;
+  //     localStateData.splice(index, 1);
+  //     setData(localStateData);
+  //     await flushData();
+  //   }
+  //   if (deleteStatus && deleteStatus === true) {
+  //     changeData();
+  //     setCurrentEventId("");
+  //     setCurrentEventStatus("");
+  //   }
+  // }, [deleteStatus]);
   return (
     <>
       <div className="Content">
@@ -235,9 +236,9 @@ const Events: React.FC = (): JSX.Element => {
           <div className="table-responsive">
             {
               <InfiniteScroll
-                dataLength={currentPage}
+                dataLength={paginationObject?.currentPage}
                 next={loadMore}
-                hasMore={pagination?.nextPage == null ? false : true}
+                hasMore={paginationObject?.nextPage == null ? false : true}
                 loader={
                   isLoading && <h4 className="listingLoader">Loading...</h4>
                 }
@@ -248,8 +249,8 @@ const Events: React.FC = (): JSX.Element => {
                     <TableHeader fields={tableHeader} />
                   </CustomSuspense>
                   <tbody>
-                    {data && data.length > 0 ? (
-                      data.map((val: any, index: number) => (
+                    {response && response.length > 0 ? (
+                      response.map((val: any, index: number) => (
                         <tr key={index}>
                           <td>
                             {

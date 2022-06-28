@@ -95,13 +95,10 @@ const Users: React.FC = (): JSX.Element => {
   const isLoading = useStoreState((state) => state.common.isLoading);
   const response = useStoreState((state) => state.user.response);
   const userId = useStoreState((state) => state.user.userId);
-  //const formData = useStoreState((state) => state.user.formData);
-  console.log("res", response);
   const paginationObject = useStoreState(
     (state) => state.user.paginationObject
   );
   const isPremium = useStoreState((state) => state.user.isPremium);
-  console.log("ispremium", isPremium);
   const memberShipData = useStoreState((state) => state.user.memberShipData);
   const deleteStatus = useStoreState((state) => state.user.deleteStatus);
   const isInvitationSend = useStoreState(
@@ -119,7 +116,6 @@ const Users: React.FC = (): JSX.Element => {
 
   //Actions
   const getUsers = useStoreActions((actions) => actions.user.getUsers);
-  //const setFormData = useStoreActions((actions) => actions.user.setFormData);
   const setCurrentUserId = useStoreActions(
     (actions) => actions.user.setCurrentUserId
   );
@@ -194,6 +190,7 @@ const Users: React.FC = (): JSX.Element => {
   }, [response]);*/
 
   const onSearch = useCallback((payload: IUsers) => {
+    console.log("payload",payload,env?.REACT_APP_FIRST_PAGE, env?.REACT_APP_PER_PAGE)
     setFormData((_:any) => ({
       ..._,
       ...payload,
@@ -203,7 +200,6 @@ const Users: React.FC = (): JSX.Element => {
   }, []);
 
   const onReset = useCallback(() => {
-    console.log(2);
     setFormData(userInititalState);
     getUserData(formData);
   }, []);
@@ -395,10 +391,7 @@ const Users: React.FC = (): JSX.Element => {
     setFrequency(event);
   }, []);
 
-  const renderCount =useRef(0)
-
-  renderCount.current =renderCount.current+1
-  console.log("render count",renderCount)
+  
   
   return (
     <>
@@ -584,10 +577,7 @@ const Users: React.FC = (): JSX.Element => {
                                   : "manageStatus  manageExpire inactive"
                               }
                             >
-                              {console.log(
-                                "compareDate",
-                                compareDate(val?.membership?.expire_at),val?.is_premium
-                              )}
+                             
 
                               {val?.is_premium == 1 &&
                                 val?.membership &&

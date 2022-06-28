@@ -8,18 +8,9 @@ import NavigationService from "src/routes/NavigationService";
 import store from "react-app-store";
 import { logoutCompletely } from "../../lib/utils/Service";
 import { string } from "yup";
-import env from "../../config";
-import { IUsers } from "react-app-interfaces";
 
 const initialState = {
-  response: {},
-  formData: {
-    q: "",
-    page: env?.REACT_APP_FIRST_PAGE,
-    limit: env?.REACT_APP_PER_PAGE,
-    status: "",
-    is_premium: "",
-  },
+  response: [],
   isPremium: "",
   userId: "",
   exportedExcelData: [],
@@ -53,7 +44,6 @@ export interface UserModel {
   premiumStatus: boolean;
   deleteStatus: boolean;
   currentUserId: string;
-  formData: IUsers;
   isPremium: string | number | any;
   userId: string | number;
   currentUserStatus: string | number;
@@ -72,7 +62,6 @@ export interface UserModel {
   setExportedExcelData: Action<UserModel, object | any>;
   setMemberShipData: Action<UserModel, object | any>;
   setPremium: Action<UserModel, object | any>;
-  setFormData: Action<UserModel, object | any>;
   setCurrentUserId: Action<UserModel, object | any>;
   setPremiumStatus: Action<UserModel, boolean>;
   setDeleteStatus: Action<UserModel, boolean>;
@@ -96,9 +85,7 @@ const user: UserModel = {
   setResponse: action((state, payload) => {
     state.response = payload;
   }),
-  setFormData: action((state, payload) => {
-    state.formData = payload;
-  }),
+  
   setExportedExcelData: action((state, payload) => {
     state.exportedExcelData = payload;
   }),
