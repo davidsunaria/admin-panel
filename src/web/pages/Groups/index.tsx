@@ -60,6 +60,7 @@ const Groups: React.FC = (): JSX.Element => {
   const isEnabledDisabled = useStoreState(state => state.group.isEnabledDisabled);
   const isLockedUnlocked = useStoreState(state => state.group.isLockedUnlocked);
   const deleteStatus = useStoreState((state) => state.group.deleteStatus);
+  const paginationObject = useStoreState((state) => state.group.paginationObject);
   //Actions
   //Actions
   const flushData = useStoreActions(actions => actions.group.flushData);
@@ -79,22 +80,21 @@ const Groups: React.FC = (): JSX.Element => {
   const getGroupData = useCallback(async (payload: IUsers) => {
       await getGroups({ url: "group/get-all-groups", payload });
   }, []);
+  // useEffect(() => {
+  //   //console.log('Response', response);
+  //   if (response?.data) {
+  //     const { data, pagination: [paginationObject] } = response;
+  //     setPagination(paginationObject);
+  //     setCurrentPage(paginationObject?.currentPage);
 
-  useEffect(() => {
-    //console.log('Response', response);
-    if (response?.data) {
-      const { data, pagination: [paginationObject] } = response;
-      setPagination(paginationObject);
-      setCurrentPage(paginationObject?.currentPage);
-
-      if (paginationObject?.currentPage === 1 || !paginationObject) {
-        setData(data);
-      }
-      else {
-        setData((_: any) => [..._, ...data]);
-      }
-    }
-  }, [response]);
+  //     if (paginationObject?.currentPage === 1 || !paginationObject) {
+  //       setData(data);
+  //     }
+  //     else {
+  //       setData((_: any) => [..._, ...data]);
+  //     }
+  //   }
+  // }, [response]);
 
   const onSearch = useCallback((payload: IUsers) => {
     setFormData(_ => ({ ..._, ...payload, page: env?.REACT_APP_FIRST_PAGE, limit: env?.REACT_APP_PER_PAGE }));
@@ -116,8 +116,8 @@ const Groups: React.FC = (): JSX.Element => {
   }, []);
 
   const onYes = useCallback(async (id: string, status: string | number) => {
-    setCurrentUserId(id);
-    setCurrentUserStatus(status);
+   // setCurrentUserId(id);
+   // setCurrentUserStatus(status);
     const payload: IEnableDisable = {
       _id: id, type: "group", status: status === 1 ? 0 : 1
     }
@@ -125,8 +125,8 @@ const Groups: React.FC = (): JSX.Element => {
   }, []);
 
   const groupDelete = useCallback(async (id: string, status: string | number) => {
-    setCurrentGroupId(id);
-    setCurrentGroupStatus(status);
+    // setCurrentGroupId(id);
+    // setCurrentGroupStatus(status);
     const payload: IEnableDisable = {
       _id: id
     }
@@ -218,62 +218,62 @@ const Groups: React.FC = (): JSX.Element => {
     return `${env?.REACT_APP_MEDIA_URL}` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
   }
 
-  useEffect(() => {
-    async function changeData() {
-      let localStateData = [...data];
-      let index = localStateData.findIndex(item => item._id === currentUserId);
-      localStateData[index].status = currentUserStatus === 1 ? 0 : 1;
-      //console.log('localStateData', localStateData);
-      setData(localStateData);
-      await flushData();
-    }
-    if (isEnabledDisabled && isEnabledDisabled === true) {
-      changeData();
-      setCurrentUserId("");
-      setCurrentUserStatus("");
-    }
-  }, [isEnabledDisabled]);
+  // useEffect(() => {
+  //   async function changeData() {
+  //     let localStateData = [...data];
+  //     let index = localStateData.findIndex(item => item._id === currentUserId);
+  //     localStateData[index].status = currentUserStatus === 1 ? 0 : 1;
+  //     //console.log('localStateData', localStateData);
+  //     setData(localStateData);
+  //     await flushData();
+  //   }
+  //   if (isEnabledDisabled && isEnabledDisabled === true) {
+  //     changeData();
+  //     setCurrentUserId("");
+  //     setCurrentUserStatus("");
+  //   }
+  // }, [isEnabledDisabled]);
 
-  useEffect(() => {
-    async function changeData() {
-      //console.log("change data",isPremium)
-      let localStateData = [...data];
-      let index = localStateData.findIndex(
-        (item) => item._id === CurrentGroupId
-      );
+  // useEffect(() => {
+  //   async function changeData() {
+  //     //console.log("change data",isPremium)
+  //     let localStateData = [...data];
+  //     let index = localStateData.findIndex(
+  //       (item) => item._id === CurrentGroupId
+  //     );
 
-      localStateData[index].status =
-      currentGroupStatus === "delete" ? 0 : 1;
-      localStateData.splice(index, 1);
-      setData(localStateData);
-      await flushData();
-    }
-    if (deleteStatus && deleteStatus === true) {
-      changeData();
-      setCurrentGroupId("");
-      setCurrentGroupStatus("");
-    }
-  }, [deleteStatus]);
+  //     localStateData[index].status =
+  //     currentGroupStatus === "delete" ? 0 : 1;
+  //     localStateData.splice(index, 1);
+  //     setData(localStateData);
+  //     await flushData();
+  //   }
+  //   if (deleteStatus && deleteStatus === true) {
+  //     changeData();
+  //     setCurrentGroupId("");
+  //     setCurrentGroupStatus("");
+  //   }
+  // }, [deleteStatus]);
 
-  useEffect(() => {
+  // useEffect(() => {
     
-    async function changeData() {
-      let localStateData = [...data];
-      let index = localStateData.findIndex(item => item._id === groupId);
-      localStateData[index].restriction_mode = restrictedMode ;
-      //console.log('localStateData', localStateData);
-      setData(localStateData);
-      await flushData();
-    }
-    if (isLockedUnlocked && isLockedUnlocked === true) {
-      changeData();
-      setGroupId("");
-      setRestrictedMode("");
-    }
-  }, [isLockedUnlocked]);
+  //   async function changeData() {
+  //     let localStateData = [...data];
+  //     let index = localStateData.findIndex(item => item._id === groupId);
+  //     localStateData[index].restriction_mode = restrictedMode ;
+  //     //console.log('localStateData', localStateData);
+  //     setData(localStateData);
+  //     await flushData();
+  //   }
+  //   if (isLockedUnlocked && isLockedUnlocked === true) {
+  //     changeData();
+  //     setGroupId("");
+  //     setRestrictedMode("");
+  //   }
+  // }, [isLockedUnlocked]);
 
   const restrictedGroup = async (formData: ILockedGroup) => {
-    setRestrictedMode(formData.restriction_mode)
+   // setRestrictedMode(formData.restriction_mode)
     let payload = {
       _id: groupId,
       restriction_mode: formData.restriction_mode
@@ -300,9 +300,9 @@ const Groups: React.FC = (): JSX.Element => {
           <div className="table-responsive">
             {
               <InfiniteScroll
-                dataLength={currentPage}
+                dataLength={paginationObject?.currentPage}
                 next={loadMore}
-                hasMore={(pagination?.nextPage == null) ? false : true}
+                hasMore={(paginationObject?.nextPage == null) ? false : true}
                 loader={isLoading && <h4 className="listingLoader">Loading...</h4>}
                 scrollThreshold={0.8}
               >
@@ -313,8 +313,8 @@ const Groups: React.FC = (): JSX.Element => {
                   </CustomSuspense>
                   <tbody>
 
-                    {data && data.length > 0 ? (
-                      data.map((val: any, index: number) => (
+                    {response && response.length > 0 ? (
+                      response.map((val: any, index: number) => (
                         <tr key={index}>
                           
                           <td>

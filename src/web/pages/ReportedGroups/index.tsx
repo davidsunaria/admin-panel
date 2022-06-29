@@ -47,30 +47,31 @@ const ReportedGroups: React.FC = (): JSX.Element => {
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.reportedResource.reportedGroupsResponse);
   const isEnabledDisabled = useStoreState(state => state.reportedResource.isEnabledDisabled);
+  const paginationObject= useStoreState(state => state.reportedResource.paginationObject);
   //Actions
   const flushData = useStoreActions(actions => actions.reportedResource.flushData);
   const getGroups = useStoreActions(actions => actions.reportedResource.getReportedGroups);
   const enableDisable = useStoreActions(actions => actions.reportedResource.enableDisable);
-
+console.log("rse",response)
   const getGroupData = useCallback(async (payload: IUsers) => {
     await getGroups({ url: "resource/get-reported-resources", payload });
   }, []);
-  useEffect(() => {
-    //console.log('Response', response);
-    if (response?.data) {
-      const { data, pagination: [paginationObject] } = response;
-      setPagination(paginationObject);
-      setCurrentPage(paginationObject?.currentPage);
+  // useEffect(() => {
+  //   //console.log('Response', response);
+  //   if (response?.data) {
+  //     const { data, pagination: [paginationObject] } = response;
+  //     setPagination(paginationObject);
+  //     setCurrentPage(paginationObject?.currentPage);
 
 
-      if (paginationObject?.currentPage === 1 || !paginationObject) {
-        setData(data);
-      }
-      else {
-        setData((_: any) => [..._, ...data]);
-      }
-    }
-  }, [response]);
+  //     if (paginationObject?.currentPage === 1 || !paginationObject) {
+  //       setData(data);
+  //     }
+  //     else {
+  //       setData((_: any) => [..._, ...data]);
+  //     }
+  //   }
+  // }, [response]);
   //console.log("response",response)
   const onSearch = useCallback((payload: IUsers) => {
     setFormData(_ => ({ ..._, ...payload, page: env?.REACT_APP_FIRST_PAGE, limit: env?.REACT_APP_PER_PAGE }));
@@ -92,8 +93,8 @@ const ReportedGroups: React.FC = (): JSX.Element => {
   }, []);
 
   const onYes = useCallback(async (id: string, is_blocked_by_admin: string | number) => {
-    setCurrentUserId(id);
-    setCurrentUserStatus(is_blocked_by_admin);
+    // setCurrentUserId(id);
+    // setCurrentUserStatus(is_blocked_by_admin);
     const payload: IEnableDisable = {
       _id: id, type: "group", is_blocked_by_admin: is_blocked_by_admin === 1 ? 0 : 1
     }
@@ -121,20 +122,20 @@ const ReportedGroups: React.FC = (): JSX.Element => {
     return `${env?.REACT_APP_MEDIA_URL}` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
   }
 
-  useEffect(() => {
-    async function changeData() {
-      let localStateData = [...data];
-      let index = localStateData.findIndex(item => item.reported_groups._id === currentUserId);
-      localStateData[index].reported_groups.is_blocked_by_admin = currentUserStatus === 1 ? 0 : 1;
-      setData(localStateData);
-      await flushData();
-    }
-    if (isEnabledDisabled && isEnabledDisabled === true) {
-      changeData();
-      setCurrentUserId("");
-      setCurrentUserStatus("");
-    }
-  }, [isEnabledDisabled]);
+  // useEffect(() => {
+  //   async function changeData() {
+  //     let localStateData = [...data];
+  //     let index = localStateData.findIndex(item => item.reported_groups._id === currentUserId);
+  //     localStateData[index].reported_groups.is_blocked_by_admin = currentUserStatus === 1 ? 0 : 1;
+  //     setData(localStateData);
+  //     await flushData();
+  //   }
+  //   if (isEnabledDisabled && isEnabledDisabled === true) {
+  //     changeData();
+  //     setCurrentUserId("");
+  //     setCurrentUserStatus("");
+  //   }
+  // }, [isEnabledDisabled]);
 
   return (
     <>
@@ -149,9 +150,9 @@ const ReportedGroups: React.FC = (): JSX.Element => {
           <div className="table-responsive">
             {
               <InfiniteScroll
-                dataLength={currentPage}
+                dataLength={paginationObject?.currentPage}
                 next={loadMore}
-                hasMore={(pagination?.nextPage == null) ? false : true}
+                hasMore={(paginationObject?.nextPage == null) ? false : true}
                 loader={isLoading && <h4>Loading...</h4>}
                 scrollThreshold={0.8}
               >
@@ -161,8 +162,8 @@ const ReportedGroups: React.FC = (): JSX.Element => {
                     <TableHeader fields={tableHeader} />
                   </CustomSuspense>
                   <tbody>
-                    {data && data.length > 0 ? (
-                      data.map((val: any, index: number) => (
+                    {response && response.length > 0 ? (
+                      response.map((val: any, index: number) => (
                         <tr key={index}>
                           <td>
                             {<LazyLoadImage
