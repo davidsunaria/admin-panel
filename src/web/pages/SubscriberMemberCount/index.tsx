@@ -4,11 +4,10 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import LoadingOverlay from "react-loading-overlay-ts";
 
 const SubscriberMemberCount: React.FC = (): JSX.Element => {
-  const [subscriberCount, setSubscriberCount] = useState<string | number>(0);
-  const [memberCount, setMemberCount] = useState<string | number>(0);
+ 
 
   //State
-  const subscribersCount = useStoreState(
+  const subscribersCount  = useStoreState(
     (state) => state.dashboard.subscribersCount
   );
   const membersCount = useStoreState((state) => state.dashboard.membersCount);
@@ -34,13 +33,7 @@ const SubscriberMemberCount: React.FC = (): JSX.Element => {
     getData();
   }, []);
 
-  useEffect(() => {
-    setSubscriberCount(subscribersCount);
-  }, [subscribersCount]);
-
-  useEffect(() => {
-    setMemberCount(membersCount);
-  }, [membersCount]);
+  
 
   return (
     <>
@@ -59,15 +52,15 @@ const SubscriberMemberCount: React.FC = (): JSX.Element => {
         <div className="customScroll">
           <div className="detailOuer">
             <label className="text-dark">Members</label>
-            <span>{memberCount || 0}</span>
+            <span>{membersCount || 0}</span>
           </div>
           <div className="detailOuer">
             <label className="text-dark">Subscribers</label>
-            <span>{subscriberCount || 0}</span>
+            <span>{subscribersCount || 0}</span>
           </div>
         </div>
       </div>
-      </div>
+      </div>  
     </>
   );
 };

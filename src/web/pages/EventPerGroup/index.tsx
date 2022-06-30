@@ -30,18 +30,17 @@ const EventPerGroup: React.FC = (): JSX.Element => {
     ];
   }, []);
 
-  const [EventsPerGroup, setEventsPerGroup] = useState<any[]>([]);
   const [groupPayload, setGroupPayload] = useState<IUsers>(inititalState);
-  const [nextPage, setNextPage] = useState<number>(1);
 
-  const numberOfEventPerGroup = useStoreState(
-    (state) => state.dashboard.numberOfEventPerGroup
+  const { pagination, data } = useStoreState(
+    (state) => state.dashboard.numberOfEventsPerGroup
   );
-  const isEventPerGroupLoading = useStoreState(state => state.dashboard.isEventPerGroupLoading);
+  const isEventPerGroupLoading = useStoreState(
+    (state) => state.dashboard.isEventPerGroupLoading
+  );
   const getEventCountPerGroup = useStoreActions(
     (actions) => actions.dashboard.getEventCountPerGroup
   );
-  
 
   const getNumberOfEventsPerGroup = useCallback(async (payload) => {
     await getEventCountPerGroup({
@@ -49,24 +48,6 @@ const EventPerGroup: React.FC = (): JSX.Element => {
       payload,
     });
   }, []);
-
-  useEffect(() => {
-    if (numberOfEventPerGroup?.data) {
-      const {
-        data,
-        pagination: [paginationObject],
-      } = numberOfEventPerGroup;
-      setNextPage(paginationObject?.nextPage);
-
-      if (paginationObject?.currentPage === 1 || !paginationObject) {
-        setEventsPerGroup(data);
-      } else {
-        setEventsPerGroup((_: any) => [..._, ...data]);
-      }
-    }
-  }, [numberOfEventPerGroup]);
-
-  
 
   useEffect(() => {
     if (groupPayload) {
@@ -78,7 +59,10 @@ const EventPerGroup: React.FC = (): JSX.Element => {
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight && nextPage !==null) {
+      if (
+        scrollTop + clientHeight === scrollHeight &&
+        pagination[0]?.nextPage !== null
+      ) {
         setGroupPayload((_) => ({
           ..._,
           page: parseInt((_.page ?? 1)?.toString()) + 1,
@@ -89,42 +73,42 @@ const EventPerGroup: React.FC = (): JSX.Element => {
 
   return (
     <>
-    <div className="col-lg-6">
-      <div className="cardBox dashboardBoxes">
-        {isEventPerGroupLoading && (
-          <LoadingOverlay
-            active={isEventPerGroupLoading}
-            spinner
-            text="Please wait..."
-          ></LoadingOverlay>
-        )}
-        <div className="dashAppointFilterOuter">
-          <div className="dashboardSubTitle">No. of events per group</div>
+      <div className="col-lg-6">
+        <div className="cardBox dashboardBoxes">
+          {isEventPerGroupLoading && (
+            <LoadingOverlay
+              active={isEventPerGroupLoading}
+              spinner
+              text="Please wait..."
+            ></LoadingOverlay>
+          )}
+          <div className="dashAppointFilterOuter">
+            <div className="dashboardSubTitle">No. of events per group</div>
 
-          {/* <GooglePlaceAutoComplete /> */}
+            {/* <GooglePlaceAutoComplete /> */}
+          </div>
+          <div className="table-responsive">
+            <table className="table customTable stickyHeader">
+              <CustomSuspense>
+                <TableHeader fields={tableHeader} />
+              </CustomSuspense>
+              <tbody onScroll={onScroll} ref={listInnerRef}>
+                {data && data?.length > 0 ? (
+                  data.map((val: any, index: number) => {
+                    return (
+                      <tr key={index}>
+                        <td className="w-50">{val?.name || 0}</td>
+                        <td className="w-50">{val?.events || 0} </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <NoRecord colspan={2} />
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div className="table-responsive">
-          <table className="table customTable stickyHeader">
-            <CustomSuspense>
-              <TableHeader fields={tableHeader} />
-            </CustomSuspense>
-            <tbody onScroll={onScroll} ref={listInnerRef}>
-              {EventsPerGroup && EventsPerGroup?.length > 0 ? (
-                EventsPerGroup.map((val: any, index: number) => {
-                  return (
-                    <tr key={index}>
-                      <td className="w-50">{val?.name || 0}</td>
-                      <td className="w-50">{val?.events || 0} </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <NoRecord colspan={2}/>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
       </div>
     </>
   );

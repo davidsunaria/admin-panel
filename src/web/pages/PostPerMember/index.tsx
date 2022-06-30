@@ -31,14 +31,11 @@ const Dashboard: React.FC = (): JSX.Element => {
     ];
   }, []);
 
-  const [numberOfResourcePerMember, setNumberOfResourcePerMember] = useState<
-    any[]
-  >([]);
+  
   const [resourcePayload, setResourcePayload] = useState<IUsers>(inititalState);
-  const [nextPage, setNextPage] = useState<number>(1);
 
 
-  const postPerMember = useStoreState((state) => state.dashboard.postPerMember);
+  const { pagination, data } = useStoreState((state) => state.dashboard.postPerMember);
   const isPostPerMemberLoading = useStoreState(
     (state) => state.dashboard.isPostPerMemberLoading
   );
@@ -53,33 +50,19 @@ const Dashboard: React.FC = (): JSX.Element => {
     });
   }, []);
 
-  useEffect(() => {
-    if (postPerMember?.data) {
-      const {
-        data,
-        pagination: [paginationObject],
-      } = postPerMember;
-      setNextPage(paginationObject?.nextPage);
-
-      if (paginationObject?.currentPage === 1 || !paginationObject) {
-        setNumberOfResourcePerMember(data);
-      } else {
-        setNumberOfResourcePerMember((_: any) => [..._, ...data]);
-      }
-    }
-  }, [postPerMember]);
+  
 
   useEffect(() => {
     if (resourcePayload) {
       getNumberOfEventGroupPerMember(resourcePayload);
     }
   }, [resourcePayload]);
-
+//console.log("data",data)
   const listInnerRef = useRef(null);
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight && nextPage !==null) {
+      if (scrollTop + clientHeight === scrollHeight && pagination[0]?.nextPage !==null) {
         setResourcePayload((_) => ({
           ..._,
           page: parseInt((_.page ?? 1)?.toString()) + 1,
@@ -128,9 +111,9 @@ const Dashboard: React.FC = (): JSX.Element => {
                 <TableHeader fields={tableHeader} headerWidth={"w-25"} />
               </CustomSuspense>
               <tbody onScroll={onScroll} ref={listInnerRef}>
-                {numberOfResourcePerMember &&
-                numberOfResourcePerMember?.length > 0 ? (
-                  numberOfResourcePerMember.map((val: any, index: number) => {
+                {data &&
+                data?.length > 0 ? (
+                  data.map((val: any, index: number) => {
                     // console.log("vala",val)
                     let { group, event } = computeResourceCount(index, val?.resources);
                     return (

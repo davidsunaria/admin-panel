@@ -24,11 +24,7 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
     };
   }, []);
 
-  const [memberCountPerResource, setMemberCountPerResource] = useState<any[]>(
-    []
-  );
   const [resourcePayload, setResourcePayload] = useState<IUsers>(inititalState);
-  const [nextPage, setNextPage] = useState<number>(1);
 
   const tableHeader = useMemo(() => {
     return [
@@ -37,8 +33,8 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
     ];
   }, []);
 
-  const numberOfMemberPerGroup = useStoreState(
-    (state) => state.dashboard.numberOfMemberPerGroup
+  const { pagination, data } = useStoreState(
+    (state) => state.dashboard.numberOfMembersPerGroup
   );
   const getMembersCountPerResource = useStoreActions(
     (actions) => actions.dashboard.getMembersCountPerResource
@@ -52,22 +48,6 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (numberOfMemberPerGroup?.data) {
-      const {
-        data,
-        pagination: [paginationObject],
-      } = numberOfMemberPerGroup;
-      setNextPage(paginationObject?.nextPage);
-
-      if (paginationObject?.currentPage === 1 || !paginationObject) {
-        setMemberCountPerResource(data);
-      } else {
-        setMemberCountPerResource((_: any) => [..._, ...data]);
-      }
-    }
-  }, [numberOfMemberPerGroup]);
-
-  useEffect(() => {
     if (resourcePayload) {
       getNumberOfMembersPerResource(resourcePayload);
     }
@@ -77,7 +57,10 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight && nextPage !== null) {
+      if (
+        scrollTop + clientHeight === scrollHeight &&
+        pagination[0]?.nextPage !== null
+      ) {
         setResourcePayload((_) => ({
           ..._,
           page: parseInt((_.page ?? 1)?.toString()) + 1,
@@ -94,8 +77,8 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
             <TableHeader fields={tableHeader} headerWidth={"w-50"} />
           </CustomSuspense>
           <tbody onScroll={onScroll} ref={listInnerRef}>
-            {memberCountPerResource && memberCountPerResource?.length > 0 ? (
-              memberCountPerResource.map((val: any, index: number) => {
+            {data && data?.length > 0 ? (
+              data.map((val: any, index: number) => {
                 return (
                   <tr key={index}>
                     <td className={"w-50"}>{val?.name || 0}</td>
@@ -105,7 +88,7 @@ const ResourceMembersPerGroup: React.FC = (): JSX.Element => {
                 );
               })
             ) : (
-              <NoRecord colspan={2}/>
+              <NoRecord colspan={2} />
             )}
           </tbody>
         </table>

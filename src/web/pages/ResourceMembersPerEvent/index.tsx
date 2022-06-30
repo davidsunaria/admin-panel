@@ -4,7 +4,7 @@ import React, {
   useState,
   useMemo,
   useRef,
-  memo
+  memo,
 } from "react";
 import { useStoreActions, useStoreState } from "react-app-store";
 import { IUsers } from "react-app-interfaces";
@@ -12,7 +12,6 @@ import "react-lazy-load-image-component/src/effects/blur.css";
 import env from "../../../config";
 import CustomSuspense from "../../components/CustomSuspense";
 const NoRecord = React.lazy(() => import("../../components/NoRecord"));
-
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 
@@ -25,11 +24,7 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
     };
   }, []);
 
-  const [memberCountPerResource, setMemberCountPerResource] = useState<any[]>(
-    []
-  );
   const [resourcePayload, setResourcePayload] = useState<IUsers>(inititalState);
-  const [nextPage, setNextPage] = useState<number>(1);
 
   const tableHeader = useMemo(() => {
     return [
@@ -39,8 +34,8 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
     ];
   }, []);
 
-  const numberOfMemberPerEvent = useStoreState(
-    (state) => state.dashboard.numberOfMemberPerEvent
+  const { pagination, data } = useStoreState(
+    (state) => state.dashboard.numberOfMembersPerEvent
   );
   const getMembersCountPerResource = useStoreActions(
     (actions) => actions.dashboard.getMembersCountPerResource
@@ -54,25 +49,6 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (numberOfMemberPerEvent?.data) {
-      console.log(numberOfMemberPerEvent?.data);
-      const {
-        data,
-        pagination: [paginationObject],
-      } = numberOfMemberPerEvent;
-      setNextPage(paginationObject?.nextPage);
-
-      if (paginationObject?.currentPage === 1 || !paginationObject) {
-        setMemberCountPerResource(data);
-      } else {
-        setMemberCountPerResource((_: any) => [..._, ...data]);
-      }
-    }
-  }, [numberOfMemberPerEvent]);
-
- 
-
-  useEffect(() => {
     if (resourcePayload) {
       getNumberOfMembersPerResource(resourcePayload);
     }
@@ -82,7 +58,10 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight && nextPage !==null) {
+      if (
+        scrollTop + clientHeight === scrollHeight &&
+        pagination[0]?.nextPage !== null
+      ) {
         setResourcePayload((_) => ({
           ..._,
           page: parseInt((_.page ?? 1)?.toString()) + 1,
@@ -91,18 +70,16 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
     }
   };
 
-  console.log("hi")
   return (
     <>
       <div className="table-responsive">
-        
         <table className="table customTable stickyHeader">
           <CustomSuspense>
             <TableHeader fields={tableHeader} headerWidth={"w-33"} />
           </CustomSuspense>
           <tbody onScroll={onScroll} ref={listInnerRef}>
-            {memberCountPerResource && memberCountPerResource?.length > 0 ? (
-              memberCountPerResource.map((val: any, index: number) => {
+            {data && data?.length > 0 ? (
+              data.map((val: any, index: number) => {
                 return (
                   <tr key={index}>
                     <td className={"w-33"}>{val?.name || 0}</td>
@@ -112,7 +89,7 @@ const ResourceMembersPerEvent: React.FC = (): JSX.Element => {
                 );
               })
             ) : (
-              <NoRecord colspan={3}/>
+              <NoRecord colspan={3} />
             )}
           </tbody>
         </table>

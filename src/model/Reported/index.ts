@@ -224,7 +224,6 @@ const reportedResource: ReportedModel = {
             break;
             case "event":
          
-            console.log("hiiii")
             let localEventsStateData = [...getState()?.reportedEventsResponse];
             let updatedEventsData = localEventsStateData.map((val) =>
               val?._id === payload?.payload?._id
