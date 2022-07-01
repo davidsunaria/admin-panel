@@ -5,14 +5,17 @@ import LoadingOverlay from "react-loading-overlay-ts";
 import * as _ from "lodash";
 
 const PaypalVsCash: React.FC = (): JSX.Element => {
-  const [paypalCash, setPaypalCash] = useState<[]>([]);
-  const [totalSum, setTotalSum] = useState<number>(0);
-  const [payPalAmount, setPayPalAmount] = useState<number>(0);
-  const [cashAmount, setCashAmount] = useState<number>(0);
+  //const [paypalCash, setPaypalCash] = useState<[]>([]);
+  //const [totalSum, setTotalSum] = useState<number>(0);
+  // const [payPalAmount, setPayPalAmount] = useState<number>(0);
+  // const [cashAmount, setCashAmount] = useState<number>(0);
   
 
   //State
-  const paypalVsCash = useStoreState((state) => state.dashboard.paypalVsCash);
+  //const paypalVsCash = useStoreState((state) => state.dashboard.paypalVsCash);
+  const {payPalAmount,cashAmount} = useStoreState((state) => state.dashboard.paypalCash);
+  const totalSum = useStoreState((state) => state.dashboard.totalSum);
+  
   const isPaypalVsCashLoading = useStoreState(
     (state) => state.dashboard.isPaypalVsCashLoading
   );
@@ -30,19 +33,19 @@ const PaypalVsCash: React.FC = (): JSX.Element => {
     getData();
   }, []);
 
-  useEffect(() => {
-    setPaypalCash(paypalVsCash);
-    let sum = _.sumBy(paypalVsCash, "total");
-    setTotalSum(sum);
-    paypalCash && paypalCash?.length > 0 && paypalCash?.forEach((val:any,i:any)=>{
-      if(val?._id==="cash"){
-        setCashAmount(val?.total)
-      }
-      if(val?._id==="paypal"){
-        setPayPalAmount(val?.total)
-      }
-   })
-  }, [paypalVsCash]);
+  // useEffect(() => {
+  //   setPaypalCash(paypalVsCash);
+  //   let sum = _.sumBy(paypalVsCash, "total");
+  //   setTotalSum(sum);
+  //   paypalCash && paypalCash?.length > 0 && paypalCash?.forEach((val:any,i:any)=>{
+  //     if(val?._id==="cash"){
+  //       setCashAmount(val?.total)
+  //     }
+  //     if(val?._id==="paypal"){
+  //       setPayPalAmount(val?.total)
+  //     }
+  //  })
+  // }, [paypalVsCash]);
   
 
   const getPercentage = useCallback(
@@ -53,7 +56,7 @@ const PaypalVsCash: React.FC = (): JSX.Element => {
       }
       return response;
     },
-    [paypalCash]
+    [payPalAmount,cashAmount]
   );
 
   

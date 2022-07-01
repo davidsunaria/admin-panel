@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 import { getApi } from "react-app-api";
 import { IPayload } from "react-app-interfaces";
+import * as _ from "lodash";
 
 const initialState = {
   subscribersCount: 0,
@@ -23,6 +24,11 @@ const initialState = {
   paypalVsCash: {},
   groupEventByLocation: {},
   isGroupEventByLocationLoading: false,
+  paypalCash: {
+    payPalAmount: 0,
+    cashAmount: 0,
+  },
+  totalSum: 0,
 };
 
 interface IPaginate {
@@ -32,6 +38,11 @@ interface IPaginate {
   pages: number;
   prevPage: number | null | undefined;
   nextPage: number | null | undefined;
+}
+
+interface IPaypalCash {
+  payPalAmount: number;
+  cashAmount: number;
 }
 interface IResponse {
   pagination: [IPaginate];
@@ -45,7 +56,6 @@ export interface DashboardModel {
   numberOfMembersPerEvent: any;
   postPerMember: object | any;
   isMembersPerResourceLoading: boolean;
-  //paginationObject: IPaginate;
   isEventPerGroupLoading: boolean;
   isSubscriberLoading: boolean;
   isPostPerMemberLoading: boolean;
@@ -53,6 +63,8 @@ export interface DashboardModel {
   groupEventByLocation: object | any;
   isPaypalVsCashLoading: boolean;
   isGroupEventByLocationLoading: object | any;
+  paypalCash: IPaypalCash;
+  totalSum: number;
   //**************State Actions************///
 
   setSubscribersCount: Action<DashboardModel, object | any>;
@@ -71,6 +83,8 @@ export interface DashboardModel {
   setPaypalVsCashLoading: Action<DashboardModel, object | any>;
   setGroupEventByLocation: Action<DashboardModel, object | any>;
   setGroupEventByLocationLoading: Action<DashboardModel, object | any>;
+  setPayPalCashAmount: Action<DashboardModel, object | any>;
+  setTotalSum: Action<DashboardModel, object | any>;
   // setPaginationObject: Action<DashboardModel, IPaginate>;
   //**************State  Actions************///
 
@@ -95,10 +109,12 @@ const dashboard: DashboardModel = {
   setMembersCount: action((state, payload) => {
     state.membersCount = payload;
   }),
-
-  // setPaginationObject: action((state, payload) => {
-  //   state.paginationObject = payload;
-  // }),
+  setPayPalCashAmount: action((state, payload) => {
+    state.paypalCash = payload;
+  }),
+  setTotalSum: action((state, payload) => {
+    state.totalSum = payload;
+  }),
 
   setNumberOfEventPerGroup: action((state, payload) => {
     state.numberOfEventsPerGroup = payload;
@@ -340,6 +356,26 @@ const dashboard: DashboardModel = {
         toast.error(response?.message);
         actions.setPaypalVsCashLoading(false);
       } else if (response && response?.status === 200) {
+        console.log("paypall respomse", response.data);
+        let sum = _.sumBy(response?.data, "total");
+        actions.setTotalSum(sum)
+        response?.data &&
+          response?.data?.length > 0 &&
+          response?.data?.forEach((val: any, i: any) => {
+            if (val?._id === "cash") {
+              actions.setPayPalCashAmount({
+                ...getState().paypalCash,
+                cashAmount: val?.total,
+              });
+            }
+            if (val?._id === "paypal") {
+              actions.setPayPalCashAmount({
+                ...getState().paypalCash,
+                payPalAmount: val?.total,
+              });
+            }
+          });
+
         actions.setPaypalVsCash(response?.data);
         actions.setPaypalVsCashLoading(false);
       } else {
@@ -372,10 +408,13 @@ const dashboard: DashboardModel = {
         } else {
           actions.setGroupEventByLocation({
             pagination: response?.data?.pagination,
-            data: [...getState().groupEventByLocation?.data, ...response?.data?.data],
+            data: [
+              ...getState().groupEventByLocation?.data,
+              ...response?.data?.data,
+            ],
           });
         }
-      //  actions.setGroupEventByLocation(response?.data);
+        //  actions.setGroupEventByLocation(response?.data);
         actions.setGroupEventByLocationLoading(false);
       } else {
         actions.setGroupEventByLocationLoading(false);
