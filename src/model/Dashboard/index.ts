@@ -364,7 +364,18 @@ const dashboard: DashboardModel = {
         toast.error(response?.message);
         actions.setGroupEventByLocationLoading(false);
       } else if (response && response?.status === 200) {
-        actions.setGroupEventByLocation(response?.data);
+        const { currentPage } = response?.data.pagination.length
+          ? response?.data.pagination[0]
+          : undefined;
+        if (currentPage && currentPage === 1) {
+          actions.setGroupEventByLocation(response?.data);
+        } else {
+          actions.setGroupEventByLocation({
+            pagination: response?.data?.pagination,
+            data: [...getState().groupEventByLocation?.data, ...response?.data?.data],
+          });
+        }
+      //  actions.setGroupEventByLocation(response?.data);
         actions.setGroupEventByLocationLoading(false);
       } else {
         actions.setGroupEventByLocationLoading(false);

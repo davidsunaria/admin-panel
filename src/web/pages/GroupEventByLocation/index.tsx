@@ -29,11 +29,11 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
     ];
   }, []);
   const [params, setParams] = useState<IUsers>(inititalState);
-  const [data, setData] = useState<any[]>([]);
-  const [nextPage, setNextPage] = useState<number>(1);
+ // const [data, setData] = useState<any[]>([]);
+ // const [nextPage, setNextPage] = useState<number>(1);
 
   //State
-  const groupEventByLocation = useStoreState(
+  const { pagination, data } = useStoreState(
     (state) => state.dashboard.groupEventByLocation
   );
   const isGroupEventByLocationLoading = useStoreState(
@@ -47,7 +47,6 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
  
 
   const getData = useCallback(async (payload) => {
-    console.log("hi")
     await getGroupEventByLocation({
       url: "dashboard/get-resources-by-location",
       payload,
@@ -69,23 +68,23 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
     }));
   }, []);
 
-  useEffect(() => {
-    if (groupEventByLocation?.data) {
-      const {
-        data,
-        pagination: [paginationObject],
-      } = groupEventByLocation;
-      setNextPage(paginationObject?.nextPage);
+  // useEffect(() => {
+  //   if (groupEventByLocation?.data) {
+  //     const {
+  //       data,
+  //       pagination: [paginationObject],
+  //     } = groupEventByLocation;
+  //     setNextPage(paginationObject?.nextPage);
      
 
-      if (paginationObject?.currentPage === 1 || !paginationObject) {
-        setData(data);
-      } 
-      else {
-        setData((_: any) => [..._, ...data]);
-      }
-    }
-  }, [groupEventByLocation]);
+  //     if (paginationObject?.currentPage === 1 || !paginationObject) {
+  //       setData(data);
+  //     } 
+  //     else {
+  //       setData((_: any) => [..._, ...data]);
+  //     }
+  //   }
+  // }, [groupEventByLocation]);
 
 
   
@@ -93,7 +92,7 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
   const onScroll = () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      if (scrollTop + clientHeight === scrollHeight && nextPage !==null) {
+      if (scrollTop + clientHeight === scrollHeight && pagination[0]?.nextPage !==null) {
         setParams((_) => ({
           ..._,
           page: parseInt((_.page ?? 1)?.toString()) + 1,
