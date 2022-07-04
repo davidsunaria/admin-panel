@@ -1,26 +1,19 @@
 import { StoreModel } from "react-app-model";
 import { Action, action, Thunk, thunk } from "easy-peasy";
 import { toast } from "react-toastify";
-
 import { getApi, postApi } from "react-app-api";
 import { IPayload } from "react-app-interfaces";
 import NavigationService from "src/routes/NavigationService";
 import store from "react-app-store";
 import { logoutCompletely } from "../../lib/utils/Service";
-import { string } from "yup";
 
 const initialState = {
   response: [],
   isPremium: "",
   userId: "",
   exportedExcelData: [],
-  memberShipData: {},
   isInvitationSend: false,
-  isEnabledDisabled: false,
-  premiumStatus: false,
   deleteStatus: false,
-  currentUserId: "",
-  currentUserStatus: "",
   paginationObject: {
     total: 0,
     currentPage: 0,
@@ -40,30 +33,20 @@ interface IPaginate {
 }
 export interface UserModel {
   isInvitationSend: boolean;
-  isEnabledDisabled: boolean;
-  premiumStatus: boolean;
   deleteStatus: boolean;
-  currentUserId: string;
   isPremium: string | number | any;
   userId: string | number;
-  currentUserStatus: string | number;
   paginationObject: IPaginate;
   response: string | object | any;
   exportedExcelData: string | object | any;
-  memberShipData: string | object | any;
   //**************State Actions************///
   setIsInvitationSend: Action<UserModel, boolean>;
   flushData: Action<UserModel>;
   reset: Action<UserModel>;
-  setEnabledDisabled: Action<UserModel, boolean>;
-  setCurrentUserStatus: Action<UserModel, string | number>;
   setResponse: Action<UserModel, object | any>;
   setUserId: Action<UserModel, object | any>;
   setExportedExcelData: Action<UserModel, object | any>;
-  setMemberShipData: Action<UserModel, object | any>;
   setPremium: Action<UserModel, object | any>;
-  setCurrentUserId: Action<UserModel, object | any>;
-  setPremiumStatus: Action<UserModel, boolean>;
   setDeleteStatus: Action<UserModel, boolean>;
   flushExcelData: Action<UserModel>;
   setPaginationObject: Action<UserModel, IPaginate>;
@@ -89,9 +72,7 @@ const user: UserModel = {
   setExportedExcelData: action((state, payload) => {
     state.exportedExcelData = payload;
   }),
-  setPremiumStatus: action((state, payload) => {
-    state.premiumStatus = payload;
-  }),
+  
   setPremium: action((state, payload) => {
     state.isPremium = payload;
   }),
@@ -101,28 +82,17 @@ const user: UserModel = {
   setDeleteStatus: action((state, payload) => {
     state.deleteStatus = payload;
   }),
-  setMemberShipData: action((state, payload) => {
-    state.memberShipData = payload;
-  }),
+ 
   setIsInvitationSend: action((state, payload) => {
     state.isInvitationSend = payload;
   }),
-  setCurrentUserId: action((state, payload) => {
-    state.currentUserId = payload;
-  }),
-  setCurrentUserStatus: action((state, payload) => {
-    state.currentUserStatus = payload;
-  }),
+
   flushData: action((state, payload) => {
     state.isInvitationSend = false;
-    state.isEnabledDisabled = false;
-    state.premiumStatus = false;
     state.exportedExcelData = [];
     state.deleteStatus = false;
   }),
-  setEnabledDisabled: action((state, payload) => {
-    state.isEnabledDisabled = payload;
-  }),
+ 
   reset: action((state) => (state = initialState)),
   flushExcelData: action((state, payload) => {
     state.exportedExcelData = [];
@@ -161,8 +131,6 @@ const user: UserModel = {
             ...response?.data?.data,
           ]);
         }
-        //console.log('Old',getState().paginationObject)
-
         getStoreActions().common.setLoading(false);
       } else {
         getStoreActions().common.setLoading(false);
@@ -174,9 +142,6 @@ const user: UserModel = {
   getExportedExcelData: thunk<UserModel, IPayload, any, StoreModel>(
     async (actions, payload: IPayload, { getStoreActions, getState }) => {
       getStoreActions().common.setLoading(true);
-
-      //console.log("payload",payload)
-      // getStoreActions().common.setLoading(true);
       let response = await getApi(payload);
       if (response && response.status !== 200) {
         toast.error(response.message);
@@ -187,7 +152,6 @@ const user: UserModel = {
         } else {
           actions.setExportedExcelData(response.data);
         }
-
         getStoreActions().common.setLoading(false);
       } else {
         getStoreActions().common.setLoading(false);
@@ -225,22 +189,18 @@ const user: UserModel = {
   enableDisable: thunk<UserModel, IPayload, any, StoreModel>(
     async (actions, payload: IPayload, { getStoreActions, getState }) => {
       getStoreActions().common.setLoading(true);
-      actions.setEnabledDisabled(false);
       let response = await postApi(payload);
-      if (response && response.status !== 200) {
+      if (response && response?.status !== 200) {
         toast.error(response.message);
         getStoreActions().common.setLoading(false);
-      } else if (response && response.status === 200) {
+      } else if (response && response?.status === 200) {
         let localStateData = [...getState()?.response];
         let updatedData = localStateData.map((val) =>
           val?._id === payload?.payload?._id
             ? { ...val, active: payload?.payload?.status }
             : val
         );
-        actions.setEnabledDisabled(true);
         actions.setResponse(updatedData);
-        actions.flushData();
-        //await actions.updateResponse(payload?.payload);
         toast.success(response.message);
         getStoreActions().common.setLoading(false);
       } else {
@@ -271,7 +231,6 @@ const user: UserModel = {
 
   markAsPremium: thunk<UserModel, IPayload, any, StoreModel>(
     async (actions, payload: IPayload, { getStoreActions, getState }) => {
-      actions.setPremiumStatus(false);
       getStoreActions().common.setLoading(true);
       let response = await postApi(payload);
       if (response && response.status !== 200) {
@@ -285,7 +244,7 @@ const user: UserModel = {
             ? {
                 ...val,
                 is_premium: payload?.payload?.is_premium,
-                membership: response.data.membership,
+                membership: response?.data?.membership,
               }
             : val
         );
@@ -293,7 +252,6 @@ const user: UserModel = {
         actions.setPremium(0);
         toast.success(response.message);
         getStoreActions().common.setLoading(false);
-        actions.setPremiumStatus(true);
       } else {
         getStoreActions().common.setLoading(false);
         return true;

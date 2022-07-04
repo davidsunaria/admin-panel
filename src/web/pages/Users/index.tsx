@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useState, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { useStoreActions, useStoreState } from "react-app-store";
 import {
   IUsers,
   IEnableDisable,
-  IPagination,
   IInviteuser,
   IPremiumuser,
+  IImageOptions
 } from "react-app-interfaces";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ConfirmAlert from "../../components/ConfirmAlert";
@@ -20,7 +20,6 @@ import DEFAULT_USER_IMG from "react-app-images/default_user.png";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { toUpperCase } from "../../../lib/utils/Service";
-import { action } from "easy-peasy";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const NoRecord = React.lazy(() => import("../../components/NoRecord"));
@@ -59,13 +58,13 @@ const Users: React.FC = (): JSX.Element => {
       is_premium: "",
     };
   }, []);
-  const inviteInititalState = useCallback((): IInviteuser => {
+  const inviteInititalState = useMemo((): IInviteuser => {
     return {
       email: "",
     };
   }, []);
 
-  const premiumInititalState = useCallback((): IPremiumuser => {
+  const premiumInititalState = useMemo((): IPremiumuser => {
     return {
       type: "",
       is_premium: "",
@@ -73,23 +72,12 @@ const Users: React.FC = (): JSX.Element => {
       expire_at: "",
     };
   }, []);
-  // const [currentUserId, setCurrentUserId] = useState<String>("");
-  // const [currentUserStatus, setCurrentUserStatus] = useState<String | number>(
-  //   ""
-  // );
-  const [currentUserDeleteStatus, setCurrentUserDeleteStatus] = useState<
-    String | number
-  >("");
-
+  
+ 
   const [formData, setFormData] = useState<IUsers>(userInititalState);
-  const [pagination, setPagination] = useState<IPagination>();
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [data, setData] = useState<Array<any>>([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isPremiumModalOpen, setPremiumOpen] = useState(false);
-  //const [userId, setUserId] = useState("");
-  // const [isPremium, setPremium] = useState<any>("");
-  const [frequency, setFrequency] = useState<any>("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isPremiumModalOpen, setPremiumOpen] = useState<boolean>(false);
+  const [frequency, setFrequency] = useState<string | undefined>("");
 
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
@@ -99,29 +87,12 @@ const Users: React.FC = (): JSX.Element => {
     (state) => state.user.paginationObject
   );
   const isPremium = useStoreState((state) => state.user.isPremium);
-  const memberShipData = useStoreState((state) => state.user.memberShipData);
-  const deleteStatus = useStoreState((state) => state.user.deleteStatus);
   const isInvitationSend = useStoreState(
     (state) => state.user.isInvitationSend
   );
-  const isEnabledDisabled = useStoreState(
-    (state) => state.user.isEnabledDisabled
-  );
-
-  const premiumStatus = useStoreState((state) => state.user.premiumStatus);
-  const currentUserId = useStoreState((state) => state.user.currentUserId);
-  const currentUserStatus = useStoreState(
-    (state) => state.user.currentUserStatus
-  );
-
+ 
   //Actions
   const getUsers = useStoreActions((actions) => actions.user.getUsers);
-  const setCurrentUserId = useStoreActions(
-    (actions) => actions.user.setCurrentUserId
-  );
-  const setCurrentUserStatus = useStoreActions(
-    (actions) => actions.user.setCurrentUserStatus
-  );
   const setPremium = useStoreActions((actions) => actions.user.setPremium);
   const setUserId = useStoreActions((actions) => actions.user.setUserId);
 
@@ -133,14 +104,13 @@ const Users: React.FC = (): JSX.Element => {
     (actions) => actions.user.markAsPremium
   );
   const deleteUser = useStoreActions((actions) => actions.user.deleteUser);
-  const setResponse = useStoreActions((actions) => actions.user.setResponse);
   const flushData = useStoreActions((actions) => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
 
   const openPremiumModal = async (
     id: string,
     is_premium: any,
-    expiredDate: any
+    expiredDate: boolean | undefined
   ) => {
     togglePremium();
     setUserId(id);
@@ -172,26 +142,9 @@ const Users: React.FC = (): JSX.Element => {
     await getUsers({ url: "user/get-all-users", payload });
   }, []);
 
-  /*useEffect(() => {
-    if (response?.data) {
-      const {
-        data,
-        pagination: [paginationObject],
-      } = response;
-      setPagination(paginationObject);
-      setCurrentPage(paginationObject?.currentPage);
-
-      if (paginationObject?.currentPage === 1 || !paginationObject) {
-        setData(data);
-      } else {
-        setData((_: any) => [..._, ...data]);
-      }
-    }
-  }, [response]);*/
 
   const onSearch = useCallback((payload: IUsers) => {
-    console.log("payload",payload,env?.REACT_APP_FIRST_PAGE, env?.REACT_APP_PER_PAGE)
-    setFormData((_:any) => ({
+    setFormData((_:IUsers) => ({
       ..._,
       ...payload,
       page: env?.REACT_APP_FIRST_PAGE,
@@ -211,15 +164,13 @@ const Users: React.FC = (): JSX.Element => {
   }, [formData]);
 
   const loadMore = useCallback(() => {
-    setFormData((_:any) => ({
+    setFormData((_:IUsers) => ({
       ..._,
       page: parseInt((_.page ?? 1)?.toString()) + 1,
     }));
   }, []);
 
   const onYes = useCallback(async (id: string, status: string | number) => {
-    setCurrentUserId(id);
-    setCurrentUserStatus(status);
     const payload: IEnableDisable = {
       _id: id,
       type: "user",
@@ -230,8 +181,6 @@ const Users: React.FC = (): JSX.Element => {
 
   const deleteMember = useCallback(
     async (id: string, status: string | number) => {
-      setCurrentUserId(id);
-      setCurrentUserDeleteStatus(status);
       const payload: IUsers = {
         user_id: id,
       };
@@ -268,7 +217,7 @@ const Users: React.FC = (): JSX.Element => {
     });
   }, []);
 
-  const getImageUrl = (url: string, options: any) => {
+  const getImageUrl = (url: string, options: IImageOptions) => {
     return (
       `${env?.REACT_APP_MEDIA_URL}` +
       options?.type +
@@ -287,7 +236,7 @@ const Users: React.FC = (): JSX.Element => {
   };
 
   const markPremium = async (formData: IPremiumuser) => {
-    let payload = {
+    const payload = {
       ...formData,
       user_id: userId,
       is_premium: isPremium,
@@ -295,43 +244,7 @@ const Users: React.FC = (): JSX.Element => {
     await markAsPremium({ url: "user/mark-premium", payload });
   };
 
-  // useEffect(() => {
-  //   async function changeData() {
-  //     //console.log("change data",isPremium)
-  //     let localStateData = [...data];
-  //     let index = localStateData.findIndex((item) => item._id === userId);
-  //     localStateData[index].is_premium = parseInt(isPremium);
-  //     localStateData[index].membership = memberShipData;
-  //     setData(localStateData);
-  //     await flushData();
-  //   }
-  //   if (premiumStatus && premiumStatus === true) {
-  //     changeData();
-  //     setUserId("");
-  //     setPremium("");
-  //   }
-  // }, [premiumStatus]);
-
-  // useEffect(() => {
-  //   async function changeData() {
-  //     //console.log("change data",isPremium)
-  //     let localStateData = [...data];
-  //     let index = localStateData.findIndex(
-  //       (item) => item._id === currentUserId
-  //     );
-
-  //     localStateData[index].active =
-  //       currentUserDeleteStatus === "delete" ? 0 : 1;
-  //     localStateData.splice(index, 1);
-  //     setData(localStateData);
-  //     await flushData();
-  //   }
-  //   if (deleteStatus && deleteStatus === true) {
-  //     changeData();
-  //     setUserId("");
-  //     setCurrentUserDeleteStatus("");
-  //   }
-  // }, [deleteStatus]);
+  
   useEffect(() => {
     async function flush() {
       toggle();
@@ -342,22 +255,6 @@ const Users: React.FC = (): JSX.Element => {
     }
   }, [isInvitationSend]);
 
-  // useEffect(() => {
-  //   async function changeData() {
-  //     let localStateData = [...response];
-  //     let index = localStateData.findIndex(
-  //       (item) => item._id === currentUserId
-  //     );
-  //     localStateData[index].active = currentUserStatus === 1 ? 0 : 1;
-  //     setResponse(localStateData);
-  //     await flushData();
-  //   }
-  //   if (isEnabledDisabled && isEnabledDisabled === true) {
-  //     changeData();
-  //     setCurrentUserId("");
-  //     setCurrentUserStatus("");
-  //   }
-  // }, [isEnabledDisabled]);
 
   const radioParameters: any = [
     { value: "monthly", label: "Monthly", name: "type" },
@@ -387,7 +284,6 @@ const Users: React.FC = (): JSX.Element => {
   }, []);
 
   const getRadioValue = useCallback((event?: string) => {
-    //console.log("event new" ,event)
     setFrequency(event);
   }, []);
 
@@ -409,7 +305,7 @@ const Users: React.FC = (): JSX.Element => {
             >
               <Formik
                 enableReinitialize={true}
-                initialValues={inviteInititalState()}
+                initialValues={inviteInititalState}
                 onSubmit={async (values) => {
                   //setFormData(JSON.stringify(values, null, 2))
                   onInvite(values);
@@ -468,7 +364,7 @@ const Users: React.FC = (): JSX.Element => {
               >
                 <Formik
                   enableReinitialize={true}
-                  initialValues={premiumInititalState()}
+                  initialValues={premiumInititalState}
                   onSubmit={async (values) => {
                     markPremium(values);
                   }}
@@ -533,7 +429,6 @@ const Users: React.FC = (): JSX.Element => {
                     {response && response.length > 0 ? (
                       response.map((val: any, index: number) => (
                         <tr key={index}>
-                          {/* {console.log(val)}   */}
                           <td>
                             {
                               <LazyLoadImage
@@ -624,27 +519,6 @@ const Users: React.FC = (): JSX.Element => {
                           </td>
 
                           <td className={"tdAction"}>
-                            {/* {JSON.stringify(compareDate(val?.membership?.expire_at))} */}
-                            {/* <div
-                              className={
-                                val?.is_premium === 1 &&
-                                compareDate(val?.membership?.expire_at)
-                                  ? "manageStatus managePremium  active"
-                                  : "manageStatus managePremium  inactive"
-                              }
-                              onClick={() =>
-                                openPremiumModal(
-                                  val?._id,
-                                  val?.is_premium,
-                                  compareDate(val?.membership?.expire_at)
-                                )
-                              }
-                            >
-                              {val?.is_premium === 1 &&
-                              compareDate(val?.membership?.expire_at)
-                                ? "Unmark Premium"
-                                : "Mark Premium"}
-                            </div> */}
                             <div className="d-flex">
                               <i
                                 title={

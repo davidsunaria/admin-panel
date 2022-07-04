@@ -55,3 +55,10 @@ export interface IEventGroups extends IUsersProps {
   id?: string;
   name?: string;
 }
+
+export interface IImageOptions{
+  type: string,
+  width: number,
+  height?:number
+}
+
