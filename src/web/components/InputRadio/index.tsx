@@ -1,10 +1,6 @@
 import React,{useCallback} from "react";
 import { Field,ErrorMessage } from 'formik';
-interface RadioInputValue {
-    name: string;
-    value: string;
-    label: string;
-}
+import { RadioInputValue} from "react-app-interfaces";
 interface IInputRadio {
     heading?:string,
     values: Array<RadioInputValue>;

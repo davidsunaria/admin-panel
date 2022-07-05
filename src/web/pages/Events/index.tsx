@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import CustomSuspense from "../../components/CustomSuspense";
 import { useStoreActions, useStoreState } from "react-app-store";
-import { IUsers, IEnableDisable, IPagination } from "react-app-interfaces";
+import { IUsers, IEnableDisable,IImageOptions} from "react-app-interfaces";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ConfirmAlert from "../../components/ConfirmAlert";
 import { confirmAlert } from "react-confirm-alert";
@@ -41,25 +41,11 @@ const Events: React.FC = (): JSX.Element => {
   }, []);
 
   const [formData, setFormData] = useState<IUsers>(userInititalState);
-  const [pagination, setPagination] = useState<IPagination>();
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [data, setData] = useState<Array<any>>([]);
-  const [currentEventId, setCurrentEventId] = useState<String>("");
-  const [currentEventStatus, setCurrentEventStatus] = useState<String>("");
-  const [currentUserId, setCurrentUserId] = useState<String>("");
-  const [currentUserStatus, setCurrentUserStatus] = useState<String | number>(
-    ""
-  );
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
   const response = useStoreState((state) => state.event.response);
   const paginationObject= useStoreState((state) => state.event.paginationObject);
-  const isEnabledDisabled = useStoreState(
-    (state) => state.group.isEnabledDisabled
-  );
-  const deleteStatus = useStoreState((state) => state.event.deleteStatus);
   //Actions
-  const flushData = useStoreActions((actions) => actions.group.flushData);
   const getEvents = useStoreActions((actions) => actions.event.getEvents);
   const deleteEvent = useStoreActions((actions) => actions.event.deleteEvent);
   const enableDisable = useStoreActions(
@@ -69,24 +55,6 @@ const Events: React.FC = (): JSX.Element => {
   const getGroupData = useCallback(async (payload: IUsers) => {
     await getEvents({ url: "event/get-all-events", payload });
   }, []);
-
-  // useEffect(() => {
-  //   //console.log('Response', response);
-  //   if (response?.data) {
-  //     const {
-  //       data,
-  //       pagination: [paginationObject],
-  //     } = response;
-  //     setPagination(paginationObject);
-  //     setCurrentPage(paginationObject?.currentPage);
-
-  //     if (paginationObject?.currentPage === 1 || !paginationObject) {
-  //       setData(data);
-  //     } else {
-  //       setData((_: any) => [..._, ...data]);
-  //     }
-  //   }
-  // }, [response]);
 
   const onSearch = useCallback((payload: IUsers) => {
     setFormData((_) => ({
@@ -109,15 +77,13 @@ const Events: React.FC = (): JSX.Element => {
   }, [formData]);
 
   const loadMore = useCallback(() => {
-    setFormData((_) => ({
+    setFormData((_:IUsers) => ({
       ..._,
       page: parseInt((_.page ?? 1)?.toString()) + 1,
     }));
   }, []);
 
   const onYes = useCallback(async (id: string, status: string | number) => {
-    setCurrentUserId(id);
-    setCurrentUserStatus(status);
     const payload: IEnableDisable = {
       _id: id,
       type: "event",
@@ -127,10 +93,7 @@ const Events: React.FC = (): JSX.Element => {
   }, []);
 
   const eventDelete = useCallback(
-    async (id: string, status: any) => {
-      console.log("event status",status)
-      setCurrentEventId(id);
-       setCurrentEventStatus(status);
+    async (id: string) => {
       const payload: IEnableDisable = {
         _id: id,
       };
@@ -156,7 +119,7 @@ const Events: React.FC = (): JSX.Element => {
             onYes={
               status !== "delete"
                 ? () => onYes(id, status)
-                : () => eventDelete(id, status)
+                : () => eventDelete(id)
             }
             heading="Are you sure?"
             subHeading={text}
@@ -168,7 +131,7 @@ const Events: React.FC = (): JSX.Element => {
     });
   }, []);
 
-  const getImageUrl = (url: string, options: any) => {
+  const getImageUrl = (url: string, options: IImageOptions) => {
     return (
       `${env?.REACT_APP_MEDIA_URL}` +
       options?.type +
@@ -180,44 +143,6 @@ const Events: React.FC = (): JSX.Element => {
       (options?.height || "")
     );
   };
-
-  // useEffect(() => {
-  //   async function changeData() {
-  //     let localStateData = [...data];
-  //     let index = localStateData.findIndex(
-  //       (item) => item._id === currentUserId
-  //     );
-  //     localStateData[index].status = currentUserStatus === 1 ? 0 : 1;
-  //     //console.log('localStateData', localStateData);
-  //     setData(localStateData);
-  //     await flushData();
-  //   }
-  //   if (isEnabledDisabled && isEnabledDisabled === true) {
-  //     changeData();
-  //     setCurrentUserId("");
-  //     setCurrentUserStatus("");
-  //   }
-  // }, [isEnabledDisabled]);
-
-  // useEffect(() => {
-  //   async function changeData() {
-  //     //console.log("change data",isPremium)
-  //     let localStateData = [...data];
-  //     let index = localStateData.findIndex(
-  //       (item) => item._id === currentEventId
-  //     );
-  //     localStateData[index].status =
-  //     currentEventStatus === "delete" ? 0 : 1;
-  //     localStateData.splice(index, 1);
-  //     setData(localStateData);
-  //     await flushData();
-  //   }
-  //   if (deleteStatus && deleteStatus === true) {
-  //     changeData();
-  //     setCurrentEventId("");
-  //     setCurrentEventStatus("");
-  //   }
-  // }, [deleteStatus]);
   return (
     <>
       <div className="Content">

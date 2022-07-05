@@ -1,6 +1,6 @@
 import React, {  useCallback, useEffect, useState, useMemo } from 'react';
 import { useStoreActions, useStoreState } from 'react-app-store';
-import { IUsers, IEnableDisable, IPagination } from 'react-app-interfaces';
+import { IUsers, IEnableDisable, IImageOptions } from 'react-app-interfaces';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ConfirmAlert from '../../components/ConfirmAlert';
 import { confirmAlert } from 'react-confirm-alert';
@@ -38,42 +38,18 @@ const ReportedEvents: React.FC = (): JSX.Element => {
 
 
   const [formData, setFormData] = useState<IUsers>(userInititalState);
-  const [pagination, setPagination] = useState<IPagination>();
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [data, setData] = useState<Array<any>>([]);
-  const [currentUserId, setCurrentUserId] = useState<String>("");
-  const [currentUserStatus, setCurrentUserStatus] = useState<String | number>("");
   //State
   const isLoading = useStoreState(state => state.common.isLoading);
   const response = useStoreState(state => state.reportedResource.reportedEventsResponse);
-  const isEnabledDisabled = useStoreState(state => state.reportedResource.isEnabledDisabled);
   const paginationObject = useStoreState(state => state.reportedResource.paginationObject);
   
   //Actions
-  const flushData = useStoreActions(actions => actions.reportedResource.flushData);
   const getReportedEvents = useStoreActions(actions => actions.reportedResource.getReportedEvents);
   const enableDisable = useStoreActions(actions => actions.reportedResource.enableDisable);
 
   const getEvents = useCallback(async (payload: IUsers) => {
     await getReportedEvents({ url: "resource/get-reported-resources", payload });
   }, []);
-
-  useEffect(() => {
-    //console.log('Response', response);
-    if (response?.data) {
-      const { data, pagination: [paginationObject] } = response;
-      setPagination(paginationObject);
-      setCurrentPage(paginationObject?.currentPage);
-
-
-      if (paginationObject?.currentPage === 1 || !paginationObject) {
-        setData(data);
-      }
-      else {
-        setData((_: any) => [..._, ...data]);
-      }
-    }
-  }, [response]);
 
   const onSearch = useCallback((payload: IUsers) => {
     setFormData(_ => ({ ..._, ...payload, page: env?.REACT_APP_FIRST_PAGE, limit: env?.REACT_APP_PER_PAGE }));
@@ -95,8 +71,6 @@ const ReportedEvents: React.FC = (): JSX.Element => {
   }, []);
 
   const onYes = useCallback(async (id: string, is_blocked_by_admin: string | number) => {
-    // setCurrentUserId(id);
-    // setCurrentUserStatus(is_blocked_by_admin);
     const payload: IEnableDisable = {
       _id: id, type: "event", is_blocked_by_admin: is_blocked_by_admin === 1 ? 0 : 1
     }
@@ -120,25 +94,10 @@ const ReportedEvents: React.FC = (): JSX.Element => {
     });
   }, []);
 
-  const getImageUrl = (url: string, options: any) => {
+  const getImageUrl = (url: string, options: IImageOptions) => {
     return `${env?.REACT_APP_MEDIA_URL}` + options?.type + "/" + url + "?width=" + options?.width + "&height=" + (options?.height || "")
   }
 
-  // useEffect(() => {
-  //   async function changeData() {
-  //     let localStateData = [...data];
-  //     let index = localStateData.findIndex(item => item.reported_events._id === currentUserId);
-  //     localStateData[index].reported_events.is_blocked_by_admin = currentUserStatus === 1 ? 0 : 1;
-  //     //console.log('localStateData', localStateData);
-  //     setData(localStateData);
-  //     await flushData();
-  //   }
-  //   if (isEnabledDisabled && isEnabledDisabled === true) {
-  //     changeData();
-  //     setCurrentUserId("");
-  //     setCurrentUserStatus("");
-  //   }
-  // }, [isEnabledDisabled]);
   return (
     <>
       <div className="Content">

@@ -68,11 +68,11 @@ const user: UserModel = {
   setResponse: action((state, payload) => {
     state.response = payload;
   }),
-  
+
   setExportedExcelData: action((state, payload) => {
     state.exportedExcelData = payload;
   }),
-  
+
   setPremium: action((state, payload) => {
     state.isPremium = payload;
   }),
@@ -82,7 +82,7 @@ const user: UserModel = {
   setDeleteStatus: action((state, payload) => {
     state.deleteStatus = payload;
   }),
- 
+
   setIsInvitationSend: action((state, payload) => {
     state.isInvitationSend = payload;
   }),
@@ -92,7 +92,7 @@ const user: UserModel = {
     state.exportedExcelData = [];
     state.deleteStatus = false;
   }),
- 
+
   reset: action((state) => (state = initialState)),
   flushExcelData: action((state, payload) => {
     state.exportedExcelData = [];
@@ -115,22 +115,35 @@ const user: UserModel = {
         toast.error(response.message);
         getStoreActions().common.setLoading(false);
       } else if (response && response.status === 200) {
-        const { currentPage } = response?.data.pagination.length
-          ? response?.data.pagination[0]
-          : undefined;
-        actions.setPaginationObject(
-          response?.data.pagination.length
-            ? response?.data.pagination[0]
-            : undefined
-        );
-        if (currentPage && currentPage === 1) {
-          actions.setResponse(response?.data?.data);
+        const { currentPage } =
+          response?.data.pagination.length > 0 && response?.data.pagination[0];
+        if (currentPage) {
+          actions.setPaginationObject(
+            response?.data.pagination.length > 0 && response?.data.pagination[0]
+          );
         } else {
-          actions.setResponse([
-            ...getState().response,
-            ...response?.data?.data,
-          ]);
+          actions.setPaginationObject({
+            total: 0,
+            currentPage: 0,
+            limit: 0,
+            pages: 0,
+            prevPage: null,
+            nextPage: null,
+          });
         }
+        if (response?.data?.data?.length !== 0) {
+          if (currentPage && currentPage === 1) {
+            actions.setResponse(response?.data?.data);
+          } else {
+            actions.setResponse([
+              ...getState().response,
+              ...response?.data?.data,
+            ]);
+          }
+        } else {
+          actions.setResponse([]);
+        }
+
         getStoreActions().common.setLoading(false);
       } else {
         getStoreActions().common.setLoading(false);

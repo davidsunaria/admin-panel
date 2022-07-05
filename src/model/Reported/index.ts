@@ -89,22 +89,36 @@ const reportedResource: ReportedModel = {
         toast.error(response.message);
         getStoreActions().common.setLoading(false);
       } else if (response && response.status === 200) {
-        const { currentPage } = response?.data.pagination.length
-          ? response?.data.pagination[0]
-          : undefined;
-        actions.setPaginationObject(
-          response?.data.pagination.length
-            ? response?.data.pagination[0]
-            : undefined
-        );
-        if (currentPage && currentPage === 1) {
-          actions.setReportedGroupResponse(response?.data?.data);
+        const { currentPage } =
+          response?.data.pagination.length > 0 && response?.data.pagination[0];
+        if (currentPage) {
+          actions.setPaginationObject(
+            response?.data.pagination.length > 0 && response?.data.pagination[0]
+          );
         } else {
-          actions.setReportedGroupResponse([
-            ...getState().reportedGroupsResponse,
-            ...response?.data?.data,
-          ]);
+          actions.setPaginationObject({
+            total: 0,
+            currentPage: 0,
+            limit: 0,
+            pages: 0,
+            prevPage: null,
+            nextPage: null,
+          });
         }
+
+        if (response?.data?.data?.length > 0) {
+          if (currentPage && currentPage === 1) {
+            actions.setReportedGroupResponse(response?.data?.data);
+          } else {
+            actions.setReportedGroupResponse([
+              ...getState().reportedGroupsResponse,
+              ...response?.data?.data,
+            ]);
+          }
+        } else {
+          actions.setReportedGroupResponse([]);
+        }
+
         getStoreActions().common.setLoading(false);
       } else {
         getStoreActions().common.setLoading(false);
@@ -128,22 +142,35 @@ const reportedResource: ReportedModel = {
         toast.error(response.message);
         getStoreActions().common.setLoading(false);
       } else if (response && response.status === 200) {
-        const { currentPage } = response?.data.pagination.length
-          ? response?.data.pagination[0]
-          : undefined;
-        actions.setPaginationObject(
-          response?.data.pagination.length
-            ? response?.data.pagination[0]
-            : undefined
-        );
-        if (currentPage && currentPage === 1) {
-          actions.setReportedUsersResponse(response?.data?.data);
+        const { currentPage } =
+          response?.data.pagination.length > 0 && response?.data.pagination[0];
+        if (currentPage) {
+          actions.setPaginationObject(
+            response?.data.pagination.length > 0 && response?.data.pagination[0]
+          );
         } else {
-          actions.setReportedUsersResponse([
-            ...getState().reportedUsersResponse,
-            ...response?.data?.data,
-          ]);
+          actions.setPaginationObject({
+            total: 0,
+            currentPage: 0,
+            limit: 0,
+            pages: 0,
+            prevPage: null,
+            nextPage: null,
+          });
         }
+        if (response?.data?.data?.length !== 0) {
+          if (currentPage && currentPage === 1) {
+            actions.setReportedUsersResponse(response?.data?.data);
+          } else {
+            actions.setReportedUsersResponse([
+              ...getState().reportedUsersResponse,
+              ...response?.data?.data,
+            ]);
+          }
+        } else {
+          actions.setReportedUsersResponse([]);
+        }
+
         getStoreActions().common.setLoading(false);
       } else {
         getStoreActions().common.setLoading(false);
@@ -167,21 +194,33 @@ const reportedResource: ReportedModel = {
         toast.error(response?.message);
         getStoreActions().common.setLoading(false);
       } else if (response && response.status === 200) {
-        const { currentPage } = response?.data.pagination.length
-          ? response?.data.pagination[0]
-          : undefined;
-        actions.setPaginationObject(
-          response?.data.pagination.length
-            ? response?.data.pagination[0]
-            : undefined
-        );
-        if (currentPage && currentPage === 1) {
-          actions.setReportedEventsResponse(response?.data?.data);
+        const { currentPage } =
+          response?.data.pagination.length > 0 && response?.data.pagination[0];
+        if (currentPage) {
+          actions.setPaginationObject(
+            response?.data.pagination.length > 0 && response?.data.pagination[0]
+          );
         } else {
-          actions.setReportedEventsResponse([
-            ...getState().reportedEventsResponse,
-            ...response?.data?.data,
-          ]);
+          actions.setPaginationObject({
+            total: 0,
+            currentPage: 0,
+            limit: 0,
+            pages: 0,
+            prevPage: null,
+            nextPage: null,
+          });
+        }
+        if (response?.data?.data?.length !== 0) {
+          if (currentPage && currentPage === 1) {
+            actions.setReportedEventsResponse(response?.data?.data);
+          } else {
+            actions.setReportedEventsResponse([
+              ...getState().reportedEventsResponse,
+              ...response?.data?.data,
+            ]);
+          }
+        } else {
+          actions.setReportedEventsResponse([]);
         }
         getStoreActions().common.setLoading(false);
       } else {
@@ -205,7 +244,14 @@ const reportedResource: ReportedModel = {
             let localUserStateData = [...getState()?.reportedUsersResponse];
             let updatedUserData = localUserStateData.map((val) =>
               val?._id === payload?.payload?._id
-                ? { ...val, reported_users:{...val?.reported_users,is_blocked_by_admin: payload?.payload?.is_blocked_by_admin } }
+                ? {
+                    ...val,
+                    reported_users: {
+                      ...val?.reported_users,
+                      is_blocked_by_admin:
+                        payload?.payload?.is_blocked_by_admin,
+                    },
+                  }
                 : val
             );
             //actions.setEnabledDisabled(true);
@@ -214,26 +260,37 @@ const reportedResource: ReportedModel = {
           case "group":
             let localGroupsStateData = [...getState()?.reportedGroupsResponse];
             let updatedGroupsData = localGroupsStateData.map((val) =>
-            val?._id === payload?.payload?._id
-                ? {...val,reported_groups:{...val?.reported_groups,is_blocked_by_admin: payload?.payload?.is_blocked_by_admin }}
+              val?._id === payload?.payload?._id
+                ? {
+                    ...val,
+                    reported_groups: {
+                      ...val?.reported_groups,
+                      is_blocked_by_admin:
+                        payload?.payload?.is_blocked_by_admin,
+                    },
+                  }
                 : val
-              
             );
             //actions.setEnabledDisabled(true);
             actions.setReportedGroupResponse(updatedGroupsData);
             break;
-            case "event":
-         
+          case "event":
             let localEventsStateData = [...getState()?.reportedEventsResponse];
             let updatedEventsData = localEventsStateData.map((val) =>
               val?._id === payload?.payload?._id
-                ? { ...val, reported_events:{...val?.reported_events,is_blocked_by_admin: payload?.payload?.is_blocked_by_admin } }
+                ? {
+                    ...val,
+                    reported_events: {
+                      ...val?.reported_events,
+                      is_blocked_by_admin:
+                        payload?.payload?.is_blocked_by_admin,
+                    },
+                  }
                 : val
             );
             //actions.setEnabledDisabled(true);
             actions.setReportedEventsResponse(updatedEventsData);
             break;
-            
         }
 
         //actions.flushData();

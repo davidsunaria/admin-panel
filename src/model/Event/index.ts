@@ -8,8 +8,6 @@ import { IPayload } from "react-app-interfaces";
 const initialState = {
   response: [],
   groups: {},
-  isEnabledDisabled: false,
-  deleteStatus: false,
   paginationObject: {
     total: 0,
     currentPage: 0,
@@ -32,15 +30,10 @@ export interface EventModel {
   response: string | object | any;
   paginationObject: IPaginate;
   groups: string | object | any;
-  isEnabledDisabled: boolean;
-  deleteStatus: boolean;
   //**************State Actions************///
-  flushData: Action<EventModel>;
-  setEnabledDisabled: Action<EventModel, boolean>;
   setResponse: Action<EventModel, object | any>;
   setGroups: Action<EventModel, object | any>;
   reset: Action<EventModel>;
-  setDeleteStatus: Action<EventModel, object | any>;
   setPaginationObject: Action<EventModel, IPaginate>;
   //**************State  Actions************///
 
@@ -63,16 +56,6 @@ const event: EventModel = {
   setGroups: action((state, payload) => {
     state.groups = payload;
   }),
-  flushData: action((state, payload) => {
-    state.isEnabledDisabled = false;
-    state.deleteStatus = false;
-  }),
-  setEnabledDisabled: action((state, payload) => {
-    state.isEnabledDisabled = payload;
-  }),
-  setDeleteStatus: action((state, payload) => {
-    state.deleteStatus = payload;
-  }),
 
   reset: action((state) => (state = initialState)),
 
@@ -91,22 +74,35 @@ const event: EventModel = {
         toast.error(response?.message);
         getStoreActions().common.setLoading(false);
       } else if (response && response.status === 200) {
-        const { currentPage } = response?.data.pagination.length
-          ? response?.data.pagination[0]
-          : undefined;
-        actions.setPaginationObject(
-          response?.data.pagination.length
-            ? response?.data.pagination[0]
-            : undefined
-        );
-        if (currentPage && currentPage === 1) {
-          actions.setResponse(response?.data?.data);
+        const { currentPage } =
+          response?.data.pagination.length > 0 && response?.data.pagination[0];
+        if (currentPage) {
+          actions.setPaginationObject(
+            response?.data.pagination.length > 0 && response?.data.pagination[0]
+          );
         } else {
-          actions.setResponse([
-            ...getState().response,
-            ...response?.data?.data,
-          ]);
+          actions.setPaginationObject({
+            total: 0,
+            currentPage: 0,
+            limit: 0,
+            pages: 0,
+            prevPage: null,
+            nextPage: null,
+          });
         }
+        if (response?.data?.data?.length !== 0) {
+          if (currentPage && currentPage === 1) {
+            actions.setResponse(response?.data?.data);
+          } else {
+            actions.setResponse([
+              ...getState().response,
+              ...response?.data?.data,
+            ]);
+          }
+        } else {
+          actions.setResponse([]);
+        }
+
         getStoreActions().common.setLoading(false);
       } else {
         getStoreActions().common.setLoading(false);
@@ -116,9 +112,8 @@ const event: EventModel = {
   ),
 
   enableDisable: thunk<EventModel, IPayload, any, StoreModel>(
-    async (actions, payload: IPayload, { getStoreActions,getState }) => {
+    async (actions, payload: IPayload, { getStoreActions, getState }) => {
       getStoreActions().common.setLoading(true);
-      actions.setEnabledDisabled(false);
       let response = await postApi(payload);
       if (response && response.status !== 200) {
         toast.error(response?.message);
@@ -130,13 +125,10 @@ const event: EventModel = {
             ? { ...val, status: payload?.payload?.status }
             : val
         );
-        actions.setEnabledDisabled(true);
         actions.setResponse(updatedData);
-        actions.flushData();
         //await actions.updateResponse(payload?.payload);
         toast.success(response.message);
         getStoreActions().common.setLoading(false);
-       // actions.setEnabledDisabled(true);
       } else {
         getStoreActions().common.setLoading(false);
         return true;
@@ -144,9 +136,8 @@ const event: EventModel = {
     }
   ),
   deleteEvent: thunk<EventModel, IPayload, any, StoreModel>(
-    async (actions, payload: IPayload, { getStoreActions ,getState}) => {
+    async (actions, payload: IPayload, { getStoreActions, getState }) => {
       getStoreActions().common.setLoading(true);
-      actions.setDeleteStatus(false);
       let response = await postApi(payload);
       if (response && response.status !== 200) {
         toast.error(response?.message);

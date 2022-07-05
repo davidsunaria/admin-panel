@@ -51,10 +51,10 @@ interface IResponse {
 export interface DashboardModel {
   subscribersCount: string | number;
   membersCount: string | number;
-  numberOfEventsPerGroup: object | any;
-  numberOfMembersPerGroup: object | any;
+  numberOfEventsPerGroup: IResponse | any;
+  numberOfMembersPerGroup: IResponse | any;
   numberOfMembersPerEvent: any;
-  postPerMember: object | any;
+  postPerMember: IResponse | any;
   isMembersPerResourceLoading: boolean;
   isEventPerGroupLoading: boolean;
   isSubscriberLoading: boolean;
@@ -219,20 +219,36 @@ const dashboard: DashboardModel = {
         toast.error(response?.message);
         actions.setEventPerGroupLoading(false);
       } else if (response && response?.status === 200) {
-        const { currentPage } = response?.data.pagination.length
-          ? response?.data.pagination[0]
-          : undefined;
-        if (currentPage && currentPage === 1) {
-          actions.setNumberOfEventPerGroup(response?.data);
+        const { currentPage } =
+          response?.data.pagination.length > 0 && response?.data.pagination[0];
+        if (response?.data?.data?.length !== 0) {
+          if (currentPage && currentPage === 1) {
+            actions.setNumberOfEventPerGroup(response?.data);
+          } else {
+            actions.setNumberOfEventPerGroup({
+              pagination: response?.data?.pagination,
+              data: [
+                ...getState().numberOfEventsPerGroup?.data,
+                ...response?.data?.data,
+              ],
+            });
+          }
         } else {
           actions.setNumberOfEventPerGroup({
-            pagination: response?.data?.pagination,
-            data: [
-              ...getState().numberOfEventsPerGroup?.data,
-              ...response?.data?.data,
+            pagination: [
+              {
+                total: 0,
+                currentPage: 0,
+                limit: 0,
+                pages: 0,
+                prevPage: null,
+                nextPage: null,
+              },
             ],
+            data: [],
           });
         }
+
         //actions.setNumberOfEventPerGroup(response?.data);
         actions.setEventPerGroupLoading(false);
       } else {
@@ -265,34 +281,66 @@ const dashboard: DashboardModel = {
         actions.setMembersPerResourceLoading(false);
       } else if (response && response?.status === 200) {
         if (payload.payload.resource_type === "group") {
-          const { currentPage } = response?.data.pagination.length
-            ? response?.data.pagination[0]
-            : undefined;
-          if (currentPage && currentPage === 1) {
-            actions.setNumberOfMemberPerGroup(response?.data);
+          const { currentPage } =
+            response?.data.pagination.length > 0 &&
+            response?.data.pagination[0];
+          if (response?.data?.data?.length !== 0) {
+            if (currentPage && currentPage === 1) {
+              actions.setNumberOfMemberPerGroup(response?.data);
+            } else {
+              actions.setNumberOfMemberPerGroup({
+                pagination: response?.data?.pagination,
+                data: [
+                  ...getState().numberOfMembersPerGroup?.data,
+                  ...response?.data?.data,
+                ],
+              });
+            }
           } else {
             actions.setNumberOfMemberPerGroup({
-              pagination: response?.data?.pagination,
-              data: [
-                ...getState().numberOfMembersPerGroup?.data,
-                ...response?.data?.data,
+              pagination: [
+                {
+                  total: 0,
+                  currentPage: 0,
+                  limit: 0,
+                  pages: 0,
+                  prevPage: null,
+                  nextPage: null,
+                },
               ],
+              data: [],
             });
           }
         }
         if (payload.payload.resource_type === "event") {
-          const { currentPage } = response?.data.pagination.length
-            ? response?.data.pagination[0]
-            : undefined;
-          if (currentPage && currentPage === 1) {
-            actions.setNumberOfMembersPerEvent(response?.data);
+          const { currentPage } =
+            response?.data.pagination.length > 0 &&
+            response?.data.pagination[0];
+          if (response?.data?.data?.length !== 0) {
+            if (currentPage && currentPage === 1) {
+              actions.setNumberOfMembersPerEvent(response?.data);
+            } else {
+              actions.setNumberOfMembersPerEvent({
+                pagination: response?.data?.pagination,
+                data: [
+                  ...getState().numberOfMembersPerEvent?.data,
+                  ...response?.data?.data,
+                ],
+              });
+            }
           } else {
             actions.setNumberOfMembersPerEvent({
-              pagination: response?.data?.pagination,
-              data: [
-                ...getState().numberOfMembersPerEvent?.data,
-                ...response?.data?.data,
+              pagination: [
+                {
+                  total: 0,
+                  currentPage: 0,
+                  limit: 0,
+                  pages: 0,
+                  prevPage: null,
+                  nextPage: null,
+                },
               ],
+              data: [],
             });
           }
         }
@@ -321,17 +369,36 @@ const dashboard: DashboardModel = {
         toast.error(response?.message);
         actions.setPostPerMemberLoading(false);
       } else if (response && response?.status === 200) {
-        const { currentPage } = response?.data.pagination.length
-          ? response?.data.pagination[0]
-          : undefined;
-        if (currentPage && currentPage === 1) {
-          actions.setPostPerMember(response?.data);
+        const { currentPage } =
+          response?.data.pagination.length > 0 && response?.data.pagination[0];
+        if (response?.data?.data?.length !== 0) {
+          if (currentPage && currentPage === 1) {
+            actions.setPostPerMember(response?.data);
+          } else {
+            actions.setPostPerMember({
+              pagination: response?.data?.pagination,
+              data: [
+                ...getState().postPerMember?.data,
+                ...response?.data?.data,
+              ],
+            });
+          }
         } else {
           actions.setPostPerMember({
-            pagination: response?.data?.pagination,
-            data: [...getState().postPerMember?.data, ...response?.data?.data],
+            pagination: [
+              {
+                total: 0,
+                currentPage: 0,
+                limit: 0,
+                pages: 0,
+                prevPage: null,
+                nextPage: null,
+              },
+            ],
+            data: [],
           });
         }
+
         // actions.setPostPerMember(response?.data);
         actions.setPostPerMemberLoading(false);
       } else {
@@ -356,12 +423,11 @@ const dashboard: DashboardModel = {
         toast.error(response?.message);
         actions.setPaypalVsCashLoading(false);
       } else if (response && response?.status === 200) {
-        console.log("paypall respomse", response.data);
         let sum = _.sumBy(response?.data, "total");
-        actions.setTotalSum(sum)
+        actions.setTotalSum(sum);
         response?.data &&
           response?.data?.length > 0 &&
-          response?.data?.forEach((val: any, i: any) => {
+          response?.data?.forEach((val: any) => {
             if (val?._id === "cash") {
               actions.setPayPalCashAmount({
                 ...getState().paypalCash,

@@ -7,9 +7,6 @@ import { IPayload } from "react-app-interfaces";
 
 const initialState = {
   response: [],
-  isEnabledDisabled: false,
-  isLockedUnlocked: false,
-  deleteStatus: false,
   paginationObject: {
     total: 0,
     currentPage: 0,
@@ -31,18 +28,11 @@ interface IPaginate {
 
 export interface GroupModel {
   response: string | object | any;
-  isEnabledDisabled: boolean;
-  isLockedUnlocked: boolean;
-  deleteStatus: boolean;
   paginationObject: IPaginate;
 
   //**************State Actions************///
-  flushData: Action<GroupModel>;
-  setEnabledDisabled: Action<GroupModel, boolean>;
-  setLockedUnlocked: Action<GroupModel, boolean>;
   reset: Action<GroupModel>;
   setResponse: Action<GroupModel, object | any>;
-  setDeleteStatus: Action<GroupModel, object | any>;
   //**************State  Actions************///
 
   //**************Thunk Actions************///
@@ -64,20 +54,6 @@ const group: GroupModel = {
   }),
 
   reset: action((state) => (state = initialState)),
-  flushData: action((state, payload) => {
-    state.isEnabledDisabled = false;
-    state.isLockedUnlocked = false;
-    state.deleteStatus = false;
-  }),
-  setEnabledDisabled: action((state, payload) => {
-    state.isEnabledDisabled = payload;
-  }),
-  setLockedUnlocked: action((state, payload) => {
-    state.isLockedUnlocked = payload;
-  }),
-  setDeleteStatus: action((state, payload) => {
-    state.deleteStatus = payload;
-  }),
   getGroups: thunk<GroupModel, IPayload, any, StoreModel>(
     async (actions, payload: IPayload, { getStoreActions, getState }) => {
       if (
@@ -93,23 +69,35 @@ const group: GroupModel = {
         toast.error(response.message);
         getStoreActions().common.setLoading(false);
       } else if (response && response.status === 200) {
-        let { currentPage } = response?.data.pagination.length
-          ? response?.data.pagination[0]
-          : undefined;
-
-        actions.setPaginationObject(
-          response?.data.pagination.length
-            ? response?.data.pagination[0]
-            : undefined
-        );
-        if (currentPage && currentPage === 1) {
-          actions.setResponse(response?.data?.data);
+        const { currentPage } =
+          response?.data.pagination.length > 0 && response?.data.pagination[0];
+        if (currentPage) {
+          actions.setPaginationObject(
+            response?.data.pagination.length > 0 && response?.data.pagination[0]
+          );
         } else {
-          actions.setResponse([
-            ...getState().response,
-            ...response?.data?.data,
-          ]);
+          actions.setPaginationObject({
+            total: 0,
+            currentPage: 0,
+            limit: 0,
+            pages: 0,
+            prevPage: null,
+            nextPage: null,
+          });
         }
+        if (response?.data?.data?.length !== 0) {
+          if (currentPage && currentPage === 1) {
+            actions.setResponse(response?.data?.data);
+          } else {
+            actions.setResponse([
+              ...getState().response,
+              ...response?.data?.data,
+            ]);
+          }
+        } else {
+          actions.setResponse([]);
+        }
+
         getStoreActions().common.setLoading(false);
       } else {
         getStoreActions().common.setLoading(false);
@@ -121,7 +109,6 @@ const group: GroupModel = {
   enableDisable: thunk<GroupModel, IPayload, any, StoreModel>(
     async (actions, payload: IPayload, { getStoreActions, getState }) => {
       getStoreActions().common.setLoading(true);
-      actions.setEnabledDisabled(false);
       let response = await postApi(payload);
       if (response && response.status !== 200) {
         toast.error(response.message);
@@ -133,9 +120,7 @@ const group: GroupModel = {
             ? { ...val, status: payload?.payload?.status }
             : val
         );
-        actions.setEnabledDisabled(true);
         actions.setResponse(updatedData);
-        actions.flushData();
         //await actions.updateResponse(payload?.payload);
         toast.success(response.message);
         getStoreActions().common.setLoading(false);
@@ -147,9 +132,8 @@ const group: GroupModel = {
   ),
 
   lockedUnlocked: thunk<GroupModel, IPayload, any, StoreModel>(
-    async (actions, payload: IPayload, { getStoreActions,getState }) => {
+    async (actions, payload: IPayload, { getStoreActions, getState }) => {
       getStoreActions().common.setLoading(true);
-      actions.setLockedUnlocked(false);
       let response = await postApi(payload);
       if (response && response.status !== 200) {
         toast.error(response.message);
@@ -161,12 +145,9 @@ const group: GroupModel = {
             ? { ...val, restriction_mode: payload?.payload?.restriction_mode }
             : val
         );
-       // actions.setEnabledDisabled(true);
         actions.setResponse(updatedData);
-        actions.flushData();
         toast.success(response.message);
         getStoreActions().common.setLoading(false);
-       // actions.setLockedUnlocked(true);
       } else {
         getStoreActions().common.setLoading(false);
         return true;
@@ -176,7 +157,6 @@ const group: GroupModel = {
   deleteGroup: thunk<GroupModel, IPayload, any, StoreModel>(
     async (actions, payload: IPayload, { getStoreActions, getState }) => {
       getStoreActions().common.setLoading(true);
-      actions.setDeleteStatus(false);
       let response = await postApi(payload);
       if (response && response.status !== 200) {
         toast.error(response.message);
@@ -190,7 +170,6 @@ const group: GroupModel = {
         actions.setResponse(localStateData);
         toast.success(response.message);
         getStoreActions().common.setLoading(false);
-       // actions.setDeleteStatus(true);
       } else {
         getStoreActions().common.setLoading(false);
         return true;

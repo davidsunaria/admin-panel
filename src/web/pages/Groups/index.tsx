@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { useStoreActions, useStoreState } from "react-app-store";
-import { IUsers, IEnableDisable, ILockedGroup } from "react-app-interfaces";
+import { IUsers, IEnableDisable, ILockedGroup ,RadioInputValue,IImageOptions} from "react-app-interfaces";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ConfirmAlert from "../../components/ConfirmAlert";
 import CustomSuspense from "../../components/CustomSuspense";
@@ -66,7 +66,7 @@ const Groups: React.FC = (): JSX.Element => {
 
   const toggle = () => setIsOpen(!isOpen);
 
-  const openLockedPostingModal = async (id: string, restriction_mode: any) => {
+  const openLockedPostingModal = async (id: string, restriction_mode: string) => {
     toggle();
     setGroupId(id);
     setCurrentRestrictedMode(restriction_mode);
@@ -77,7 +77,7 @@ const Groups: React.FC = (): JSX.Element => {
   }, []);
 
   const onSearch = useCallback((payload: IUsers) => {
-    setFormData((_) => ({
+    setFormData((_:IUsers) => ({
       ..._,
       ...payload,
       page: env?.REACT_APP_FIRST_PAGE,
@@ -97,7 +97,7 @@ const Groups: React.FC = (): JSX.Element => {
   }, [formData]);
 
   const loadMore = useCallback(() => {
-    setFormData((_) => ({
+    setFormData((_:IUsers) => ({
       ..._,
       page: parseInt((_.page ?? 1)?.toString()) + 1,
     }));
@@ -151,14 +151,13 @@ const Groups: React.FC = (): JSX.Element => {
     });
   }, []);
 
-  const radioParameters: any = [
+  const radioParameters: RadioInputValue[] = [
     { value: "open", label: "Open", name: "restriction_mode" },
     { value: "subscribed", label: "Subscriber only", name: "restriction_mode" },
     { value: "admin", label: "Admin only", name: "restriction_mode" },
   ];
 
   const lockedGroupInititalState = useCallback((): ILockedGroup => {
-    console.log("hi");
     return {
       restriction_mode: currentRestrictedMode ?? "",
       _id: "",
@@ -212,7 +211,7 @@ const Groups: React.FC = (): JSX.Element => {
     );
   }, [currentRestrictedMode, isOpen]);
 
-  const getImageUrl = (url: string, options: any) => {
+  const getImageUrl = (url: string, options: IImageOptions) => {
     return (
       `${env?.REACT_APP_MEDIA_URL}` +
       options?.type +
