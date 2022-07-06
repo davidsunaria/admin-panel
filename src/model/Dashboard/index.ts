@@ -466,21 +466,36 @@ const dashboard: DashboardModel = {
         toast.error(response?.message);
         actions.setGroupEventByLocationLoading(false);
       } else if (response && response?.status === 200) {
-        const { currentPage } = response?.data.pagination.length
-          ? response?.data.pagination[0]
-          : undefined;
-        if (currentPage && currentPage === 1) {
-          actions.setGroupEventByLocation(response?.data);
+        const { currentPage } =
+          response?.data.pagination.length > 0 && response?.data.pagination[0];
+        if (response?.data?.data?.length !== 0) {
+          if (currentPage && currentPage === 1) {
+            actions.setGroupEventByLocation(response?.data);
+          } else {
+            actions.setGroupEventByLocation({
+              pagination: response?.data?.pagination,
+              data: [
+                ...getState().groupEventByLocation?.data,
+                ...response?.data?.data,
+              ],
+            });
+          }
         } else {
           actions.setGroupEventByLocation({
-            pagination: response?.data?.pagination,
-            data: [
-              ...getState().groupEventByLocation?.data,
-              ...response?.data?.data,
+            pagination: [
+              {
+                total: 0,
+                currentPage: 0,
+                limit: 0,
+                pages: 0,
+                prevPage: null,
+                nextPage: null,
+              },
             ],
+            data: [],
           });
         }
-        //  actions.setGroupEventByLocation(response?.data);
+
         actions.setGroupEventByLocationLoading(false);
       } else {
         actions.setGroupEventByLocationLoading(false);

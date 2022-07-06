@@ -29,8 +29,6 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
     ];
   }, []);
   const [params, setParams] = useState<IUsers>(inititalState);
- // const [data, setData] = useState<any[]>([]);
- // const [nextPage, setNextPage] = useState<number>(1);
 
   //State
   const { pagination, data } = useStoreState(
@@ -61,32 +59,12 @@ const GroupEventByLocation: React.FC = (): JSX.Element => {
     }
   }, [params]);
 
-  const getCity = useCallback((value: any) => {
+  const getCity = useCallback((value: string) => {
     setParams((_) => ({
       ..._,
       city: value,
     }));
   }, []);
-
-  // useEffect(() => {
-  //   if (groupEventByLocation?.data) {
-  //     const {
-  //       data,
-  //       pagination: [paginationObject],
-  //     } = groupEventByLocation;
-  //     setNextPage(paginationObject?.nextPage);
-     
-
-  //     if (paginationObject?.currentPage === 1 || !paginationObject) {
-  //       setData(data);
-  //     } 
-  //     else {
-  //       setData((_: any) => [..._, ...data]);
-  //     }
-  //   }
-  // }, [groupEventByLocation]);
-
-
   
   const listInnerRef = useRef(null);
   const onScroll = () => {
