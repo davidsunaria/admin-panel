@@ -8,4 +8,4 @@ permissions:
     pattern: "**"
     owner: ubuntu
     group: www-data
-    mode: 775
+    mode: 775 

@@ -7,6 +7,7 @@ import AppRouter from '../src/routes';
 import { BrowserRouter } from "react-router-dom"
 import { ToastContainer, Zoom } from 'react-toastify';
 import "./index.scss";
+
 function WaitForStateRehydration({ children }: {children: any}) {
   const isRehydrated = useStoreRehydrated();
   return isRehydrated ? children : null;

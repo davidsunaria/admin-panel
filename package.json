@@ -101,7 +101,7 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "build:local": "env-cmd -f .env node scripts/build.js",
-    "build:dev": "env-cmd -f .env.development node scripts/build.js",
+    "build:dev": "env-cmd -f .env.development node scripts/build.js && cp -R ./build ./pro-build/",
     "build:prod": "env-cmd -f .env.production node scripts/build.js"
   },
   "eslintConfig": {
