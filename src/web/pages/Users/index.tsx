@@ -18,9 +18,9 @@ import { useAuthValidation } from "../../../lib/validations/AuthSchema";
 import env from "../../../config";
 import DEFAULT_USER_IMG from "react-app-images/default_user.png";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from "moment"
-import { toUpperCase } from '../../../lib/utils/Service';
-
+import moment from "moment";
+import { toUpperCase } from "../../../lib/utils/Service";
+import { toast } from "react-toastify";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const NoRecord = React.lazy(() => import("../../components/NoRecord"));
@@ -48,7 +48,6 @@ const Users: React.FC = (): JSX.Element => {
       { key: "is_blocked_by_admin", value: "Blocked by admin" },
       { key: "status", value: "Status" },
       { key: "action", value: "Action" },
-    
     ];
   }, []);
   const userInititalState = useMemo(() => {
@@ -71,7 +70,7 @@ const Users: React.FC = (): JSX.Element => {
       type: "",
       is_premium: "",
       user_id: "",
-      expire_at: "",
+      expire_at_unix: "",
     };
   }, []);
   const [currentUserId, setCurrentUserId] = useState<String>("");
@@ -91,6 +90,7 @@ const Users: React.FC = (): JSX.Element => {
   const [userId, setUserId] = useState("");
   const [isPremium, setPremium] = useState<any>("");
   const [frequency, setFrequency] = useState<any>("");
+  const [expireAtUnix, setExpireAtUnix] = useState<number>(0);
 
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
@@ -122,7 +122,8 @@ const Users: React.FC = (): JSX.Element => {
   const openPremiumModal = async (
     id: string,
     is_premium: any,
-    expiredDate: any
+    expiredDate: any,
+    device: string
   ) => {
     togglePremium();
     setUserId(id);
@@ -132,18 +133,26 @@ const Users: React.FC = (): JSX.Element => {
     if (expiredDate === true) {
       setPremium("0");
     }
-    if (typeof expiredDate === "undefined") {
+    if (typeof expiredDate === undefined) {
       setPremium(is_premium === 0 ? "1" : "0");
     }
 
-    if (is_premium === 1 && expiredDate === true) {
+    if (is_premium === 1 && expiredDate === true && device === "web") {
       let payload = {
         user_id: id,
         is_premium: "0",
         type: "",
-        expire_at: "",
+        expire_at_unix: "",
       };
       await markAsPremium({ url: "user/mark-premium", payload });
+    } else if (
+      is_premium === 1 &&
+      expiredDate === true &&
+      (device === "ios" || device === "android")
+    ) {
+      toast.error("You cannot unmark premium");
+    } else if (is_premium === 1 && (device === "ios" || device === "android")) {
+      toast.error("You cannot mark premium");
     }
   };
   const togglePremium = () => {
@@ -273,7 +282,9 @@ const Users: React.FC = (): JSX.Element => {
       ...formData,
       user_id: userId,
       is_premium: isPremium,
+      expire_at_unix: (expireAtUnix * 1000).toString(),
     };
+    console.log(payload);
     await markAsPremium({ url: "user/mark-premium", payload });
   };
 
@@ -346,12 +357,21 @@ const Users: React.FC = (): JSX.Element => {
     { value: "yearly", label: "Yearly", name: "type" },
   ];
 
-  const compareDate = useCallback((date?: string) => {
-    if (date) {
+  const compareDate = useCallback((date?: any) => {
+    if (date?.expire_at_unix) {
+      const expireDate = date?.expire_at_unix;
+      if (moment().valueOf() > expireDate) {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (date?.expire_at) {
       const today = moment(moment(new Date()).format("YYYY-MM-DD")).unix();
-      const expireAt = moment(moment(date).format("YYYY-MM-DD")).unix();
+      const expireAt = moment(
+        moment(date?.expire_at).format("YYYY-MM-DD")
+      ).unix();
 
-      if (today > expireAt && date) {
+      if (today > expireAt && date?.expire_at) {
         return false;
       } else {
         return true;
@@ -361,19 +381,21 @@ const Users: React.FC = (): JSX.Element => {
   }, []);
   const getLanguage = useCallback((lang) => {
     switch (lang) {
-        case 'es':
-            return "Spanish"
-        default:
-            return "English"
+      case "es":
+        return "Spanish";
+      default:
+        return "English";
     }
+  }, []);
 
+  const getRadioValue = useCallback((event?: string) => {
+    //console.log("event new" ,event)
+    setFrequency(event);
+  }, []);
 
-}, [])
-
-const getRadioValue = useCallback((event?: string) => {
-  //console.log("event new" ,event)
-  setFrequency(event)
-}, []);
+  const unixDate = (data: any) => {
+    setExpireAtUnix(data);
+  };
 
   return (
     <>
@@ -452,6 +474,7 @@ const getRadioValue = useCallback((event?: string) => {
                   enableReinitialize={true}
                   initialValues={premiumInititalState()}
                   onSubmit={async (values) => {
+                    console.log("hii");
                     markPremium(values);
                   }}
                   validationSchema={PremiumSchema}
@@ -469,10 +492,11 @@ const getRadioValue = useCallback((event?: string) => {
                             />
                           </div>
                           <CustomDatePicker
-                            value={values?.expire_at}
+                            value={values?.expire_at_unix}
                             label="Expires on"
-                            name="expire_at"
+                            name="expire_at_unix"
                             props={props}
+                            unixDate={unixDate}
                             frequency={frequency}
                           />
                         </div>
@@ -540,33 +564,39 @@ const getRadioValue = useCallback((event?: string) => {
                           <td>{toUpperCase(val?.last_name)}</td>
                           <td>{val?.email || "-"}</td>
                           <td>{val?.username || "-"}</td>
-                          <td>{ moment(val?.created_at).format("YYYY-MM-DD") || "-"}</td>
-                          <td>{ moment(val?.last_seen).format(env?.REACT_APP_TIME_FORMAT) || "-"}</td>
-                          <td>{ getLanguage(val?.language)}</td>
+                          <td>
+                            {moment(val?.created_at).format("YYYY-MM-DD") ||
+                              "-"}
+                          </td>
+                          <td>
+                            {moment(val?.last_seen).format(
+                              env?.REACT_APP_TIME_FORMAT
+                            ) || "-"}
+                          </td>
+                          <td>{getLanguage(val?.language)}</td>
                           <td>
                             <div
                               className={
                                 val?.is_premium === 1 &&
-                                compareDate(val?.membership?.expire_at)
+                                compareDate(val?.membership)
                                   ? "manageStatus manageExpire active"
                                   : "manageStatus  manageExpire inactive"
                               }
                             >
                               {val?.is_premium === 1 &&
                                 val?.membership &&
-                                compareDate(val?.membership?.expire_at) &&
+                                compareDate(val?.membership) &&
                                 "Yes"}
                               {val?.is_premium === 0 &&
-                                typeof val?.membership === "undefined" &&
+                                !val?.membership &&
                                 "No"}
                               {val?.is_premium === 1 &&
-                                typeof val?.membership !== "undefined" &&
-                                !compareDate(val?.membership?.expire_at) &&
+                                val?.membership &&
+                                !compareDate(val?.membership) &&
                                 "No(expired)"}
                             </div>
                           </td>
-                         
-                        
+
                           <td>
                             <div
                               className={
@@ -619,42 +649,41 @@ const getRadioValue = useCallback((event?: string) => {
                                 ? "Unmark Premium"
                                 : "Mark Premium"}
                             </div> */}
-                             <div className="d-flex">
-                            <i
-                              title={
-                                val?.is_premium === 1 &&
-                                compareDate(val?.membership?.expire_at)
-                                  ? "Unmark Premium"
-                                  : "Mark Premium"
-                              }
-                              className={`bi bi-star-fill ${
-                                val?.is_premium === 1 &&
-                                compareDate(val?.membership?.expire_at)
-                                  ? "success"
-                                  : "danger"
-                              }`}
-                              onClick={() =>
-                                openPremiumModal(
-                                  val?._id,
-                                  val?.is_premium,
-                                  compareDate(val?.membership?.expire_at)
-                                )
-                              }
-                            />
+                            <div className="d-flex">
+                              <i
+                                title={
+                                  val?.is_premium === 1 &&
+                                  compareDate(val?.membership)
+                                    ? "Unmark Premium"
+                                    : "Mark Premium"
+                                }
+                                className={`bi bi-star-fill ${
+                                  val?.is_premium === 1 &&
+                                  compareDate(val?.membership)
+                                    ? "success"
+                                    : "danger"
+                                }`}
+                                onClick={() =>
+                                  openPremiumModal(
+                                    val?._id,
+                                    val?.is_premium,
+                                    compareDate(val?.membership),
+                                    val?.membership?.device
+                                  )
+                                }
+                              />
 
-                            <i
-                              title="Delete user"
-                              className="bi  bi-trash"
-                              onClick={() =>
-                                manageAction(val?._id, "delete")
-                              }
-                            />
+                              <i
+                                title="Delete user"
+                                className="bi  bi-trash"
+                                onClick={() => manageAction(val?._id, "delete")}
+                              />
                             </div>
                           </td>
                         </tr>
                       ))
                     ) : (
-                      <NoRecord colspan={12}/>
+                      <NoRecord colspan={12} />
                     )}
                   </tbody>
                 </table>

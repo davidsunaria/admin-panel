@@ -42,6 +42,7 @@ export interface IPremiumuser {
   is_premium?:string | number;
   user_id?:string | number;
   expire_at?: any;
+  expire_at_unix:any
 }
 
 export interface ILockedGroup {
