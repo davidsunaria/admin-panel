@@ -21,7 +21,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { toUpperCase } from "../../../lib/utils/Service";
 import { toast } from "react-toastify";
-import { json } from "stream/consumers";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const NoRecord = React.lazy(() => import("../../components/NoRecord"));
