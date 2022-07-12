@@ -7,21 +7,21 @@ import NavigationService from "src/routes/NavigationService";
 import store from "react-app-store";
 import { logoutCompletely } from "../../lib/utils/Service";
 
+const paginationObject = {
+  total: 0,
+  currentPage: 0,
+  limit: 0,
+  pages: 0,
+  prevPage: 0,
+  nextPage: 0,
+};
+
 const initialState = {
   response: [],
   isPremium: "",
   userId: "",
   exportedExcelData: [],
-  isInvitationSend: false,
-  deleteStatus: false,
-  paginationObject: {
-    total: 0,
-    currentPage: 0,
-    limit: 0,
-    pages: 0,
-    prevPage: 0,
-    nextPage: 0,
-  },
+  paginationObject: paginationObject,
 };
 interface IPaginate {
   total: number;
@@ -32,22 +32,17 @@ interface IPaginate {
   nextPage: number | null | undefined;
 }
 export interface UserModel {
-  isInvitationSend: boolean;
-  deleteStatus: boolean;
   isPremium: string | number | any;
   userId: string | number;
   paginationObject: IPaginate;
   response: string | object | any;
   exportedExcelData: string | object | any;
   //**************State Actions************///
-  setIsInvitationSend: Action<UserModel, boolean>;
-  flushData: Action<UserModel>;
   reset: Action<UserModel>;
   setResponse: Action<UserModel, object | any>;
   setUserId: Action<UserModel, object | any>;
   setExportedExcelData: Action<UserModel, object | any>;
   setPremium: Action<UserModel, object | any>;
-  setDeleteStatus: Action<UserModel, boolean>;
   flushExcelData: Action<UserModel>;
   setPaginationObject: Action<UserModel, IPaginate>;
   //**************State  Actions************///
@@ -79,19 +74,6 @@ const user: UserModel = {
   setUserId: action((state, payload) => {
     state.userId = payload;
   }),
-  setDeleteStatus: action((state, payload) => {
-    state.deleteStatus = payload;
-  }),
-
-  setIsInvitationSend: action((state, payload) => {
-    state.isInvitationSend = payload;
-  }),
-
-  flushData: action((state, payload) => {
-    state.isInvitationSend = false;
-    state.exportedExcelData = [];
-    state.deleteStatus = false;
-  }),
 
   reset: action((state) => (state = initialState)),
   flushExcelData: action((state, payload) => {
@@ -122,14 +104,7 @@ const user: UserModel = {
             response?.data.pagination.length > 0 && response?.data.pagination[0]
           );
         } else {
-          actions.setPaginationObject({
-            total: 0,
-            currentPage: 0,
-            limit: 0,
-            pages: 0,
-            prevPage: null,
-            nextPage: null,
-          });
+          actions.setPaginationObject(paginationObject);
         }
         if (response?.data?.data?.length !== 0) {
           if (currentPage && currentPage === 1) {
@@ -224,7 +199,7 @@ const user: UserModel = {
   ),
   inviteUser: thunk<UserModel, IPayload, any, StoreModel>(
     async (actions, payload: IPayload, { getStoreActions }) => {
-      actions.setIsInvitationSend(false);
+      // actions.setIsInvitationSend(false);
       getStoreActions().common.setLoading(true);
       let response = await postApi(payload);
       console.log("response", response);
@@ -234,7 +209,7 @@ const user: UserModel = {
       } else if (response && response.status === 200) {
         toast.success(response.message);
         getStoreActions().common.setLoading(false);
-        actions.setIsInvitationSend(true);
+        //actions.setIsInvitationSend(true);
       } else {
         getStoreActions().common.setLoading(false);
         return true;

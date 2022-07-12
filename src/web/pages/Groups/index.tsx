@@ -43,6 +43,12 @@ const Groups: React.FC = (): JSX.Element => {
     };
   }, []);
 
+  const radioParameters: RadioInputValue[] = [
+    { value: "open", label: "Open", name: "restriction_mode" },
+    { value: "subscribed", label: "Subscriber only", name: "restriction_mode" },
+    { value: "admin", label: "Admin only", name: "restriction_mode" },
+  ];
+
   const [formData, setFormData] = useState<IUsers>(userInititalState);
   const [currentRestrictedMode, setCurrentRestrictedMode] = useState<string | undefined>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -151,11 +157,7 @@ const Groups: React.FC = (): JSX.Element => {
     });
   }, []);
 
-  const radioParameters: RadioInputValue[] = [
-    { value: "open", label: "Open", name: "restriction_mode" },
-    { value: "subscribed", label: "Subscriber only", name: "restriction_mode" },
-    { value: "admin", label: "Admin only", name: "restriction_mode" },
-  ];
+
 
   const lockedGroupInititalState = useCallback((): ILockedGroup => {
     return {

@@ -49,6 +49,11 @@ const Users: React.FC = (): JSX.Element => {
       { key: "action", value: "Action" },
     ];
   }, []);
+
+  const radioParameters: any = [
+    { value: "monthly", label: "Monthly", name: "type" },
+    { value: "yearly", label: "Yearly", name: "type" },
+  ];
   const userInititalState = useMemo(() => {
     return {
       q: "",
@@ -87,10 +92,6 @@ const Users: React.FC = (): JSX.Element => {
     (state) => state.user.paginationObject
   );
   const isPremium = useStoreState((state) => state.user.isPremium);
-  const isInvitationSend = useStoreState(
-    (state) => state.user.isInvitationSend
-  );
- 
   //Actions
   const getUsers = useStoreActions((actions) => actions.user.getUsers);
   const setPremium = useStoreActions((actions) => actions.user.setPremium);
@@ -104,7 +105,6 @@ const Users: React.FC = (): JSX.Element => {
     (actions) => actions.user.markAsPremium
   );
   const deleteUser = useStoreActions((actions) => actions.user.deleteUser);
-  const flushData = useStoreActions((actions) => actions.user.flushData);
   const toggle = () => setIsOpen(!isOpen);
 
   const openPremiumModal = async (
@@ -232,7 +232,7 @@ const Users: React.FC = (): JSX.Element => {
 
   const onInvite = async (payload: IInviteuser) => {
     await inviteUser({ url: "user/invite-user", payload });
-    //
+    toggle();
   };
 
   const markPremium = async (formData: IPremiumuser) => {
@@ -245,21 +245,9 @@ const Users: React.FC = (): JSX.Element => {
   };
 
   
-  useEffect(() => {
-    async function flush() {
-      toggle();
-      await flushData();
-    }
-    if (isInvitationSend && isInvitationSend === true) {
-      flush();
-    }
-  }, [isInvitationSend]);
+ 
 
 
-  const radioParameters: any = [
-    { value: "monthly", label: "Monthly", name: "type" },
-    { value: "yearly", label: "Yearly", name: "type" },
-  ];
 
   const compareDate = useCallback((date?: string) => {
     if (date) {
