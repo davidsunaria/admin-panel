@@ -126,31 +126,15 @@ const Users: React.FC = (): JSX.Element => {
     expiredDate: any,
     device: string
   ) => {
-    togglePremium();
     setUserId(id);
-    console.log("expire date", expiredDate);
-    console.log("is_premium", is_premium);
-    console.log("device", device);
-    if (expiredDate === false) {
-      console.log("1");
-      setPremium("1");
-    }
-    if (expiredDate === true) {
-      setPremium("0");
-    }
-    if (typeof expiredDate === "undefined") {
-      console.log("2");
-      setPremium(is_premium === 0 ? "1" : "0");
-    }
-
     if (is_premium === 1 && expiredDate === true && device === "web") {
-      console.log("unmark web");
       let payload = {
         user_id: id,
         is_premium: "0",
         type: "",
         expire_at_unix: "",
       };
+      setPremium("0");
       await markAsPremium({ url: "user/mark-premium", payload });
     } else if (
       is_premium === 1 &&
@@ -160,6 +144,17 @@ const Users: React.FC = (): JSX.Element => {
       toast.error("You cannot unmark premium");
     } else if (is_premium === 1 && (device === "ios" || device === "android")) {
       toast.error("You cannot mark premium");
+    } else {
+      togglePremium();
+      if (expiredDate === false) {
+        setPremium("1");
+      }
+      // if (expiredDate === true) {
+      //   setPremium("0");
+      // }
+      if (typeof expiredDate === "undefined") {
+        setPremium(is_premium === 0 ? "1" : "0");
+      }
     }
   };
   const togglePremium = () => {
@@ -196,14 +191,12 @@ const Users: React.FC = (): JSX.Element => {
   }, []);
 
   const onReset = useCallback(() => {
-    console.log(2);
     setFormData(userInititalState);
     getUserData(formData);
   }, []);
 
   useEffect(() => {
     if (formData) {
-      console.log(3, formData);
       getUserData(formData);
     }
   }, [formData]);
@@ -291,8 +284,8 @@ const Users: React.FC = (): JSX.Element => {
       is_premium: isPremium,
       expire_at_unix: (expireAtUnix * 1000).toString(),
     };
-    console.log(payload);
     await markAsPremium({ url: "user/mark-premium", payload });
+    setPremiumOpen(false);
   };
 
   useEffect(() => {
@@ -468,9 +461,8 @@ const Users: React.FC = (): JSX.Element => {
               exportButton={true}
             />
           </CustomSuspense>
-          {JSON.stringify(isPremium)}
           <CustomSuspense>
-            {isPremium === "1" && (
+            {
               <MyModal
                 heading={isPremium === "1" ? "Mark Premium" : "Unmark Premium"}
                 showSubmitBtn={false}
@@ -481,7 +473,6 @@ const Users: React.FC = (): JSX.Element => {
                   enableReinitialize={true}
                   initialValues={premiumInititalState()}
                   onSubmit={async (values) => {
-                    console.log("hii");
                     markPremium(values);
                   }}
                   validationSchema={PremiumSchema}
@@ -525,7 +516,7 @@ const Users: React.FC = (): JSX.Element => {
                   }}
                 </Formik>
               </MyModal>
-            )}
+            }
           </CustomSuspense>
           <div className="table-responsive">
             {
@@ -546,7 +537,6 @@ const Users: React.FC = (): JSX.Element => {
                     {data && data.length > 0 ? (
                       data.map((val: any, index: number) => (
                         <tr key={index}>
-                          {/* {console.log(val)}   */}
                           <td>
                             {
                               <LazyLoadImage
@@ -584,20 +574,21 @@ const Users: React.FC = (): JSX.Element => {
                           <td>
                             <div
                               className={
-                                val?.is_premium === 1 &&
+                                val?.is_premium == 1 &&
                                 compareDate(val?.membership)
                                   ? "manageStatus manageExpire active"
                                   : "manageStatus  manageExpire inactive"
                               }
                             >
-                              {val?.is_premium === 1 &&
+                              {val?.is_premium == 1 &&
                                 val?.membership &&
                                 compareDate(val?.membership) &&
                                 "Yes"}
-                              {val?.is_premium === 0 &&
-                                !val?.membership &&
-                                "No"}
-                              {val?.is_premium === 1 &&
+                              {val?.is_premium == 0 && "No"}
+                              {/* {(val?.is_premium == 0 ||
+                                Object.hasOwn(val, val?.membership))===false &&
+                                "No"} */}
+                              {val?.is_premium == 1 &&
                                 val?.membership &&
                                 !compareDate(val?.membership) &&
                                 "No(expired)"}
@@ -659,13 +650,13 @@ const Users: React.FC = (): JSX.Element => {
                             <div className="d-flex">
                               <i
                                 title={
-                                  val?.is_premium === 1 &&
+                                  val?.is_premium == 1 &&
                                   compareDate(val?.membership)
                                     ? "Unmark Premium"
                                     : "Mark Premium"
                                 }
                                 className={`bi bi-star-fill ${
-                                  val?.is_premium === 1 &&
+                                  val?.is_premium == 1 &&
                                   compareDate(val?.membership)
                                     ? "success"
                                     : "danger"
