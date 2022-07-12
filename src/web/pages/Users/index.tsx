@@ -21,6 +21,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { toUpperCase } from "../../../lib/utils/Service";
 import { toast } from "react-toastify";
+import { json } from "stream/consumers";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const NoRecord = React.lazy(() => import("../../components/NoRecord"));
@@ -127,17 +128,23 @@ const Users: React.FC = (): JSX.Element => {
   ) => {
     togglePremium();
     setUserId(id);
+    console.log("expire date", expiredDate);
+    console.log("is_premium", is_premium);
+    console.log("device", device);
     if (expiredDate === false) {
+      console.log("1");
       setPremium("1");
     }
     if (expiredDate === true) {
       setPremium("0");
     }
-    if (typeof expiredDate === undefined) {
+    if (typeof expiredDate === "undefined") {
+      console.log("2");
       setPremium(is_premium === 0 ? "1" : "0");
     }
 
     if (is_premium === 1 && expiredDate === true && device === "web") {
+      console.log("unmark web");
       let payload = {
         user_id: id,
         is_premium: "0",
@@ -461,7 +468,7 @@ const Users: React.FC = (): JSX.Element => {
               exportButton={true}
             />
           </CustomSuspense>
-
+          {JSON.stringify(isPremium)}
           <CustomSuspense>
             {isPremium === "1" && (
               <MyModal
