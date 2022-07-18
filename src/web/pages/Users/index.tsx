@@ -20,6 +20,7 @@ import DEFAULT_USER_IMG from "react-app-images/default_user.png";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { toUpperCase } from "../../../lib/utils/Service";
+import { toast } from "react-toastify";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const NoRecord = React.lazy(() => import("../../components/NoRecord"));
@@ -69,7 +70,7 @@ const Users: React.FC = (): JSX.Element => {
       type: "",
       is_premium: "",
       user_id: "",
-      expire_at: "",
+      expire_at_unix: "",
     };
   }, []);
   const [currentUserId, setCurrentUserId] = useState<String>("");
@@ -89,6 +90,7 @@ const Users: React.FC = (): JSX.Element => {
   const [userId, setUserId] = useState("");
   const [isPremium, setPremium] = useState<any>("");
   const [frequency, setFrequency] = useState<any>("");
+  const [expireAtUnix, setExpireAtUnix] = useState<number>(0);
 
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
@@ -124,30 +126,41 @@ const Users: React.FC = (): JSX.Element => {
   const openPremiumModal = async (
     id: string,
     is_premium: any,
-    expiredDate: any
+    expiredDate: any,
+    device: string
   ) => {
-    togglePremium();
     setUserId(id);
-    if (expiredDate === false) {
-      setPremium("1");
-    }
-    if (expiredDate === true) {
-      setPremium("0");
-    }
-    if (typeof expiredDate === "undefined") {
-      setPremium(is_premium === 0 ? "1" : "0");
-    }
-
-    if (is_premium === 1 && expiredDate === true) {
+    if (is_premium === 1 && expiredDate === true && device === "web") {
       let payload = {
         user_id: id,
         is_premium: "0",
         type: "",
-        expire_at: "",
+        expire_at_unix: "",
       };
+      setPremium("0");
       await markAsPremium({ url: "user/mark-premium", payload });
-  }};
- 
+    } else if (
+      is_premium === 1 &&
+      expiredDate === true &&
+      (device === "ios" || device === "android")
+    ) {
+      toast.error("This membership s purchased from mobile device. you cannot unmark from here");
+    } else if (is_premium === 1 && (device === "ios" || device === "android")) {
+      toast.error("You cannot mark premium");
+    } else {
+      togglePremium();
+      if (expiredDate === false) {
+        setPremium("1");
+      }
+      // if (expiredDate === true) {
+      //   setPremium("0");
+      // }
+      if (typeof expiredDate === "undefined") {
+        setPremium(is_premium === 0 ? "1" : "0");
+      }
+    }
+  };
+  
 
   const getUserData = useCallback(async (payload: IUsers) => {
     await getUsers({ url: "user/get-all-users", payload });
@@ -179,14 +192,12 @@ const Users: React.FC = (): JSX.Element => {
   }, []);
   
   const onReset = useCallback(() => {
-
-      setFormData(userInititalState);
-
+    setFormData(userInititalState);
+    getUserData(formData);
   }, []);
 
   useEffect(() => {
     if (formData) {
-      console.log("formdata")
       getUserData(formData);
     }
   }, [formData]);
@@ -272,8 +283,10 @@ const Users: React.FC = (): JSX.Element => {
       ...formData,
       user_id: userId,
       is_premium: isPremium,
+      expire_at_unix: (expireAtUnix * 1000).toString(),
     };
     await markAsPremium({ url: "user/mark-premium", payload });
+    setPremiumOpen(false);
   };
 
   useEffect(() => {
@@ -346,14 +359,20 @@ const Users: React.FC = (): JSX.Element => {
   ];
 
   const compareDate = useCallback((date?: any) => {
-    if(date?.expire_at_unix){
-      return false;
-    }
-    if (date?.expire_at) {
+    if (date?.expire_at_unix) {
+      const expireDate = date?.expire_at_unix;
+      if (moment().valueOf() > expireDate) {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (date?.expire_at) {
       const today = moment(moment(new Date()).format("YYYY-MM-DD")).unix();
-      const expireAt = moment(moment(date).format("YYYY-MM-DD")).unix();
+      const expireAt = moment(
+        moment(date?.expire_at).format("YYYY-MM-DD")
+      ).unix();
 
-      if (today > expireAt && date) {
+      if (today > expireAt && date?.expire_at) {
         return false;
       } else {
         return true;
@@ -374,6 +393,10 @@ const Users: React.FC = (): JSX.Element => {
     //console.log("event new" ,event)
     setFrequency(event);
   }, []);
+
+  const unixDate = (data: any) => {
+    setExpireAtUnix(data);
+  };
 
   return (
     <>
@@ -434,9 +457,8 @@ const Users: React.FC = (): JSX.Element => {
             </MyModal>
             <SearchUser type={"users"} onSearch={onSearch} onReset={onReset}  exportButton={true} />
           </CustomSuspense>
-
           <CustomSuspense>
-            {isPremium === "1" && (
+            {
               <MyModal
                 heading={isPremium === "1" ? "Mark Premium" : "Unmark Premium"}
                 showSubmitBtn={false}
@@ -464,10 +486,11 @@ const Users: React.FC = (): JSX.Element => {
                             />
                           </div>
                           <CustomDatePicker
-                            value={values?.expire_at}
+                            value={values?.expire_at_unix}
                             label="Expires on"
-                            name="expire_at"
+                            name="expire_at_unix"
                             props={props}
+                            unixDate={unixDate}
                             frequency={frequency}
                           />
                         </div>
@@ -489,7 +512,7 @@ const Users: React.FC = (): JSX.Element => {
                   }}
                 </Formik>
               </MyModal>
-            )}
+            }
           </CustomSuspense>
           <div className="table-responsive">
             {
@@ -510,7 +533,6 @@ const Users: React.FC = (): JSX.Element => {
                     {data && data.length > 0 ? (
                       data.map((val: any, index: number) => (
                         <tr key={index}>
-                          {/* {console.log(val)}   */}
                           <td>
                             {
                               <LazyLoadImage
@@ -548,21 +570,22 @@ const Users: React.FC = (): JSX.Element => {
                           <td>
                             <div
                               className={
-                                val?.is_premium === 1 &&
+                                val?.is_premium == 1 &&
                                 compareDate(val?.membership)
                                   ? "manageStatus manageExpire active"
                                   : "manageStatus  manageExpire inactive"
                               }
                             >
-                              {val?.is_premium === 1 &&
+                              {val?.is_premium == 1 &&
                                 val?.membership &&
                                 compareDate(val?.membership) &&
                                 "Yes"}
-                              {val?.is_premium === 0 &&
-                                typeof val?.membership === "undefined" &&
-                                "No"}
-                              {val?.is_premium === 1 &&
-                                typeof val?.membership !== "undefined" &&
+                              {val?.is_premium == 0 && "No"}
+                              {/* {(val?.is_premium == 0 ||
+                                Object.hasOwn(val, val?.membership))===false &&
+                                "No"} */}
+                              {val?.is_premium == 1 &&
+                                val?.membership &&
                                 !compareDate(val?.membership) &&
                                 "No(expired)"}
                             </div>
@@ -622,13 +645,13 @@ const Users: React.FC = (): JSX.Element => {
                             <div className="d-flex">
                               <i
                                 title={
-                                  val?.is_premium === 1 &&
+                                  val?.is_premium == 1 &&
                                   compareDate(val?.membership)
                                     ? "Unmark Premium"
                                     : "Mark Premium"
                                 }
                                 className={`bi bi-star-fill ${
-                                  val?.is_premium === 1 &&
+                                  val?.is_premium == 1 &&
                                   compareDate(val?.membership)
                                     ? "success"
                                     : "danger"
@@ -637,7 +660,8 @@ const Users: React.FC = (): JSX.Element => {
                                   openPremiumModal(
                                     val?._id,
                                     val?.is_premium,
-                                    compareDate(val?.membership)
+                                    compareDate(val?.membership),
+                                    val?.membership?.device
                                   )
                                 }
                               />
