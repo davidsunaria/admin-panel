@@ -140,7 +140,7 @@ const Users: React.FC = (): JSX.Element => {
       expiredDate === true &&
       (device === "ios" || device === "android")
     ) {
-      toast.error("This membership s purchased from mobile device. you cannot unmark from here");
+      toast.error("This membership is purchased from mobile device. you cannot unmark from here");
     } else if (is_premium === 1 && (device === "ios" || device === "android")) {
       toast.error("You cannot mark premium");
     } else {
