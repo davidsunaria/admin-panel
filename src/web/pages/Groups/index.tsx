@@ -292,7 +292,7 @@ const Groups: React.FC = (): JSX.Element => {
         </CustomSuspense>
         <div className="cardBox">
           <CustomSuspense>
-            <SearchUser type={"groups"} onSearch={onSearch} onReset={onReset}  exportButton={true}/>
+            <SearchUser type={"groups"} placeholder="Search by group name" onSearch={onSearch} onReset={onReset}  exportButton={true}/>
           </CustomSuspense>
           <CustomSuspense >
            {modal}      

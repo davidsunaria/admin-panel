@@ -15,6 +15,7 @@ export interface IUsersProps extends IUsers{
   onSearch: (payload?: any) => any;
   onReset: () => any;
   type?: string;
+  placeholder?:string
 }
 
 export interface IEnableDisable {

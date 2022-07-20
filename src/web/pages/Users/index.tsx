@@ -458,6 +458,7 @@ const Users: React.FC = (): JSX.Element => {
               onSearch={onSearch}
               onReset={onReset}
               exportButton={true}
+              placeholder="Search by name, email, username"
             />
           </CustomSuspense>
           <CustomSuspense>
