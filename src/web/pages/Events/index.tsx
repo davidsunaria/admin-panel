@@ -230,6 +230,7 @@ const Events: React.FC = (): JSX.Element => {
               onSearch={onSearch}
               onReset={onReset}
               exportButton={true}
+              placeholder="Search by event name"
             />
           </CustomSuspense>
           <div className="table-responsive">

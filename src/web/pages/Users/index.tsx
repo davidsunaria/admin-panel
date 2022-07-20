@@ -455,7 +455,13 @@ const Users: React.FC = (): JSX.Element => {
                 }}
               </Formik>
             </MyModal>
-            <SearchUser type={"users"} onSearch={onSearch} onReset={onReset}  exportButton={true} />
+            <SearchUser
+              type={"users"}
+              onSearch={onSearch}
+              onReset={onReset}
+              exportButton={true}
+              placeholder="Search by name, email, username"
+            />
           </CustomSuspense>
           <CustomSuspense>
             {

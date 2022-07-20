@@ -145,7 +145,7 @@ const ReportedEvents: React.FC = (): JSX.Element => {
         </CustomSuspense>
         <div className="cardBox">
           <CustomSuspense>
-            <SearchUser type={"reported"} onSearch={onSearch} onReset={onReset} />
+            <SearchUser type={"reported"} onSearch={onSearch} onReset={onReset} placeholder="Search by event name"/>
           </CustomSuspense>
           <div className="table-responsive">
             {
