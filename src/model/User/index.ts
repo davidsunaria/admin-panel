@@ -237,7 +237,8 @@ const user: UserModel = {
             : val
         );
         actions.setResponse(updatedData);
-        actions.setPremium(0);
+        console.log("payload?.payload?.is_premium,",payload?.payload?.is_premium)
+        actions.setUserId("")
         toast.success(response.message);
         getStoreActions().common.setLoading(false);
       } else {

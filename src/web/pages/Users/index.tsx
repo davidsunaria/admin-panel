@@ -85,6 +85,7 @@ const Users: React.FC = (): JSX.Element => {
   const [isPremiumModalOpen, setPremiumOpen] = useState<boolean>(false);
   const [frequency, setFrequency] = useState<string | undefined>("");
   const [expireAtUnix, setExpireAtUnix] = useState<number>(0);
+  const [isPremium, setPremium] = useState<any>("");
 
   //State
   const isLoading = useStoreState((state) => state.common.isLoading);
@@ -93,10 +94,11 @@ const Users: React.FC = (): JSX.Element => {
   const paginationObject = useStoreState(
     (state) => state.user.paginationObject
   );
-  const isPremium = useStoreState((state) => state.user.isPremium);
+  // const isPremium = useStoreState((state) => state.user.isPremium);
+  console.log("response",response)
   //Actions
   const getUsers = useStoreActions((actions) => actions.user.getUsers);
-  const setPremium = useStoreActions((actions) => actions.user.setPremium);
+  // const setPremium = useStoreActions((actions) => actions.user.setPremium);
   const setUserId = useStoreActions((actions) => actions.user.setUserId);
 
   const enableDisable = useStoreActions(
@@ -112,11 +114,14 @@ const Users: React.FC = (): JSX.Element => {
   const openPremiumModal = async (
     id: string,
     is_premium: any,
-    expiredDate: boolean | undefined,
+    expiredDate: any,
     device: string
   ) => {
     setUserId(id);
-    if (is_premium === 1 && expiredDate === true && device === "web") {
+    console.log("function trigger",is_premium,expiredDate,device)
+    setPremium(is_premium)
+    if (is_premium == 1 && expiredDate === true && device === "web") {
+      console.log("1")
       let payload = {
         user_id: id,
         is_premium: "0",
@@ -126,26 +131,29 @@ const Users: React.FC = (): JSX.Element => {
       setPremium("0");
       await markAsPremium({ url: "user/mark-premium", payload });
     } else if (
-      is_premium === 1 &&
+      is_premium == 1 &&
       expiredDate === true &&
       (device === "ios" || device === "android")
     ) {
       toast.error("This membership is purchased from mobile device. you cannot unmark from here");
-    } else if (is_premium === 1 && (device === "ios" || device === "android")) {
+    } else if (is_premium == 1 && (device === "ios" || device === "android")) {
       toast.error("You cannot mark premium");
     } else {
       togglePremium();
       if (expiredDate === false) {
+        console.log("2")
         setPremium("1");
       }
       // if (expiredDate === true) {
       //   setPremium("0");
       // }
       if (typeof expiredDate === "undefined") {
-        setPremium(is_premium === 0 ? "1" : "0");
+        console.log("3")
+        setPremium(is_premium == 0 ? "1" : "0");
       }
     }
   };
+  console.log("outer",isPremium)
   const togglePremium = () => {
     setPremiumOpen(!isPremiumModalOpen);
   };
@@ -248,6 +256,7 @@ const Users: React.FC = (): JSX.Element => {
   };
 
   const markPremium = async (formData: IPremiumuser) => {
+    console.log(formData,isPremium)
     const payload = {
       ...formData,
       user_id: userId,
@@ -306,6 +315,7 @@ const Users: React.FC = (): JSX.Element => {
   return (
     <>
       <div className="Content">
+      {JSON.stringify(isPremium)}
         <CustomSuspense>
           <Navbar toggle={toggle} text={"Manage users"} />
         </CustomSuspense>
@@ -371,7 +381,7 @@ const Users: React.FC = (): JSX.Element => {
           <CustomSuspense>
             {
               <MyModal
-                heading={isPremium === "1" ? "Mark Premium" : "Unmark Premium"}
+                heading={isPremium == "1" ? "Mark Premium" : "Unmark Premium"}
                 showSubmitBtn={false}
                 isOpen={isPremiumModalOpen}
                 toggle={() => togglePremium()}
