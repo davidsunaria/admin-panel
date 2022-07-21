@@ -107,7 +107,7 @@ const ReportedUsers: React.FC = (): JSX.Element => {
         </CustomSuspense>
         <div className="cardBox">
           <CustomSuspense >
-            <SearchUser type={"reported"} onSearch={onSearch} onReset={onReset} />
+            <SearchUser type={"reported"} onSearch={onSearch} onReset={onReset} placeholder="Search by name, lastname"/>
           </CustomSuspense>
           <div className="table-responsive">
             {

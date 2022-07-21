@@ -58,7 +58,7 @@ const useAuthValidation = () => {
     type: Yup
       .string()
       .required(RADIO_REQUIRED),
-      expire_at: Yup
+      expire_at_unix: Yup
       .string()
       .required(DATE_REQUIRED),
   }), []);
