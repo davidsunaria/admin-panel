@@ -94,11 +94,8 @@ const Users: React.FC = (): JSX.Element => {
   const paginationObject = useStoreState(
     (state) => state.user.paginationObject
   );
-  // const isPremium = useStoreState((state) => state.user.isPremium);
-  console.log("response",response)
   //Actions
   const getUsers = useStoreActions((actions) => actions.user.getUsers);
-  // const setPremium = useStoreActions((actions) => actions.user.setPremium);
   const setUserId = useStoreActions((actions) => actions.user.setUserId);
 
   const enableDisable = useStoreActions(
@@ -118,10 +115,8 @@ const Users: React.FC = (): JSX.Element => {
     device: string
   ) => {
     setUserId(id);
-    console.log("function trigger",is_premium,expiredDate,device)
     setPremium(is_premium)
     if (is_premium == 1 && expiredDate === true && device === "web") {
-      console.log("1")
       let payload = {
         user_id: id,
         is_premium: "0",
@@ -141,19 +136,16 @@ const Users: React.FC = (): JSX.Element => {
     } else {
       togglePremium();
       if (expiredDate === false) {
-        console.log("2")
         setPremium("1");
       }
       // if (expiredDate === true) {
       //   setPremium("0");
       // }
       if (typeof expiredDate === "undefined") {
-        console.log("3")
         setPremium(is_premium == 0 ? "1" : "0");
       }
     }
   };
-  console.log("outer",isPremium)
   const togglePremium = () => {
     setPremiumOpen(!isPremiumModalOpen);
   };
@@ -256,7 +248,6 @@ const Users: React.FC = (): JSX.Element => {
   };
 
   const markPremium = async (formData: IPremiumuser) => {
-    console.log(formData,isPremium)
     const payload = {
       ...formData,
       user_id: userId,
@@ -315,7 +306,6 @@ const Users: React.FC = (): JSX.Element => {
   return (
     <>
       <div className="Content">
-      {JSON.stringify(isPremium)}
         <CustomSuspense>
           <Navbar toggle={toggle} text={"Manage users"} />
         </CustomSuspense>

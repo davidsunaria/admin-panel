@@ -18,7 +18,6 @@ const paginationObject = {
 
 const initialState = {
   response: [],
-  isPremium: "",
   userId: "",
   exportedExcelData: [],
   paginationObject: paginationObject,
@@ -32,7 +31,6 @@ interface IPaginate {
   nextPage: number | null | undefined;
 }
 export interface UserModel {
-  isPremium: string | number | any;
   userId: string | number;
   paginationObject: IPaginate;
   response: string | object | any;
@@ -42,7 +40,6 @@ export interface UserModel {
   setResponse: Action<UserModel, object | any>;
   setUserId: Action<UserModel, object | any>;
   setExportedExcelData: Action<UserModel, object | any>;
-  setPremium: Action<UserModel, object | any>;
   flushExcelData: Action<UserModel>;
   setPaginationObject: Action<UserModel, IPaginate>;
   //**************State  Actions************///
@@ -68,9 +65,7 @@ const user: UserModel = {
     state.exportedExcelData = payload;
   }),
 
-  setPremium: action((state, payload) => {
-    state.isPremium = payload;
-  }),
+ 
   setUserId: action((state, payload) => {
     state.userId = payload;
   }),
@@ -106,7 +101,7 @@ const user: UserModel = {
         } else {
           actions.setPaginationObject(paginationObject);
         }
-        if (response?.data?.data?.length !== 0) {
+        if (response?.data?.data?.length > 0) {
           if (currentPage && currentPage === 1) {
             actions.setResponse(response?.data?.data);
           } else {
@@ -237,7 +232,6 @@ const user: UserModel = {
             : val
         );
         actions.setResponse(updatedData);
-        console.log("payload?.payload?.is_premium,",payload?.payload?.is_premium)
         actions.setUserId("")
         toast.success(response.message);
         getStoreActions().common.setLoading(false);

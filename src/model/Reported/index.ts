@@ -5,19 +5,21 @@ import { toast } from "react-toastify";
 import { getApi, postApi } from "react-app-api";
 import { IPayload } from "react-app-interfaces";
 
+const paginationObject = {
+  total: 0,
+  currentPage: 0,
+  limit: 0,
+  pages: 0,
+  prevPage: 0,
+  nextPage: 0,
+};
+
 const initialState = {
   reportedGroupsResponse: [],
   reportedUsersResponse: [],
   reportedEventsResponse: [],
   isEnabledDisabled: false,
-  paginationObject: {
-    total: 0,
-    currentPage: 0,
-    limit: 0,
-    pages: 0,
-    prevPage: 0,
-    nextPage: 0,
-  },
+  paginationObject: paginationObject,
 };
 
 interface IPaginate {
@@ -96,14 +98,7 @@ const reportedResource: ReportedModel = {
             response?.data.pagination.length > 0 && response?.data.pagination[0]
           );
         } else {
-          actions.setPaginationObject({
-            total: 0,
-            currentPage: 0,
-            limit: 0,
-            pages: 0,
-            prevPage: null,
-            nextPage: null,
-          });
+          actions.setPaginationObject(paginationObject);
         }
 
         if (response?.data?.data?.length > 0) {
@@ -149,16 +144,9 @@ const reportedResource: ReportedModel = {
             response?.data.pagination.length > 0 && response?.data.pagination[0]
           );
         } else {
-          actions.setPaginationObject({
-            total: 0,
-            currentPage: 0,
-            limit: 0,
-            pages: 0,
-            prevPage: null,
-            nextPage: null,
-          });
+          actions.setPaginationObject(paginationObject);
         }
-        if (response?.data?.data?.length !== 0) {
+        if (response?.data?.data?.length > 0) {
           if (currentPage && currentPage === 1) {
             actions.setReportedUsersResponse(response?.data?.data);
           } else {
@@ -201,16 +189,9 @@ const reportedResource: ReportedModel = {
             response?.data.pagination.length > 0 && response?.data.pagination[0]
           );
         } else {
-          actions.setPaginationObject({
-            total: 0,
-            currentPage: 0,
-            limit: 0,
-            pages: 0,
-            prevPage: null,
-            nextPage: null,
-          });
+          actions.setPaginationObject(paginationObject);
         }
-        if (response?.data?.data?.length !== 0) {
+        if (response?.data?.data?.length > 0) {
           if (currentPage && currentPage === 1) {
             actions.setReportedEventsResponse(response?.data?.data);
           } else {

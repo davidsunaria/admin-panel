@@ -6,13 +6,22 @@ import { getApi } from "react-app-api";
 import { IPayload } from "react-app-interfaces";
 import * as _ from "lodash";
 
+const paginationObject = {
+  total: 0,
+  currentPage: 0,
+  limit: 0,
+  pages: 0,
+  prevPage: 0,
+  nextPage: 0,
+};
+
 const initialState = {
   subscribersCount: 0,
   membersCount: 0,
-  numberOfEventsPerGroup: { pagination: [], data: [] },
-  numberOfMembersPerGroup: { pagination: [], data: [] },
+  numberOfEventsPerGroup: { pagination: paginationObject, data: [] },
+  numberOfMembersPerGroup: { pagination: paginationObject, data: [] },
   numberOfMembersPerEvent: {
-    pagination: [],
+    pagination: paginationObject,
     data: [],
   },
   isSubscriberLoading: false,
@@ -20,7 +29,7 @@ const initialState = {
   isEventPerGroupLoading: false,
   isPostPerMemberLoading: false,
   isPaypalVsCashLoading: false,
-  postPerMember: { pagination: [], data: [] },
+  postPerMember: { pagination: paginationObject, data: [] },
   paypalVsCash: {},
   groupEventByLocation: {},
   isGroupEventByLocationLoading: false,
@@ -221,7 +230,7 @@ const dashboard: DashboardModel = {
       } else if (response && response?.status === 200) {
         const { currentPage } =
           response?.data.pagination.length > 0 && response?.data.pagination[0];
-        if (response?.data?.data?.length !== 0) {
+        if (response?.data?.data?.length > 0) {
           if (currentPage && currentPage === 1) {
             actions.setNumberOfEventPerGroup(response?.data);
           } else {
@@ -235,16 +244,7 @@ const dashboard: DashboardModel = {
           }
         } else {
           actions.setNumberOfEventPerGroup({
-            pagination: [
-              {
-                total: 0,
-                currentPage: 0,
-                limit: 0,
-                pages: 0,
-                prevPage: null,
-                nextPage: null,
-              },
-            ],
+            pagination: [paginationObject],
             data: [],
           });
         }
@@ -284,7 +284,7 @@ const dashboard: DashboardModel = {
           const { currentPage } =
             response?.data.pagination.length > 0 &&
             response?.data.pagination[0];
-          if (response?.data?.data?.length !== 0) {
+          if (response?.data?.data?.length > 0) {
             if (currentPage && currentPage === 1) {
               actions.setNumberOfMemberPerGroup(response?.data);
             } else {
@@ -298,16 +298,7 @@ const dashboard: DashboardModel = {
             }
           } else {
             actions.setNumberOfMemberPerGroup({
-              pagination: [
-                {
-                  total: 0,
-                  currentPage: 0,
-                  limit: 0,
-                  pages: 0,
-                  prevPage: null,
-                  nextPage: null,
-                },
-              ],
+              pagination: [paginationObject],
               data: [],
             });
           }
@@ -330,16 +321,7 @@ const dashboard: DashboardModel = {
             }
           } else {
             actions.setNumberOfMembersPerEvent({
-              pagination: [
-                {
-                  total: 0,
-                  currentPage: 0,
-                  limit: 0,
-                  pages: 0,
-                  prevPage: null,
-                  nextPage: null,
-                },
-              ],
+              pagination: [paginationObject],
               data: [],
             });
           }
@@ -385,16 +367,7 @@ const dashboard: DashboardModel = {
           }
         } else {
           actions.setPostPerMember({
-            pagination: [
-              {
-                total: 0,
-                currentPage: 0,
-                limit: 0,
-                pages: 0,
-                prevPage: null,
-                nextPage: null,
-              },
-            ],
+            pagination: [paginationObject],
             data: [],
           });
         }
@@ -468,7 +441,7 @@ const dashboard: DashboardModel = {
       } else if (response && response?.status === 200) {
         const { currentPage } =
           response?.data.pagination.length > 0 && response?.data.pagination[0];
-        if (response?.data?.data?.length !== 0) {
+        if (response?.data?.data?.length > 0) {
           if (currentPage && currentPage === 1) {
             actions.setGroupEventByLocation(response?.data);
           } else {
@@ -482,16 +455,7 @@ const dashboard: DashboardModel = {
           }
         } else {
           actions.setGroupEventByLocation({
-            pagination: [
-              {
-                total: 0,
-                currentPage: 0,
-                limit: 0,
-                pages: 0,
-                prevPage: null,
-                nextPage: null,
-              },
-            ],
+            pagination: [paginationObject],
             data: [],
           });
         }
