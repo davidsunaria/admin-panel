@@ -12,8 +12,8 @@ const paginationObject = {
   currentPage: 0,
   limit: 0,
   pages: 0,
-  prevPage: 0,
-  nextPage: 0,
+  prevPage: null,
+  nextPage: null,
 };
 
 const initialState = {
