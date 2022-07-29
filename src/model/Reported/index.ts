@@ -1,7 +1,7 @@
 import { StoreModel } from "react-app-model";
 import { Action, action, Thunk, thunk } from "easy-peasy";
 import { toast } from "react-toastify";
-
+import { blockedUnblockedReportedData } from "../../lib/utils/Service";
 import { getApi, postApi } from "react-app-api";
 import { IPayload } from "react-app-interfaces";
 
@@ -211,6 +211,80 @@ const reportedResource: ReportedModel = {
     }
   ),
 
+  // enableDisable: thunk<ReportedModel, IPayload, any, StoreModel>(
+  //   async (actions, payload: IPayload, { getStoreActions, getState }) => {
+  //     getStoreActions().common.setLoading(true);
+  //     actions.setEnabledDisabled(false);
+  //     let response = await postApi(payload);
+  //     if (response && response.status !== 200) {
+  //       toast.error(response.message);
+  //       getStoreActions().common.setLoading(false);
+  //     } else if (response && response.status === 200) {
+  //       switch (payload?.payload?.type) {
+  //         case "user":
+  //           let localUserStateData = [...getState()?.reportedUsersResponse];
+  //           let updatedUserData = localUserStateData.map((val) =>
+  //             val?._id === payload?.payload?._id
+  //               ? {
+  //                   ...val,
+  //                   reported_users: {
+  //                     ...val?.reported_users,
+  //                     is_blocked_by_admin:
+  //                       payload?.payload?.is_blocked_by_admin,
+  //                   },
+  //                 }
+  //               : val
+  //           );
+  //           //actions.setEnabledDisabled(true);
+  //           actions.setReportedUsersResponse(updatedUserData);
+  //           break;
+  //         case "group":
+  //           let localGroupsStateData = [...getState()?.reportedGroupsResponse];
+  //           let updatedGroupsData = localGroupsStateData.map((val) =>
+  //             val?._id === payload?.payload?._id
+  //               ? {
+  //                   ...val,
+  //                   reported_groups: {
+  //                     ...val?.reported_groups,
+  //                     is_blocked_by_admin:
+  //                       payload?.payload?.is_blocked_by_admin,
+  //                   },
+  //                 }
+  //               : val
+  //           );
+  //           //actions.setEnabledDisabled(true);
+  //           actions.setReportedGroupResponse(updatedGroupsData);
+  //           break;
+  //         case "event":
+  //           let localEventsStateData = [...getState()?.reportedEventsResponse];
+  //           let updatedEventsData = localEventsStateData.map((val) =>
+  //             val?._id === payload?.payload?._id
+  //               ? {
+  //                   ...val,
+  //                   reported_events: {
+  //                     ...val?.reported_events,
+  //                     is_blocked_by_admin:
+  //                       payload?.payload?.is_blocked_by_admin,
+  //                   },
+  //                 }
+  //               : val
+  //           );
+  //           //actions.setEnabledDisabled(true);
+  //           actions.setReportedEventsResponse(updatedEventsData);
+  //           break;
+  //       }
+
+  //       //actions.flushData();
+  //       //await actions.updateResponse(payload?.payload);
+  //       toast.success(response.message);
+  //       getStoreActions().common.setLoading(false);
+  //     } else {
+  //       getStoreActions().common.setLoading(false);
+  //       return true;
+  //     }
+  //   }
+  // ),
+
   enableDisable: thunk<ReportedModel, IPayload, any, StoreModel>(
     async (actions, payload: IPayload, { getStoreActions, getState }) => {
       getStoreActions().common.setLoading(true);
@@ -222,54 +296,24 @@ const reportedResource: ReportedModel = {
       } else if (response && response.status === 200) {
         switch (payload?.payload?.type) {
           case "user":
-            let localUserStateData = [...getState()?.reportedUsersResponse];
-            let updatedUserData = localUserStateData.map((val) =>
-              val?._id === payload?.payload?._id
-                ? {
-                    ...val,
-                    reported_users: {
-                      ...val?.reported_users,
-                      is_blocked_by_admin:
-                        payload?.payload?.is_blocked_by_admin,
-                    },
-                  }
-                : val
+            let updatedUserData = blockedUnblockedReportedData(
+              payload?.payload,
+              getState()
             );
-            //actions.setEnabledDisabled(true);
             actions.setReportedUsersResponse(updatedUserData);
             break;
           case "group":
-            let localGroupsStateData = [...getState()?.reportedGroupsResponse];
-            let updatedGroupsData = localGroupsStateData.map((val) =>
-              val?._id === payload?.payload?._id
-                ? {
-                    ...val,
-                    reported_groups: {
-                      ...val?.reported_groups,
-                      is_blocked_by_admin:
-                        payload?.payload?.is_blocked_by_admin,
-                    },
-                  }
-                : val
+            let updatedGroupData = blockedUnblockedReportedData(
+              payload?.payload,
+              getState()
             );
-            //actions.setEnabledDisabled(true);
-            actions.setReportedGroupResponse(updatedGroupsData);
+            actions.setReportedGroupResponse(updatedGroupData);
             break;
           case "event":
-            let localEventsStateData = [...getState()?.reportedEventsResponse];
-            let updatedEventsData = localEventsStateData.map((val) =>
-              val?._id === payload?.payload?._id
-                ? {
-                    ...val,
-                    reported_events: {
-                      ...val?.reported_events,
-                      is_blocked_by_admin:
-                        payload?.payload?.is_blocked_by_admin,
-                    },
-                  }
-                : val
+            let updatedEventsData = blockedUnblockedReportedData(
+              payload?.payload,
+              getState()
             );
-            //actions.setEnabledDisabled(true);
             actions.setReportedEventsResponse(updatedEventsData);
             break;
         }
