@@ -673,7 +673,7 @@ a {
 }
 
 .manageStatus {
-  width: 73px;
+  width: 82px;
   height: 28px;
   display: inline-block;
   border-radius: 30px;
@@ -1081,4 +1081,8 @@ table.stickyHeader tbody tr td {
 
 .danger{
   color: #ea4335
+ }
+
+ .notClickAble{
+   pointer-events: none;
  }

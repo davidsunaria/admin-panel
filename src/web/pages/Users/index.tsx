@@ -140,7 +140,9 @@ const Users: React.FC = (): JSX.Element => {
       expiredDate === true &&
       (device === "ios" || device === "android")
     ) {
-      toast.error("This membership is purchased from mobile device. you cannot unmark from here");
+      toast.error(
+        "This membership is purchased from mobile device. you cannot unmark from here"
+      );
     } else if (is_premium === 1 && (device === "ios" || device === "android")) {
       toast.error("You cannot mark premium");
     } else {
@@ -396,6 +398,34 @@ const Users: React.FC = (): JSX.Element => {
     setExpireAtUnix(data);
   };
 
+  const renderStatus = (status: number) => {
+    if (status === 1) {
+      return "Active";
+    } else if (status === 2) {
+      return "Self Deleted";
+    } else {
+      return "Inactive";
+    }
+  };
+  const renderStatusRow = (val: any) => {
+    return (
+      <td className={"onHover"}>
+        <div
+          onClick={() => manageAction(val?._id, val?.active)}
+          className={
+            val?.active === 1 || val?.active === true
+              ? "manageStatus active me-1"
+              : (val?.active === 2) ? "manageStatus inactive me-1 notClickAble":   "manageStatus inactive me-1"
+              
+          }
+        >
+          {" "}
+          {renderStatus(val?.active)}
+        </div>
+      </td>
+    );
+  };
+
   return (
     <>
       <div className="Content">
@@ -607,23 +637,7 @@ const Users: React.FC = (): JSX.Element => {
                             </div>
                           </td>
 
-                          <td className={"onHover"}>
-                            <div
-                              onClick={() =>
-                                manageAction(val?._id, val?.active)
-                              }
-                              className={
-                                val?.active === 1 || val?.active === true
-                                  ? "manageStatus active me-1"
-                                  : "manageStatus inactive me-1"
-                              }
-                            >
-                              {" "}
-                              {val?.active === 1 || val?.active === true
-                                ? "Active"
-                                : "Inactive"}
-                            </div>
-                          </td>
+                          {renderStatusRow(val)}
 
                           <td className={"tdAction"}>
                             {/* {JSON.stringify(compareDate(val?.membership?.expire_at))} */}
