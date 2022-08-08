@@ -9,8 +9,8 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import DEFAULT_EVENT_IMG from "react-app-images/default_event.png";
 import env from "../../../config";
-import { truncate,toUpperCase } from "../../../lib/utils/Service";
-import _  from 'lodash';
+import { truncate, toUpperCase } from "../../../lib/utils/Service";
+import _ from "lodash";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
 const NoRecord = React.lazy(() => import("../../components/NoRecord"));
@@ -125,18 +125,15 @@ const Events: React.FC = (): JSX.Element => {
     await enableDisable({ url: "common/enable-disable", payload });
   }, []);
 
-  const eventDelete = useCallback(
-    async (id: string, status: any) => {
-      console.log("event status",status)
-      setCurrentEventId(id);
-       setCurrentEventStatus(status);
-      const payload: IEnableDisable = {
-        _id: id,
-      };
-      await deleteEvent({ url: 'event/delete-event', payload });
-    },
-    []
-  );
+  const eventDelete = useCallback(async (id: string, status: any) => {
+    console.log("event status", status);
+    setCurrentEventId(id);
+    setCurrentEventStatus(status);
+    const payload: IEnableDisable = {
+      _id: id,
+    };
+    await deleteEvent({ url: "event/delete-event", payload });
+  }, []);
 
   const manageAction = useCallback((id, status) => {
     let text: string;
@@ -205,8 +202,7 @@ const Events: React.FC = (): JSX.Element => {
       let index = localStateData.findIndex(
         (item) => item._id === currentEventId
       );
-      localStateData[index].status =
-      currentEventStatus === "delete" ? 0 : 1;
+      localStateData[index].status = currentEventStatus === "delete" ? 0 : 1;
       localStateData.splice(index, 1);
       setData(localStateData);
       await flushData();
@@ -275,12 +271,13 @@ const Events: React.FC = (): JSX.Element => {
                           <td>{toUpperCase(val?.name)}</td>
                           <td>
                             <div
-                              title={
-                                ` ${val?.creator_of_event?.first_name } ${val?.creator_of_event?.last_name}`
-                              }
+                              title={` ${val?.creator_of_event?.first_name} ${val?.creator_of_event?.last_name}`}
                             >
                               {truncate(
-                                toUpperCase(` ${val?.creator_of_event?.first_name } ${val?.creator_of_event?.last_name}`))}
+                                toUpperCase(
+                                  ` ${val?.creator_of_event?.first_name} ${val?.creator_of_event?.last_name}`
+                                )
+                              )}
                             </div>
                           </td>
                           <td>
@@ -294,7 +291,7 @@ const Events: React.FC = (): JSX.Element => {
                             </div>
                           </td>
                           <td>{val?.capacity || "-"}</td>
-                          <td>{toUpperCase(val?.capacity_type) }</td>
+                          <td>{toUpperCase(val?.capacity_type)}</td>
                           <td>
                             <div
                               className={
@@ -320,16 +317,22 @@ const Events: React.FC = (): JSX.Element => {
                                 : "Inactive"}
                             </div> */}
 
-                            <div className="d-flex">
+                            <div
+                              className="d-flex"
+                              title={
+                                val?.status === 1 || val?.status === true
+                                  ? "Activate event"
+                                  : val?.status === 6
+                                  ? "Self Deleted"
+                                  : "Inactivate event"
+                              }
+                            >
                               <i
-                                title={
-                                  val?.status === 1 || val?.status === true
-                                    ? "Inactivate event"
-                                    : "Activate event"
-                                }
                                 className={`bi  ${
                                   val?.status === 1 || val?.status === true
                                     ? "text-success bi-check-circle"
+                                    : val?.status === 6
+                                    ? "text-danger bi-x-circle notClickAble"
                                     : "text-danger bi-x-circle"
                                 }`}
                                 onClick={() =>
@@ -339,16 +342,14 @@ const Events: React.FC = (): JSX.Element => {
                               <i
                                 title="Delete event"
                                 className="bi  bi-trash"
-                                onClick={() =>
-                                  manageAction(val?._id, "delete")
-                                }
+                                onClick={() => manageAction(val?._id, "delete")}
                               />
                             </div>
                           </td>
                         </tr>
                       ))
                     ) : (
-                      <NoRecord colspan={10}/>
+                      <NoRecord colspan={10} />
                     )}
                   </tbody>
                 </table>
