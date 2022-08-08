@@ -673,7 +673,7 @@ a {
 }
 
 .manageStatus {
-  width: 73px;
+  width: 82px;
   height: 28px;
   display: inline-block;
   border-radius: 30px;
@@ -1083,3 +1083,20 @@ table.stickyHeader tbody tr td {
     font-size: 13px;
   }
 }
+.tdAction i{
+  font-size: 20px;
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+.success{
+ color: #34a853
+}
+
+.danger{
+  color: #ea4335
+ }
+
+ .notClickAble{
+   pointer-events: none;
+ }
