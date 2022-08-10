@@ -341,7 +341,7 @@ const Groups: React.FC = (): JSX.Element => {
           val?.status === 1
             ? "Group is published and available on app"
             : val?.status === 6
-            ? "Group creator has deleted their account so group is not available on app"
+            ? "Group creator has deleted his account so group is not available on app"
             : "Group is unpublished and not available on app"
         }
       >
