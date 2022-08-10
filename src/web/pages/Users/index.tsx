@@ -238,7 +238,8 @@ const Users: React.FC = (): JSX.Element => {
     if (status === 1) {
       text = "You want to inactivate user?";
     } else if (status === "delete") {
-      text = "You want to delete user?";
+      text =
+        "Do you want to delete user permanently. All events, groups associated with this user will no longer be available?";
     } else {
       text = "You want to activate user?";
     }
@@ -411,14 +412,24 @@ const Users: React.FC = (): JSX.Element => {
   };
   const renderStatusRow = (val: any) => {
     return (
-      <td className={"onHover"}>
+      <td
+        className={"onHover"}
+        title={
+          val?.active === 1 || val?.active === true
+            ? "Active User"
+            : val?.active === 2
+            ? "User has voluntary deleted his account"
+            : "Inactive User"
+        }
+      >
         <div
           onClick={() => manageAction(val?._id, val?.active)}
           className={
             val?.active === 1 || val?.active === true
               ? "manageStatus active me-1"
-              : (val?.active === 2) ? "manageStatus inactive me-1 notClickAble":   "manageStatus inactive me-1"
-              
+              : val?.active === 2
+              ? "manageStatus inactive me-1 notClickAble"
+              : "manageStatus inactive me-1"
           }
         >
           {" "}
