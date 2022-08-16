@@ -362,7 +362,26 @@ const Users: React.FC = (): JSX.Element => {
   ];
 
   const compareDate = useCallback((date?: any) => {
-    if (date?.expire_at_unix) {
+    if (date?.device === "android") {
+      if (date?.expire_at) {
+        const today = moment(moment(new Date()).format("YYYY-MM-DD")).unix();
+        const expireAt = moment(
+          moment(date?.expire_at).format("YYYY-MM-DD")
+        ).unix();
+        if (today > expireAt && date?.expire_at) {
+          return false;
+        } else {
+          return true;
+        }
+      } else if (date?.expire_at_unix) {
+        const expireDate = date?.expire_at_unix;
+        if (moment().valueOf() > expireDate) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    } else if (date?.expire_at_unix) {
       const expireDate = date?.expire_at_unix;
       if (moment().valueOf() > expireDate) {
         return false;
