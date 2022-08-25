@@ -236,7 +236,8 @@ const Users: React.FC = (): JSX.Element => {
     if (status === 1) {
       text = "You want to inactivate user?";
     } else if (status === "delete") {
-      text = "You want to delete user?";
+      text =
+        "Do you want to delete user permanently. All events, groups associated with this user will no longer be available?";
     } else {
       text = "You want to activate user?";
     }
@@ -415,6 +416,44 @@ const Users: React.FC = (): JSX.Element => {
 
   const unixDate = (data: any) => {
     setExpireAtUnix(data);
+  };
+
+  const renderStatus = (status: number) => {
+    if (status === 1) {
+      return "Active";
+    } else if (status === 2) {
+      return "Self Deleted";
+    } else {
+      return "Inactive";
+    }
+  };
+  const renderStatusRow = (val: any) => {
+    return (
+      <td
+        className={"onHover"}
+        title={
+          val?.active === 1 || val?.active === true
+            ? "Active User"
+            : val?.active === 2
+            ? "User has voluntary deleted his account"
+            : "Inactive User"
+        }
+      >
+        <div
+          onClick={() => manageAction(val?._id, val?.active)}
+          className={
+            val?.active === 1 || val?.active === true
+              ? "manageStatus active me-1"
+              : val?.active === 2
+              ? "manageStatus inactive me-1 notClickAble"
+              : "manageStatus inactive me-1"
+          }
+        >
+          {" "}
+          {renderStatus(val?.active)}
+        </div>
+      </td>
+    );
   };
 
   return (
@@ -628,23 +667,7 @@ const Users: React.FC = (): JSX.Element => {
                             </div>
                           </td>
 
-                          <td className={"onHover"}>
-                            <div
-                              onClick={() =>
-                                manageAction(val?._id, val?.active)
-                              }
-                              className={
-                                val?.active === 1 || val?.active === true
-                                  ? "manageStatus active me-1"
-                                  : "manageStatus inactive me-1"
-                              }
-                            >
-                              {" "}
-                              {val?.active === 1 || val?.active === true
-                                ? "Active"
-                                : "Inactive"}
-                            </div>
-                          </td>
+                          {renderStatusRow(val)}
 
                           <td className={"tdAction"}>
                             {/* {JSON.stringify(compareDate(val?.membership?.expire_at))} */}
