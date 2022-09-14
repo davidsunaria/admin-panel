@@ -8,7 +8,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import env from '../../../config';
 import DEFAULT_GROUP_IMG from 'react-app-images/default_group.png';
-import { truncate ,toUpperCase} from '../../../lib/utils/Service';
+import { truncate ,toUpperCase,dateFormat} from '../../../lib/utils/Service';
 import CustomSuspense from '../../components/CustomSuspense';
 import moment from "moment"
 
@@ -180,7 +180,8 @@ const ReportedGroups: React.FC = (): JSX.Element => {
                           
                           <td>{toUpperCase(val?.reported_groups?.category)}</td>
                           <td><div title={val?.reported_groups?.address}>{truncate(toUpperCase(val?.reported_groups?.address))}</div></td>
-                          <td>{moment(val?.created_at).format(env?.REACT_APP_TIME_FORMAT) || '-'}</td>
+                          {/* <td>{moment(val?.created_at).format(env?.REACT_APP_TIME_FORMAT) || '-'}</td> */}
+                          <td>{dateFormat(val?.created_at,"ll, h:mm a")}</td>
                           <td>
                             {val?.resource_reporter.map((value: any, i: number, row: Array<object>) => {
                               return (

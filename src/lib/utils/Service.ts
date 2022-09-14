@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import moment from "moment";
 export function isLoggedIn() {
   return localStorage.getItem("isLoggedIn");
 }
@@ -13,16 +14,16 @@ export function clearUserData() {
   localStorage.removeItem("userData");
   //localStorage.removeItem("isLoggedIn");
   localStorage.removeItem("temp_signup_data");
-
 }
 export const getAccountData = () => {
-  return (localStorage.getItem('accountData') !== undefined) ? localStorage.getItem('accountData') : '';
-}
+  return localStorage.getItem("accountData") !== undefined
+    ? localStorage.getItem("accountData")
+    : "";
+};
 
-
-export const setToken = (access_token: string) =>  {
+export const setToken = (access_token: string) => {
   localStorage.setItem("access_token", access_token);
-}
+};
 
 export function getToken() {
   let token = localStorage.getItem("access_token");
@@ -37,38 +38,60 @@ export function logoutCompletely() {
 
 export const setTempData = (payload: any) => {
   localStorage.setItem("temp_signup_data", JSON.stringify(payload));
-}
+};
 export function removeTempData() {
   localStorage.removeItem("temp_signup_data");
 }
 
 export const getTempData = (): any => {
-  return (localStorage.getItem('temp_signup_data') !== undefined) ? localStorage.getItem('temp_signup_data') : '';
-}
+  return localStorage.getItem("temp_signup_data") !== undefined
+    ? localStorage.getItem("temp_signup_data")
+    : "";
+};
 
-export const showNavbar = (toggleId: string, navId: string, bodyId: string, headerId: string) => {
+export const showNavbar = (
+  toggleId: string,
+  navId: string,
+  bodyId: string,
+  headerId: string
+) => {
   const toggle = document.getElementById(toggleId),
     nav = document.getElementById(navId),
     bodypd = document.getElementById(bodyId),
-    headerpd = document.getElementById(headerId)
-    // Validate that all variables exist
-  if(toggle && nav && bodypd && headerpd) {
-      // show navbar
-      nav.classList.toggle('show')
-        // change icon
-      toggle.classList.toggle('bi-x')
-        // add padding to body
-      bodypd.classList.toggle('body-pd')
-        // add padding to header
-      headerpd.classList.toggle('body-pd')
+    headerpd = document.getElementById(headerId);
+  // Validate that all variables exist
+  if (toggle && nav && bodypd && headerpd) {
+    // show navbar
+    nav.classList.toggle("show");
+    // change icon
+    toggle.classList.toggle("bi-x");
+    // add padding to body
+    bodypd.classList.toggle("body-pd");
+    // add padding to header
+    headerpd.classList.toggle("body-pd");
   }
-}
+};
 
 export const truncate = (text: any) => {
-  return _.truncate(text, {length: 25, omission: '...'});
-}
+  return _.truncate(text, { length: 25, omission: "..." });
+};
 
 export const toUpperCase = (text: any) => {
-  return text? _.upperFirst(text):" -";
-}
+  return text ? _.upperFirst(text) : " -";
+};
 
+export const dateFormat = (date: any, type: any) => {
+  if(date===null || date===undefined || !date){
+    return "-";
+  }
+  if (type === "YYYY-MM-DD") {
+    return moment(date).format(type) || "-";
+  } else if (type === "LL") {
+    return moment(date).format(type) || "-";
+  } else if (type === "LLL") {
+    return moment(date).format(type) || "-";
+  }
+  else if("ll, h:mm a"){
+    return moment(date).format(type) || "-";
+  }
+};
