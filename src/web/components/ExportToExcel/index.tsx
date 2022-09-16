@@ -32,10 +32,12 @@ export const ExportToExcel: React.FC<{
 
   const getLanguage = useCallback((lang) => {
     switch (lang) {
+      case 'en':
+            return "English"
         case 'es':
             return "Spanish"
         default:
-            return "English"
+            return "-"
     }
 }, [])
 
@@ -49,6 +51,7 @@ export const ExportToExcel: React.FC<{
           Username: item?.username || "-",
           JoinedDate:moment(item?.created_at).format("YYYY-MM-DD") || "-",
           LastLoggedIn:moment(item?.last_seen).format(env?.REACT_APP_TIME_FORMAT) || "-",
+          DefaultDeviceLanguage: getLanguage(item?.default_device_language),
           Language: getLanguage(item?.language),
           Status: item?.active === 1 ? "Active" : "Inactive",
           Premium: item?.is_premium === 1 ? "Yes" : "No",
