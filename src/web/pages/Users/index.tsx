@@ -43,6 +43,7 @@ const Users: React.FC = (): JSX.Element => {
       { key: "username", value: "Username" },
       { key: "created_at", value: "Joined Date" },
       { key: "last_seen", value: "Last Logged In" },
+      { key: "default_device_language", value: "Default device language" },
       { key: "language", value: "Language" },
       { key: "is_premium", value: "Premium" },
       { key: "is_blocked_by_admin", value: "Blocked by admin" },
@@ -402,10 +403,12 @@ const Users: React.FC = (): JSX.Element => {
   }, []);
   const getLanguage = useCallback((lang) => {
     switch (lang) {
+      case "en":
+        return "English";
       case "es":
         return "Spanish";
       default:
-        return "English";
+        return "-";
     }
   }, []);
 
@@ -630,6 +633,7 @@ const Users: React.FC = (): JSX.Element => {
                               env?.REACT_APP_TIME_FORMAT
                             ) || "-"}
                           </td>
+                          <td className="text-center">{getLanguage(val?.default_device_language)}</td>
                           <td>{getLanguage(val?.language)}</td>
                           <td>
                             <div
