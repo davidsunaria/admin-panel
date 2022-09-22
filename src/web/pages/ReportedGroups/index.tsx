@@ -181,7 +181,7 @@ const ReportedGroups: React.FC = (): JSX.Element => {
                           <td>{toUpperCase(val?.reported_groups?.category)}</td>
                           <td><div title={val?.reported_groups?.address}>{truncate(toUpperCase(val?.reported_groups?.address))}</div></td>
                           {/* <td>{moment(val?.created_at).format(env?.REACT_APP_TIME_FORMAT) || '-'}</td> */}
-                          <td>{dateFormat(val?.created_at,"ll, h:mm a")}</td>
+                          <td>{dateFormat(val?.created_at,"LL, h:mm a")}</td>
                           <td>
                             {val?.resource_reporter.map((value: any, i: number, row: Array<object>) => {
                               return (

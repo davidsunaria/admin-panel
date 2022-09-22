@@ -627,7 +627,7 @@ const Users: React.FC = (): JSX.Element => {
                               "-"} */}
                           </td>
                           <td>
-                            {dateFormat(val?.last_seen,'ll, h:mm a')} 
+                            {dateFormat(val?.last_seen,'LL, h:mm a')} 
                             {/* {moment(val?.last_seen).format(
                               env?.REACT_APP_TIME_FORMAT
                             ) || "-"} */}
