@@ -622,12 +622,12 @@ const Users: React.FC = (): JSX.Element => {
                           <td>{val?.email || "-"}</td>
                           <td>{val?.username || "-"}</td>
                           <td>
-                            {dateFormat(val?.created_at,"LL")}
+                            {dateFormat(val?.created_at,"MMMM DD, YYYY")}
                             {/* {moment(val?.created_at).format("YYYY-MM-DD") ||
                               "-"} */}
                           </td>
                           <td>
-                            {dateFormat(val?.last_seen,'LL, h:mm a')} 
+                            {dateFormat(val?.last_seen,'MMMM DD, YYYY, hh:mm a')} 
                             {/* {moment(val?.last_seen).format(
                               env?.REACT_APP_TIME_FORMAT
                             ) || "-"} */}

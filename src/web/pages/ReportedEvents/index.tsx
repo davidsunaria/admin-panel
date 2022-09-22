@@ -183,7 +183,7 @@ const ReportedEvents: React.FC = (): JSX.Element => {
                           <td>{toUpperCase(val?.event_group?.name)}</td>
                           <td><div title={val?.event_creator?.address}>{truncate(toUpperCase(val?.reported_events?.address))}</div></td>
                           {/* <td>{moment(val?.created_at).format(env?.REACT_APP_TIME_FORMAT) || '-'}</td> */}
-                          <td>{dateFormat(val?.created_at,"LL, h:mm a")}</td>
+                          <td>{dateFormat(val?.created_at,"MMMM DD, YYYY, hh:mm a")}</td>
                           <td>
                             {val?.resource_reporter.map((value: any, i: number, row: Array<object>) => {
                               return (

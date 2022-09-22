@@ -86,12 +86,15 @@ export const dateFormat = (date: any, type: any) => {
   }
   if (type === "YYYY-MM-DD") {
     return moment(date).format(type) || "-";
-  } else if (type === "LL") {
+  } else if (type === "MMMM DD, YYYY") {
     return moment(date).format(type) || "-";
   } else if (type === "LLL") {
     return moment(date).format(type) || "-";
   }
-  else if("ll, h:mm a"){
+  else if (type === "MMMM DD, YYYY, hh:mm a") {
+    return moment(date).format(type) || "-";
+  }
+  else if("ll, hh:mm a"){
     return moment(date).format(type) || "-";
   }
 };
