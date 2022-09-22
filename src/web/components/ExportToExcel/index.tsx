@@ -3,7 +3,7 @@ import React, { useCallback, useEffect} from "react";
 import * as FileSaver from "file-saver";
 import { useStoreActions, useStoreState } from "react-app-store";
 import * as XLSX from "xlsx";
-import { toUpperCase} from '../../../lib/utils/Service';
+import { toUpperCase,dateFormat} from '../../../lib/utils/Service';
 import moment from "moment"
 import env from "../../../config";
 
@@ -49,9 +49,11 @@ export const ExportToExcel: React.FC<{
           LastName: toUpperCase(item?.last_name),
           Email: item?.email || "-",
           Username: item?.username || "-",
-          JoinedDate:moment(item?.created_at).format("YYYY-MM-DD") || "-",
-          LastLoggedIn:moment(item?.last_seen).format(env?.REACT_APP_TIME_FORMAT) || "-",
           DefaultDeviceLanguage: getLanguage(item?.default_device_language),
+          JoinedDate:dateFormat(item?.created_at,"LL") || "-",
+          LastLoggedIn:dateFormat(item?.last_seen,'LL, h:mm a') || "-",
+          //JoinedDate:moment(item?.created_at).format("YYYY-MM-DD") || "-",
+          //LastLoggedIn:moment(item?.last_seen).format(env?.REACT_APP_TIME_FORMAT) || "-",
           Language: getLanguage(item?.language),
           Status: item?.active === 1 ? "Active" : "Inactive",
           Premium: item?.is_premium === 1 ? "Yes" : "No",
