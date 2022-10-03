@@ -408,7 +408,7 @@ const Users: React.FC = (): JSX.Element => {
       case "es":
         return "Spanish";
       default:
-        return "-";
+        return "English";
     }
   }, []);
 
