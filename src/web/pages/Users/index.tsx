@@ -409,7 +409,7 @@ const Users: React.FC = (): JSX.Element => {
     else if(lang === "es"){
       return "Spanish";
     }
-    else if(lang !== "en" && lang !== "es"){
+    else if(lang !== "" && lang !== "en" && lang !== "es"){
       return "English";
     }
     else{
