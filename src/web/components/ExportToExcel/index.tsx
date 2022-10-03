@@ -37,7 +37,7 @@ export const ExportToExcel: React.FC<{
         case 'es':
             return "Spanish"
         default:
-            return "-"
+            return "English"
     }
 }, [])
 
