@@ -401,28 +401,32 @@ const Users: React.FC = (): JSX.Element => {
     }
     // return true;
   }, []);
-  const getLanguage = useCallback((lang) => {
+  
+  const getLanguageNew = useCallback((lang) => {
 
+    if(!lang){
+      return "-";
+    }
     if(lang === "en"){
       return "English";
     }
-    else if(lang === "es"){
+     if(lang === "es"){
       return "Spanish";
     }
-    else if(lang !== "" && lang !== "en" && lang !== "es"){
+    if(lang !== "" && (lang !== "en" || lang !== "es")){
       return "English";
     }
-    else{
-      return "-";
-    }
-    /*switch (lang) {
+    
+  }, []);
+  const getLanguage = useCallback((lang) => {
+    switch (lang) {
       case "en":
         return "English";
       case "es":
         return "Spanish";
       default:
         return "English";
-    }*/
+    }
   }, []);
 
   const getRadioValue = useCallback((event?: string) => {
@@ -648,7 +652,7 @@ const Users: React.FC = (): JSX.Element => {
                               env?.REACT_APP_TIME_FORMAT
                             ) || "-"} */}
                           </td>
-                          <td className="text-center">{getLanguage(val?.default_device_language)}</td>
+                          <td className="text-center">{getLanguageNew(val?.default_device_language)}</td>
                           <td>{getLanguage(val?.language)}</td>
                           <td>
                             <div

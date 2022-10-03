@@ -30,28 +30,31 @@ export const ExportToExcel: React.FC<{
 
   //console.log("exportuser",exportedUsers)
 
-  const getLanguage = useCallback((lang) => {
+  const getLanguageNew = useCallback((lang) => {
 
+    if(!lang){
+      return "-";
+    }
     if(lang === "en"){
       return "English";
     }
-    else if(lang === "es"){
+    if(lang === "es"){
       return "Spanish";
     }
-    else if(lang !== "en" && lang !== "es"){
+     if(lang !== "" && (lang !== "en" || lang !== "es")){
       return "English";
     }
-    else{
-      return "-";
-    }
-    /*switch (lang) {
+    
+  }, []);
+  const getLanguage = useCallback((lang) => {
+    switch (lang) {
       case "en":
         return "English";
       case "es":
         return "Spanish";
       default:
         return "English";
-    }*/
+    }
   }, []);
 
   const inititalState = useCallback((type, item) => {
@@ -62,7 +65,7 @@ export const ExportToExcel: React.FC<{
           LastName: toUpperCase(item?.last_name),
           Email: item?.email || "-",
           Username: item?.username || "-",
-          DefaultDeviceLanguage: getLanguage(item?.default_device_language),
+          DefaultDeviceLanguage: getLanguageNew(item?.default_device_language),
           JoinedDate:dateFormat(item?.created_at,"MMMM DD, YYYY") || "-",
           LastLoggedIn:dateFormat(item?.last_seen,"MMMM DD, YYYY, hh:mm a") || "-",
           //JoinedDate:moment(item?.created_at).format("YYYY-MM-DD") || "-",
