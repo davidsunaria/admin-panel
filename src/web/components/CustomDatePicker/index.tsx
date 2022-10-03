@@ -7,10 +7,11 @@ interface ICustomDatePicker {
   frequency?:any;
    value?: any;
     label?: string | undefined;
-    name: string;
+    name: string ;
     props:any;
+    unixDate?:any
 }
-const CustomDatePicker: React.FC<ICustomDatePicker> = ({  frequency,value, label, name, props}) => {
+const CustomDatePicker: React.FC<ICustomDatePicker> = ({ unixDate, frequency,value, label, name, props}) => {
 
   const [minDate]=useState(new Date())
   const [monthDate]=useState(moment().add(1, 'M').format('DD-MM-YYYY'))
@@ -33,6 +34,7 @@ const CustomDatePicker: React.FC<ICustomDatePicker> = ({  frequency,value, label
              }
             value={value || ""}
             onChange={date => {
+              unixDate(moment(date).unix())
               const formattedDate = moment(date).format("YYYY-MM-DD");
               setFieldValue(`${name}`, formattedDate)
             }}

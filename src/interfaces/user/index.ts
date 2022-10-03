@@ -15,6 +15,7 @@ export interface IUsersProps extends IUsers{
   onSearch: (payload?: any) => any;
   onReset: () => any;
   type?: string;
+  placeholder?:string
 }
 
 export interface IEnableDisable {
@@ -42,6 +43,7 @@ export interface IPremiumuser {
   is_premium?:string | number;
   user_id?:string | number;
   expire_at?: any;
+  expire_at_unix:any
 }
 
 export interface ILockedGroup {
