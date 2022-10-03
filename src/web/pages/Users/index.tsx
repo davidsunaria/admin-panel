@@ -402,14 +402,27 @@ const Users: React.FC = (): JSX.Element => {
     // return true;
   }, []);
   const getLanguage = useCallback((lang) => {
-    switch (lang) {
+
+    if(lang === "en"){
+      return "English";
+    }
+    else if(lang === "es"){
+      return "Spanish";
+    }
+    else if(lang !== "en" && lang !== "es"){
+      return "English";
+    }
+    else{
+      return "-";
+    }
+    /*switch (lang) {
       case "en":
         return "English";
       case "es":
         return "Spanish";
       default:
         return "English";
-    }
+    }*/
   }, []);
 
   const getRadioValue = useCallback((event?: string) => {
