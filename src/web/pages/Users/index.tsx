@@ -19,7 +19,7 @@ import env from "../../../config";
 import DEFAULT_USER_IMG from "react-app-images/default_user.png";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
-import { toUpperCase } from "../../../lib/utils/Service";
+import { toUpperCase, dateFormat } from "../../../lib/utils/Service";
 import { toast } from "react-toastify";
 
 const TableHeader = React.lazy(() => import("../../components/TableHeader"));
@@ -625,13 +625,15 @@ const Users: React.FC = (): JSX.Element => {
                           <td>{val?.email || "-"}</td>
                           <td>{val?.username || "-"}</td>
                           <td>
-                            {moment(val?.created_at).format("YYYY-MM-DD") ||
-                              "-"}
+                            {dateFormat(val?.created_at,"MMMM DD, YYYY")}
+                            {/* {moment(val?.created_at).format("YYYY-MM-DD") ||
+                              "-"} */}
                           </td>
                           <td>
-                            {moment(val?.last_seen).format(
+                            {dateFormat(val?.last_seen,'MMMM DD, YYYY, hh:mm a')} 
+                            {/* {moment(val?.last_seen).format(
                               env?.REACT_APP_TIME_FORMAT
-                            ) || "-"}
+                            ) || "-"} */}
                           </td>
                           <td className="text-center">{getLanguage(val?.default_device_language)}</td>
                           <td>{getLanguage(val?.language)}</td>
