@@ -17,6 +17,7 @@ const GroupEventByLocation = React.lazy(
 );
 
 const Dashboard: React.FC = (): JSX.Element => {
+  console.log('hey');
   return (
     <>
       <div className="Content">
