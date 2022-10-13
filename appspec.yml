@@ -8,4 +8,8 @@ permissions:
     pattern: "**"
     owner: ubuntu
     group: www-data
-    mode: 775 
+    mode: 775
+    hooks:
+AfterInstall:
+    - location: scripts/dev/afterInstall.sh
+      runas: root

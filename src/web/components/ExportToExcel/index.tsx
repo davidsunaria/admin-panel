@@ -30,16 +30,32 @@ export const ExportToExcel: React.FC<{
 
   //console.log("exportuser",exportedUsers)
 
+  const getLanguageNew = useCallback((lang) => {
+
+    if(!lang){
+      return "-";
+    }
+    if(lang === "en"){
+      return "English";
+    }
+    if(lang === "es"){
+      return "Spanish";
+    }
+     if(lang !== "" && (lang !== "en" || lang !== "es")){
+      return "English";
+    }
+    
+  }, []);
   const getLanguage = useCallback((lang) => {
     switch (lang) {
-      case 'en':
-            return "English"
-        case 'es':
-            return "Spanish"
-        default:
-            return "English"
+      case "en":
+        return "English";
+      case "es":
+        return "Spanish";
+      default:
+        return "English";
     }
-}, [])
+  }, []);
 
   const inititalState = useCallback((type, item) => {
     switch (type) {

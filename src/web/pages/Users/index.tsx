@@ -403,6 +403,23 @@ const Users: React.FC = (): JSX.Element => {
     }
     // return true;
   }, []);
+  
+  const getLanguageNew = useCallback((lang) => {
+
+    if(!lang){
+      return "-";
+    }
+    if(lang === "en"){
+      return "English";
+    }
+     if(lang === "es"){
+      return "Spanish";
+    }
+    if(lang !== "" && (lang !== "en" || lang !== "es")){
+      return "English";
+    }
+    
+  }, []);
   const getLanguage = useCallback((lang) => {
     switch (lang) {
       case "en":
@@ -637,7 +654,7 @@ const Users: React.FC = (): JSX.Element => {
                               env?.REACT_APP_TIME_FORMAT
                             ) || "-"} */}
                           </td>
-                          <td className="text-center">{getLanguage(val?.default_device_language)}</td>
+                          <td className="text-center">{getLanguageNew(val?.default_device_language)}</td>
                           <td>{getLanguage(val?.language)}</td>
                           <td>
                             <div
