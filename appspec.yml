@@ -9,7 +9,7 @@ permissions:
     owner: ubuntu
     group: www-data
     mode: 775
-    hooks:
-AfterInstall:
+hooks:
+   AfterInstall:
     - location: scripts/dev/afterInstall.sh
       runas: root
