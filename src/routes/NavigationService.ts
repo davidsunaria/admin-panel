@@ -1,5 +1,5 @@
-import { NavigateFunction } from 'react-router';
-import React from 'react';
+import { NavigateFunction, useNavigate } from 'react-router';
+import React, { useEffect } from 'react';
 let navigateRef = React.createRef<NavigateFunction>().current;
 
 const setNavigateRef = (navigate: NavigateFunction) => {
@@ -12,4 +12,11 @@ const navigate = (name: string, options?: any) => {
   }
 }
 
-export default { navigate, setNavigateRef }
+export const useNavigationService = ()=>{
+  const navigation = useNavigate()
+  useEffect(() => {
+    setNavigateRef(navigation)
+  }, [])
+}
+
+export default { navigate }

@@ -4,7 +4,7 @@ import { Route, Routes, useNavigate } from 'react-router-dom'
 import PublicRoute from '../web/hooks/PublicRoute';
 import PrivateRoute from '../web/hooks/PrivateRoute';
 import Layout from '../web/layouts/Layout';
-import NavigationService from './NavigationService';
+import NavigationService, { useNavigationService } from './NavigationService';
 import CustomSuspense from '../web/components/CustomSuspense';
 
 
@@ -33,12 +33,8 @@ const AppRouter: React.FC = (): JSX.Element => {
        setIsLoggedigationIn(response.isLoggedIn);
      }
    }, [response.isLoggedIn]);*/
-  const navigation = useNavigate()
-  useEffect(() => {
-    NavigationService.setNavigateRef(navigation)
-  }, [])
 
-
+   useNavigationService()
 
   return (
     <Layout >
